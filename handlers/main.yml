@@ -1,0 +1,6 @@
+---
+
+- name: Cardano Restart
+  service:
+    name: "{{ cardano_service_name }}.service"
+    state: restarted

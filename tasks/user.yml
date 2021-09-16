@@ -1,0 +1,26 @@
+---
+
+- name: User | Add group
+  group:
+    name: "{{ cardano_group }}"
+    state: present
+
+- name: User | Add the user (and assign it to it's group)
+  user:
+    name: "{{ cardano_user }}"
+    comment: Cardano User
+    group: "{{ cardano_group }}"
+    groups:
+      - "{{ cardano_group }}"
+    create_home: true
+    shell: /bin/bash
+    home: "{{ cardano_home_directory }}"
+
+- name: User | Permissions to the home directory
+  file:
+    path: "{{ cardano_home_directory }}"
+    state: directory
+    owner: "{{ cardano_user }}"
+    group: "{{ cardano_group }}"
+    recurse: false
+    mode: '0775'

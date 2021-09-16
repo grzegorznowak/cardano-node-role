@@ -1,0 +1,63 @@
+---
+
+# Cardano user
+cardano_home_directory: /home/cardano
+cardano_user: cardano
+cardano_group: cardano
+
+# Version variables
+ghc_version: 8.10.4
+cabal_version: 3.4.0.0
+cardano_node_version: 1.29.0
+cardano_config_path: "{{ cardano_home_directory }}/cardano_node_config"
+
+# Net Definitions
+cardano_nets:
+  main:
+    magic: 764824073
+    files:
+      config: https://hydra.iohk.io/build/7370192/download/1/mainnet-config.json
+      genesis:
+        byron: https://hydra.iohk.io/build/7370192/download/1/mainnet-byron-genesis.json
+        shelley: https://hydra.iohk.io/build/7370192/download/1/mainnet-shelley-genesis.json
+        alonzo: https://hydra.iohk.io/build/7370192/download/1/mainnet-alonzo-genesis.json
+      topology: https://hydra.iohk.io/build/7370192/download/1/mainnet-topology.json
+  test:
+    magic: 1097911063
+    files:
+      config: >-
+        https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/testnet-config.json
+      genesis:
+        byron: >-
+          https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/testnet-byron-genesis.json
+        shelley: >-
+          https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/testnet-shelley-genesis.json
+        alonzo: >-
+          https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/testnet-alonzo-genesis.json
+      topology: >-
+        https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/testnet-topology.json
+active_network: test
+
+# Service Config
+
+cardano_listen_addr: 127.0.0.1
+cardano_listen_port: 22322  # has to be in the upper bracket if it's running as non-privileged user
+
+# NON-essential variables. We use those to keep things more DRY or tight
+# feel free to adjust if you don't like those
+ghc_installer_path: /tmp/ghc.sh
+ghc_bin_path: /root/.ghcup/bin
+cardano_src_path: /usr/src/cardano
+libsodium_repo: https://github.com/input-output-hk/libsodium
+cardano_repo: https://github.com/input-output-hk/cardano-node.git
+installation_scripts_path: /usr/src
+cardano_bin_path: "{{ cardano_home_directory }}/bin"
+
+# service specific non-essential config
+cardano_service_name: cardano-node
+cardano_node_pidfile: "/var/run/{{ cardano_service_name }}/cardano_node.pid"
+cardano_service_file: "/lib/systemd/system/{{ cardano_service_name }}.service"
+cardano_node_runtime: "{{ cardano_home_directory }}/cardano_node"
+cardano_node_db: "{{ cardano_node_runtime }}/db"
+cardano_node_socket: "{{ cardano_node_runtime }}/db/node.socket"
+cardano_start_path: /var/lib/cardano_start.sh

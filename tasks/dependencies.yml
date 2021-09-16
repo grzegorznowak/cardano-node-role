@@ -1,0 +1,76 @@
+---
+
+- name: Dependencies | Libs
+  apt:
+    name:
+      - curl
+      - automake
+      - build-essential
+      - pkg-config
+      - libffi-dev
+      - libgmp-dev
+      - libgmp10
+      - libssl-dev
+      - libtinfo-dev
+      - libsystemd-dev
+      - zlib1g-dev
+      - make
+      - g++
+      - tmux
+      - git
+      - jq
+      - wget
+      - libncurses-dev
+      - libncursesw5
+      - libncurses5
+      - libtinfo5
+      - libtool
+      - autoconf
+    state: present
+    update-cache: true
+    install_recommends: false
+    cache_valid_time: 3600
+
+- block:
+    - name: Dependencies | Get the current ghc version
+      command: ./ghc --numeric-version
+      args:
+        chdir: "{{ ghc_bin_path }}"
+      register: ghc_version_output
+      changed_when: false
+
+    - name: Dependencies | Get the current cabal version
+      command: ./cabal --numeric-version
+      args:
+        chdir: "{{ ghc_bin_path }}"
+      register: cabal_version_output
+      changed_when: false
+
+    - set_fact:
+        cabal_current_version: "{{ cabal_version_output.stdout }}"
+        ghc_current_version: "{{ ghc_version_output.stdout }}"
+
+  rescue:
+    - set_fact:
+        cabal_current_version: ""
+        ghc_current_version: ""
+
+- name: Dependencies | Glasgow Haskell
+  block:
+
+    - name: Dependencies | GHC | Get installer
+      get_url:
+        url: https://get-ghcup.haskell.org
+        dest: "{{ ghc_installer_path }}"
+        mode: 'a+x'
+
+    - name: Dependencies | GHC | Install
+      shell: >
+        BOOTSTRAP_HASKELL_ADJUST_BASHRC=1
+        BOOTSTRAP_HASKELL_GHC_VERSION={{ ghc_version }}
+        BOOTSTRAP_HASKELL_CABAL_VERSION={{ cabal_version }}
+        BOOTSTRAP_HASKELL_NONINTERACTIVE=1
+        {{ ghc_installer_path }}
+  when:
+    - cabal_current_version != cabal_version
+    - ghc_current_version != ghc_version

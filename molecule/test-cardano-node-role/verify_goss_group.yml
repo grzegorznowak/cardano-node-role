@@ -1,0 +1,22 @@
+---
+
+- name: Register test files
+  shell: "ls {{ goss_test_directory }}/test_goss_{{ goss_test_group }}*.yml"
+  register: test_files
+
+- name: Execute Goss tests
+  command: "{{ goss_bin }} -g {{ item }} validate --format {{ goss_format }}"
+  register: test_results
+  with_items: "{{ test_files.stdout_lines }}"
+  failed_when: false
+
+- name: Display details about the Goss results
+  debug:
+    msg: "{{ item.stdout_lines }}"
+  with_items: "{{ test_results.results }}"
+
+- name: Fail when tests fail
+  fail:
+    msg: "Goss failed to validate"
+  when: item.rc != 0
+  with_items: "{{ test_results.results }}"

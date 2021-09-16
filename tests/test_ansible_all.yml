@@ -1,0 +1,36 @@
+---
+
+- name: Test Integration | Cardano service uptime monitoring
+  block:
+    - name: Test | stop the Cardano service
+      shell: "pkill {{ cardano_service_name }}"
+
+    - name: Test Integration | wait for monit restart the service
+      wait_for:
+        host: "{{ cardano_listen_addr }}"
+        port: "{{ cardano_listen_port }}"
+        timeout: 120  # it's a slow-ass process to get it back online...
+
+- name: Test | SecOps | Can't be reached on public port
+  block:
+    - name: "Test | SecOps | Make sure port {{ cardano_listen_port }} is inaccessible from the outside world"
+      wait_for:
+        host: "{{ public_ip }}"
+        port: "{{ cardano_listen_port }}"
+        timeout: 1
+      delegate_to: localhost
+      become: false
+
+    - name: Test | SecOps | It should never reach this (fail on the task prior)
+      set_fact:
+        public_ip_scan_failed: true
+
+  rescue:
+    - name: Test | SecOps | All GOOD
+      debug:
+        msg: "all good :)"
+
+  always:
+    - fail:
+        msg: "ERROR: Nginx port {{ cardano_listen_port }} accessible on the public interface"
+      when: public_ip_scan_failed is defined and public_ip_scan_failed

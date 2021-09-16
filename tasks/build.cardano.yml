@@ -1,0 +1,97 @@
+---
+
+- name: Cardano | Make sure the main source-holding directory exists
+  file:
+    path: "{{ cardano_src_path }}"
+    state: directory
+    mode: '600'
+
+- include: build.libsodium.yml
+
+- block:
+    - name: Cardano | Get the current cardano-cli version
+      command: cardano-cli --version
+      environment:
+        PATH: "{{ cardano_bin_path }}/:{{ ansible_env.PATH }}"
+        LD_LIBRARY_PATH: /usr/local/lib
+        PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
+      register: cardano_cli_output
+      changed_when: false   # for idempodence
+
+    - name: Cardano | Get the current cardano-node version
+      command: cardano-node --version
+      environment:
+        PATH: "{{ cardano_bin_path }}/:{{ ansible_env.PATH }}"
+        LD_LIBRARY_PATH: /usr/local/lib
+        PKG_CONFIG_PATH: /usr/local/lib/pkgconfig
+      register: cardano_node_output
+      changed_when: false   # for idempodence
+
+    - set_fact:
+        cardano_cli_current_version: "{{ cardano_cli_output.stdout | regex_search('[0-9]+\\.[0-9]+\\.[0-9]') }}"
+        cardano_node_current_version: "{{ cardano_node_output.stdout | regex_search('[0-9]+\\.[0-9]+\\.[0-9]') }}"
+  rescue:
+
+    - set_fact:
+        cardano_cli_current_version: ""
+        cardano_node_current_version: ""
+
+- name: Cardano | Wrap the install process
+  block:
+
+    - name: Cardano | Checkout the project
+      git:
+        repo: "{{ cardano_repo }}"
+        dest: "{{ cardano_src_path }}/cardano-node"
+        force: true
+        accept_hostkey: true
+
+    - name: Cardano | Hydrate the install template
+      template:
+        src: cardano.install.j2.bash
+        dest: "{{ installation_scripts_path }}/cardano.install.bash"
+        mode: "a+x"
+
+    - name: Cardano | Execute the install script
+      shell: >
+        {{ installation_scripts_path }}/cardano.install.bash
+
+    - name: "Cardano | Make sure the {{ cardano_bin_path }} directory exists"
+      file:
+        path: "{{ cardano_bin_path }}"
+        state: directory
+        owner: "{{ cardano_user }}"
+        group: "{{ cardano_group }}"
+        mode: '777'
+
+    - name: Cardano | Make sure the service is stopped before we start changing it's binaries
+      service:
+        name: "{{ cardano_service_name }}.service"
+        state: stopped
+      ignore_errors: true  # if it's a first run, the service won't be there. TODO: evade that better!
+
+    - shell: >
+        cp -p "$(./scripts/bin-path.sh cardano-node)" {{ cardano_bin_path }}
+      args:
+        chdir: "{{ cardano_src_path }}/cardano-node"
+
+    - shell: >
+        cp -p "$(./scripts/bin-path.sh cardano-cli)" {{ cardano_bin_path }}
+      args:
+        chdir: "{{ cardano_src_path }}/cardano-node"
+
+    - name: Cardano | cardano-node ownership
+      file:
+        path: "{{ cardano_bin_path }}/cardano-node"
+        owner: "{{ cardano_user }}"
+        group: "{{ cardano_group }}"
+
+    - name: Cardano | cardano-cli ownership
+      file:
+        path: "{{ cardano_bin_path }}/cardano-cli"
+        owner: "{{ cardano_user }}"
+        group: "{{ cardano_group }}"
+
+  when:
+    - cardano_cli_current_version != cardano_node_version
+    - cardano_node_current_version != cardano_node_version

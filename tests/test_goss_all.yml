@@ -1,0 +1,5 @@
+---
+service:
+  cardano-node:
+    enabled: true
+    running: true

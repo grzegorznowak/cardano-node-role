@@ -1,0 +1,30 @@
+[Unit]
+Description=Cardano Node Service
+After=network.target
+
+[Service]
+Type=simple
+Environment=LD_LIBRARY_PATH=/usr/local/lib
+WorkingDirectory={{ cardano_node_runtime }}/db
+ExecStart={{ cardano_bin_path }}/cardano-node run \
+--config {{ cardano_config_path }}/{{ active_network }}net-config.json \
+--database-path {{ cardano_node_db }}/ \
+--socket-path {{ cardano_node_socket }} \
+--host-addr {{ cardano_listen_addr }} \
+--port {{ cardano_listen_port }} \
+--topology {{ cardano_config_path }}/{{ active_network }}net-topology.json
+
+PIDFile={{ cardano_node_pidfile }}
+TimeoutStopSec=0
+Restart=always
+RestartSec=5
+User={{ cardano_user }}
+Group={{ cardano_group }}
+RuntimeDirectory={{ cardano_service_name }}
+RuntimeDirectoryMode=2775
+
+ExecStop=/bin/kill -s TERM $MAINPID
+
+[Install]
+WantedBy=multi-user.target
+Alias={{ cardano_service_name }}.service

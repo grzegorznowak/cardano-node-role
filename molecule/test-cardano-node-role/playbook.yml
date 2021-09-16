@@ -1,0 +1,7 @@
+---
+
+- name: Converge Cardano Node
+  hosts: all
+
+  roles:
+    - cardano-node-role

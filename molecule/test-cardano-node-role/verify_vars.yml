@@ -1,0 +1,12 @@
+---
+goss_version: v0.3.7
+goss_arch: amd64
+goss_bin: /usr/local/bin/goss
+goss_sha256sum: 357f5c7f2e7949b412bce44349cd32ab19eb3947255a8ac805f884cc2c326059.
+goss_test_directory: /tmp/molecule/goss
+goss_format: documentation
+public_ip: "{{ ansible_eth0.ipv4.address }}"
+
+cardano_listen_addr: 127.0.0.1
+cardano_listen_port: 22322
+cardano_service_name: cardano-node

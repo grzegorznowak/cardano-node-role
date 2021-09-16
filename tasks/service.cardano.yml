@@ -1,0 +1,78 @@
+---
+
+- name: "Cardano Service | Make sure {{ cardano_config_path }} exists"
+  file:
+    path: "{{ cardano_config_path }}"
+    state: directory
+    owner: "{{ cardano_user }}"
+    group: "{{ cardano_group }}"
+    mode: '775'
+
+- name: "Cardano Service | Make sure {{ cardano_node_db }} exists"
+  file:
+    path: "{{ cardano_node_db }}"
+    state: directory
+    owner: "{{ cardano_user }}"
+    group: "{{ cardano_group }}"
+    mode: '777'
+
+- name: Cardano Service | Grab config.json
+  get_url:
+    url: "{{ cardano_nets[active_network].files.config }}"
+    dest: "{{ cardano_config_path }}/{{ active_network }}net-config.json"
+    owner: "{{ cardano_user }}"
+    group: "{{ cardano_group }}"
+    timeout: 30
+
+- name: Cardano Service | Grab topology.json
+  get_url:
+    url: "{{ cardano_nets[active_network].files.topology }}"
+    dest: "{{ cardano_config_path }}/{{ active_network }}net-topology.json"
+    owner: "{{ cardano_user }}"
+    group: "{{ cardano_group }}"
+    timeout: 30
+
+- name: Cardano Service | Grab byron genesis.json
+  get_url:
+    url: "{{ cardano_nets[active_network].files.genesis.byron }}"
+    dest: "{{ cardano_config_path }}/{{ active_network }}net-byron-genesis.json"
+    owner: "{{ cardano_user }}"
+    group: "{{ cardano_group }}"
+    timeout: 30
+
+- name: Cardano Service | Grab shelley genesis.json
+  get_url:
+    url: "{{ cardano_nets[active_network].files.genesis.shelley }}"
+    dest: "{{ cardano_config_path }}/{{ active_network }}net-shelley-genesis.json"
+    owner: "{{ cardano_user }}"
+    group: "{{ cardano_group }}"
+    timeout: 30
+
+- name: Cardano Service | Grab alonzo genesis.json
+  get_url:
+    url: "{{ cardano_nets[active_network].files.genesis.alonzo }}"
+    dest: "{{ cardano_config_path }}/{{ active_network }}net-alonzo-genesis.json"
+    owner: "{{ cardano_user }}"
+    group: "{{ cardano_group }}"
+    timeout: 30
+
+- name: Copy service file template
+  template:
+    src: service.j2
+    dest: "{{ cardano_service_file }}"
+  register: cardano_service_file_result
+  notify: Cardano Restart
+
+- systemd:
+    daemon_reload: true
+  when: cardano_service_file_result is defined and cardano_service_file_result.changed
+
+- name: Enable the custom service
+  service:
+    name: "{{ cardano_service_name }}.service"
+    enabled: true
+
+- name: Start the custom service
+  service:
+    name: "{{ cardano_service_name }}.service"
+    state: started

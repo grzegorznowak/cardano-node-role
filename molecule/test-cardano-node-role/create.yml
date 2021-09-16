@@ -1,0 +1,36 @@
+---
+- name: Create
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: false
+  tasks:
+    - name: Save user ID
+      command: "id -u"
+      register: user_id
+    - name: Save user Group ID
+      command: "id -g"
+      register: user_group_id
+    - name: Create instance
+      lxd_container:
+        name: "{{ item.name }}"
+        state: started
+        devices:
+          root:
+            path: "/"
+            type: "disk"
+            pool: "{{ lookup('env', 'LXD_POOL') | default('default', true) }}"
+        source:
+          type: image
+          mode: pull
+          server: https://images.linuxcontainers.org/
+          protocol: simplestreams
+          alias: "{{ item.image }}"
+        config:
+          raw.idmap: "uid {{ user_id.stdout }} 0\ngid {{ user_group_id.stdout }} 0"
+          security.nesting: "{{ item.nested }}"
+          security.privileged: "{{ item.privileged }}"
+        profiles: ["default"]
+        wait_for_ipv4_addresses: true
+        timeout: 6000
+      with_items: "{{ molecule_yml.platforms }}"

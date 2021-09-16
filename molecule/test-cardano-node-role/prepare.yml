@@ -1,0 +1,16 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: false
+  tasks:
+    # no facts given here, need to bodge this with some creative test-ing
+    - name: Prepare | Install python for Ansible (Debian)
+      raw: (test -e /usr/bin/python
+           || (apt -y update && apt install -y python3-minimal))
+      changed_when: false
+      ignore_errors: true
+
+    - name: Prepare | Apt update&upgrade
+      apt:
+        upgrade: dist
+        update_cache: true
