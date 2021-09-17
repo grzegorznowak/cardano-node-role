@@ -42,20 +42,20 @@ Please remember to always ask for your tests when ordering your ansible pizza.
 
 #### When should I use this role over the official docker image ?
 
-First of all docker is a great tool that I leverage in my projects a tonne of to provide consistent images for concrete 
-tasks. The specificity of docker comes with a price and that is it's not fun when it comes to networking or systemd. 
+First of all docker is a great tool that I leverage in my projects a tonne to provide consistent images for concrete 
+tasks. The specificity of docker comes with a price and that is it's **not fun when it comes to networking or systemd**. 
 On it's own it can't really do any of those things full-on and thus behold kubernetes, docker-swarms et al.
 Which is perfectly fine until you need to actually do a bespoke setup with mesh VPN or live services monitoring - 
-you start adding layer after layer of complexity to the system only to solve problems that docker itself brought, 
-with lots dependencies, that are not easy to deploy with infra-as-code principle. 
+you start adding layer after layer of complexity to the system only to solve problems that docker itself brought; 
+with lots dependencies that are not easy to deploy with **infra-as-code** principle. 
   
-If I learnt anything over the long years in development, is that there is truly no solution that fits it all.
+If I learnt anything over the years in development, is that there is truly no solution that fits it all.
 At some point when a production grade platform is considered, trying to shoe hone docker into the frames 
 of correctly defined and controlled environment is just much more work than compiling a well understood and minimal
 set of roles that provide specific value. 
 
 If you're not developing the system with docker first approach, which I personally find really a roundabout fashion
-eventually, then you might enjoy this role. With an added value of being perfectly transparent; so you're never 
+eventually, then you might enjoy this role. With an added value of being **perfectly transparent**; so you're never 
 worried what your docker image comes with prepackaged other than what it claims.
 
 Initial tests were conducted using lxd containers, which are flyweight, fast and native to ubuntu, and can 
