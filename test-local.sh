@@ -10,4 +10,4 @@ virtualenv testingenv --python=python3
 . testingenv/bin/activate
 pip install -r tests-requirements.txt
 
-molecule test -s test-cardano-node-role
+molecule test -s local-cardano-node-role
