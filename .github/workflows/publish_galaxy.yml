@@ -5,7 +5,7 @@ on:
     types: [published]
 
 jobs:
-  publish galaxy:
+  publish_galaxy:
     runs-on: ubuntu-latest
     name: Publish role to Ansible Galaxy
     steps:
