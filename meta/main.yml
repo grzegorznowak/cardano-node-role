@@ -1,9 +1,9 @@
 ---
 galaxy_info:
   author: grzegorznowak
-  description: Copiles and installs cardano node
-  company: "Strange3.com"
-  license: "WTFPL"
+  description: Compiles and installs cardano node on Debians and Ubuntus
+  company: "strange3.com"
+  license: "license (BSD, MIT)"
   role_name: cardano_node
   min_ansible_version: 2.10
 
