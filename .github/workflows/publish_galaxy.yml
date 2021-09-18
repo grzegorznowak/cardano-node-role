@@ -2,7 +2,9 @@ name: Publish | Ansible Galaxy
 
 on:
   release:
-    types: [published]
+    types:
+      - published
+      - edited
 
 jobs:
   publish_galaxy:
