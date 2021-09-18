@@ -56,14 +56,15 @@
     group: "{{ cardano_group }}"
     timeout: 30
 
-- name: Copy service file template
+- name: Cardano Service | Copy service file template
   template:
     src: service.j2
     dest: "{{ cardano_service_file }}"
   register: cardano_service_file_result
   notify: Cardano Restart
 
-- systemd:
+- name: Cardano Service | reload systemctl
+  systemd:
     daemon_reload: true
   when: cardano_service_file_result is defined and cardano_service_file_result.changed
 

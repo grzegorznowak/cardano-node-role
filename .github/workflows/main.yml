@@ -32,5 +32,3 @@ jobs:
         with:
           molecule_command: converge
           molecule_args: "--scenario-name test-cardano-node"
-
-

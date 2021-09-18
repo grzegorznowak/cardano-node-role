@@ -22,15 +22,31 @@ Compilation of the required binaries is a CPU heavy tasks, so be prepared for a 
 
 Work in progress, tbd as soon as we understand github actions better
 
-## Usage
+## installation ##
 
-```
+one of:
+* `ansible-galaxy install grzegorznowak.cardano_node`
+* clone the repo directly
+
+## Example playbook 
+##### when cloned from github
+```YAML
 - name: Converge Cardano Node
   hosts: all
 
   roles:
     - cardano-node-role
-```
+```        
+##### when installed with ansible-galaxy
+
+```YAML
+- name: Converge Cardano Node
+  hosts: all
+
+  roles:
+    - grzegorznowak.cardano_node
+```        
+
 
 ## Motivation
 

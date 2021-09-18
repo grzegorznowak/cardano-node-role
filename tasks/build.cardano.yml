@@ -8,7 +8,8 @@
 
 - include: build.libsodium.yml
 
-- block:
+- name: Cardano | Wrap version fetching
+  block:
     - name: Cardano | Get the current cardano-cli version
       command: cardano-cli --version
       environment:
@@ -70,12 +71,14 @@
         state: stopped
       ignore_errors: true  # if it's a first run, the service won't be there. TODO: evade that better!
 
-    - shell: >
+    - name: Cardano | get cardno-node version
+      shell: >
         cp -p "$(./scripts/bin-path.sh cardano-node)" {{ cardano_bin_path }}
       args:
         chdir: "{{ cardano_src_path }}/cardano-node"
 
-    - shell: >
+    - name: Cardano | get cardno-cli version
+      shell: >
         cp -p "$(./scripts/bin-path.sh cardano-cli)" {{ cardano_bin_path }}
       args:
         chdir: "{{ cardano_src_path }}/cardano-node"
