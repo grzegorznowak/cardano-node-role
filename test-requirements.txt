@@ -1,4 +1,4 @@
-ansible==2.10.4
+ansible==2.10.7
 sh==1.12.14
 testinfra==3.0.6
 molecule<3.0.0
