@@ -101,3 +101,8 @@
   when:
     - cardano_cli_current_version != cardano_node_version
     - cardano_node_current_version != cardano_node_version
+
+- name: Cardano | Cleanup sources
+  file:
+    path: "{{ cardano_src_path }}/cardano-node"
+    state: absent

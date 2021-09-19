@@ -18,3 +18,8 @@
   command: "{{ installation_scripts_path }}/libsodium.install.bash"
   args:
     creates: /usr/local/lib/libsodium.a
+
+- name: Libsodium | Cleanup sources
+  file:
+    path: "{{ cardano_src_path }}/libsodium"
+    state: absent
