@@ -2,6 +2,7 @@ extends: default
 
 ignore: |
   *env
+  .github
 
 rules:
   braces:

@@ -41,8 +41,6 @@ cardano_nets:
         https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/testnet-topology.json
 active_network: test
 
-
-
 # NON-essential variables. We use those to keep things more DRY or tight
 # feel free to adjust if you don't like those
 cardano_config_path: "{{ cardano_home_directory }}/cardano_node_config"

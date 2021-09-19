@@ -1,3 +1,5 @@
+---
+
 name: CI
 
 on:
@@ -13,18 +15,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.6
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
 
-    - name: Install dependencies
-      run: |
-        python3 -m pip install --upgrade pip
-        python3 -m pip install -r test-cloud-requirements.txt
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r test-cloud-requirements.txt
 
-    - name: Test with molecule
-      run: |
-        molecule test --scenario-name cloud-cardano-node-role
+      - name: Test with molecule
+        run: |
+          molecule test --scenario-name cloud-cardano-node-role
