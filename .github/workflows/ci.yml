@@ -15,10 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Remove non-product files
-      run: |
-        rm -rf molecule
-        rm -rf tests
-        ls -alhtr
-
     - uses: docker://lpenz/ansible-lint:905d4ae
