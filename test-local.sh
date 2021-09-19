@@ -10,4 +10,5 @@ virtualenv testingenv --python=python3
 . testingenv/bin/activate
 pip install -r tests-requirements.txt
 
+ansible-lint
 molecule test -s local-cardano-node-role

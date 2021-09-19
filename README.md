@@ -22,7 +22,7 @@ Compilation of the required binaries is a CPU heavy tasks, so be prepared for a 
 
 Work in progress, tbd as soon as we understand github actions better
 
-## installation ##
+## Installation ##
 
 one of:
 * `ansible-galaxy install grzegorznowak.cardano_node`
@@ -47,6 +47,37 @@ one of:
     - grzegorznowak.cardano_node
 ```        
 
+## Usage
+
+Use it as any other service
+```shell script
+# managing the process:
+systemctl status cardano-node
+systemctl restart cardano-node
+
+# looking at general logs
+journalctl -xe 
+```
+
+By default is installs cardano for a `cardano` user and group. Which is a recommended practice. 
+All the other cogs to fiddle with can be found under `defaults/main.yml`, and the noteworthy ones are:
+```yaml
+# Cardano user
+cardano_home_directory: /home/cardano
+cardano_user: cardano
+cardano_group: cardano
+
+# Version variables
+ghc_version: 8.10.4
+cabal_version: 3.4.0.0
+cardano_node_version: 1.29.0
+
+# Service Config
+cardano_listen_addr: 127.0.0.1
+cardano_listen_port: 22322  # has to be in the upper bracket if it's running as non-privileged user
+``` 
+
+There's more so to fine-grain control the installation mechanisms just head on to the default's file directly
 
 ## Motivation
 

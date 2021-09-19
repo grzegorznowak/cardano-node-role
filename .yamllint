@@ -4,6 +4,7 @@ ignore: |
   *env
 
 rules:
+  unnamed-task: enable
   braces:
     max-spaces-inside: 1
     level: error
