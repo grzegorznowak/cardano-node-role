@@ -33,7 +33,7 @@ provisioner:
   playbooks:   # DRY playbooks by reusing what we can from the production scenario
     prepare: ../local-cardano-node-role/prepare.yml
     verify: ../local-cardano-node-role/verify.yml
-    playbook: ../local-cardano-node-role/playbook.yml
+    converge: ../local-cardano-node-role/playbook.yml
 scenario:
   name: cloud-cardano-node-role
   test_sequence:
