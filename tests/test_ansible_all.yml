@@ -9,7 +9,7 @@
       register: cardano_node_version_result
 
     - set_fact:
-        cardano_node_current_version: >|
+        cardano_node_current_version: >
           {{ cardano_node_version_result.stdout | regex_search('[0-9]+\\.[0-9]+\\.[0-9]') }}
 
     - assert:
