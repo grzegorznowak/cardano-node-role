@@ -46,12 +46,14 @@
       register: cabal_version_output
       changed_when: false
 
-    - set_fact:
+    - name: Dependencies | set concrete cabal versions
+      set_fact:
         cabal_current_version: "{{ cabal_version_output.stdout }}"
         ghc_current_version: "{{ ghc_version_output.stdout }}"
 
   rescue:
-    - set_fact:
+    - name: Dependencies | set empty cabal versions
+      set_fact:
         cabal_current_version: ""
         ghc_current_version: ""
 

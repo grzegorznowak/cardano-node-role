@@ -60,6 +60,7 @@
   template:
     src: service.j2
     dest: "{{ cardano_service_file }}"
+    mode: "775"
   register: cardano_service_file_result
   notify: Cardano Restart
 
@@ -67,6 +68,8 @@
   systemd:
     daemon_reload: true
   when: cardano_service_file_result is defined and cardano_service_file_result.changed
+  tags:
+    - skip_ansible_lint  # we do want to have this reloaded here and now
 
 - name: Enable the custom service
   service:
