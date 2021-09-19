@@ -28,10 +28,6 @@ provisioner:
       pipelining: true
   lint:
     name: ansible-lint
-  inventory:
-    links:
-      group_vars: ../../inventory/common/group_vars/
-      host_vars: ../../inventory/test/host_vars/
   env:
     ANSIBLE_ROLES_PATH: $ephemeral_directory/roles/:../../roles/:./roles
   playbooks:   # DRY playbooks by reusing what we can from the production scenario
