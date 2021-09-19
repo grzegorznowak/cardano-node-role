@@ -1,0 +1,20 @@
+name: CI
+on:
+  workflow_run:
+    workflows: ["Ansible Lint"]
+    branches: [main]
+    types:
+      - completed
+
+jobs:
+  lint:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: gofrolist/molecule-action@v2
+      with:
+        molecule_command: test
+        molecule_args: --scenario-name cloud-cardano-node-role

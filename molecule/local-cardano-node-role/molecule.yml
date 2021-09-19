@@ -4,8 +4,8 @@ dependency:
     name: galaxy
     options:
         force: true
-        ignore-certs: true
-        ignore-errors: true
+        ignore-certs: false
+        ignore-errors: false
 driver:
     name: lxd
 lint:

@@ -1,0 +1,60 @@
+---
+dependency:
+  name: galaxy
+  options:
+    force: true
+    ignore-certs: false
+    ignore-errors: false
+driver:
+  name: digitalocean
+lint:
+  name: yamllint
+platforms:
+  - name: molecule-test-cardano-node-role
+    image_id: ubuntu-20-04-x64
+    region_id: ams3
+    size_id: m-2vcpu-16gb
+    groups:
+      - all
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      bin_ansible_callbacks: true
+      forks: 50
+      internal_poll_interval: 0.001
+      stdout_callback: yaml
+    ssh_connection:
+      pipelining: true
+  lint:
+    name: ansible-lint
+  inventory:
+    links:
+      group_vars: ../../inventory/common/group_vars/
+      host_vars: ../../inventory/test/host_vars/
+  env:
+    ANSIBLE_ROLES_PATH: $ephemeral_directory/roles/:../../roles/:./roles
+  playbooks:   # DRY playbooks by reusing what we can from the production scenario
+    prepare: ../local-cardano-node-role/prepare.yml
+    verify: ../local-cardano-node-role/verify.yml
+    playbook: ../local-cardano-node-role/playbook.yml
+scenario:
+  name: cloud-cardano-node-role
+  test_sequence:
+    - lint
+    - dependency
+    - cleanup
+    - destroy
+    - syntax
+    - create
+    - prepare
+    - converge
+    - side_effect
+    - verify
+    - cleanup
+    - destroy
+verifier:
+  directory: ../../tests
+  name: goss
+  lint:
+    name: yamllint
