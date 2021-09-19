@@ -25,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install -r test-requirements.txt
+        python3 -m pip install -r test-cloud-requirements.txt
 
     - name: Test with molecule
       run: |
