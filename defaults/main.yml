@@ -8,7 +8,7 @@ cardano_group: cardano
 # Version variables
 ghc_version: 8.10.4
 cabal_version: 3.4.0.0
-cardano_node_version: 1.29.1
+cardano_node_version: 1.29.0
 
 # Service Config
 cardano_listen_addr: 127.0.0.1
