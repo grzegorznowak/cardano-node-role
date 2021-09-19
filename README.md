@@ -61,8 +61,8 @@ systemctl restart cardano-node
 journalctl -xe 
 ```
 
-By default is installs cardano for a `cardano` user and group. Which is a recommended practice. 
-All the other cogs to fiddle with can be found under `defaults/main.yml`, and the noteworthy ones are:
+By default installs cardano for a `cardano` user and group. Which is a recommended practice. 
+All the other cogs to fiddle with can be found under `defaults/main.yml`, and the most noteworthy ones are:
 ```yaml
 # Cardano user
 cardano_home_directory: /home/cardano
