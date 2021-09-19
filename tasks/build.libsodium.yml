@@ -1,25 +1,32 @@
 ---
 
-- name: Libsodium | Checkout the project
-  git:
-    repo: "{{ libsodium_repo }}"
-    dest: "{{ cardano_src_path }}/libsodium"
-    force: true
-    accept_hostkey: true
-    version: master
+- name: Libsodium | Check if the library exists
+  stat:
+    path: /usr/local/lib/libsodium.a
+  register: libsodium_path
 
-- name: Libsodium | Hydrate the install template
-  template:
-    src: libsodium.install.j2.bash
-    dest: "{{ installation_scripts_path }}/libsodium.install.bash"
-    mode: "a+x"
+- name: Libsodium | Wrap install
+  block:
+    - name: Libsodium | Checkout the project
+      git:
+        repo: "{{ libsodium_repo }}"
+        dest: "{{ cardano_src_path }}/libsodium"
+        force: true
+        accept_hostkey: true
+        version: master
 
-- name: Libsodium | Execute the install script
-  command: "{{ installation_scripts_path }}/libsodium.install.bash"
-  args:
-    creates: /usr/local/lib/libsodium.a
+    - name: Libsodium | Hydrate the install template
+      template:
+        src: libsodium.install.j2.bash
+        dest: "{{ installation_scripts_path }}/libsodium.install.bash"
+        mode: "a+x"
 
-- name: Libsodium | Cleanup sources
-  file:
-    path: "{{ cardano_src_path }}/libsodium"
-    state: absent
+    - name: Libsodium | Execute the install script
+      command: "{{ installation_scripts_path }}/libsodium.install.bash"
+
+    - name: Libsodium | Cleanup sources
+      file:
+        path: "{{ cardano_src_path }}/libsodium"
+        state: absent
+
+  when: not libsodium_path.stat.exists
