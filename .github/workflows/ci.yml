@@ -28,5 +28,6 @@ jobs:
           python3 -m pip install -r test-cloud-requirements.txt
 
       - name: Test with molecule
-        run: |
+        run: >-
+          DO_API_KEY=${{ secrets.DO_INFRA_KEY }}
           molecule test --scenario-name cloud-cardano-node-role
