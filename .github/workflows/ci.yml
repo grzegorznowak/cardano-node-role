@@ -27,17 +27,17 @@ jobs:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('test-cloud-requirements.txt') }}
 
-      - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install -r test-cloud-requirements.txt
+#      - name: Install dependencies
+#        run: |
+#          python3 -m pip install --upgrade pip
+#          python3 -m pip install -r test-cloud-requirements.txt
 
       - name: Debugging
-        run: echo ${DO_API_KEY}
         env:
-          DO_API_KEY: ${{ secrets.NOT_SECRET }}
+          NOT_SECRET: ${{ secrets.NOT_SECRET }}
+        run: echo $NOT_SECRET
 
-      - name: Test with molecule
-        run: molecule test --scenario-name cloud-cardano-node-role
-        env:
-          DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
+#      - name: Test with molecule
+#        run: molecule test --scenario-name cloud-cardano-node-role
+#        env:
+#          DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
