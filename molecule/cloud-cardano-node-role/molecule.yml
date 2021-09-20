@@ -13,7 +13,7 @@ platforms:
   - name: molecule-test-cardano-node-role
     image_id: ubuntu-20-04-x64
     region_id: ams3
-    size_id: m-2vcpu-16gb
+    size_id: c-16
     groups:
       - all
 provisioner:
