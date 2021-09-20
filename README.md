@@ -14,7 +14,7 @@ Please note this is an early version of documentation.
 
 ### locally on LXD
 
-python3 and LXD should be already installed and configured.
+LXD should already be installed and configured.
 
 Trigger the full suite with `./test-local.sh`
 
