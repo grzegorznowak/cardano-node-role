@@ -39,7 +39,6 @@ jobs:
           python -m pip install -r test-cloud-requirements.txt
 
       - name: Test with molecule
-        concurrency: test_env
         run: molecule test --scenario-name cloud-cardano-node-role
         env:
           DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
