@@ -8,7 +8,8 @@ sudo apt install python3-pip || true
 
 virtualenv testingenv --python=python3
 . testingenv/bin/activate
-pip install -r tests-requirements.txt
+python -m pip install --upgrade pip
+pip install -r local-requirements.txt
 
 ansible-lint
 molecule test -s local-cardano-node-role

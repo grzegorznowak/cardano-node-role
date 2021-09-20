@@ -132,6 +132,8 @@ Developers and Ops
  
 ## Donations
 
+Running CI pipeline for this project is no fluff, so any donations are highly appreciated 
+
 ##### RVN wallet
 `RKcFiQxRpUv6GTVSX7HQZc4EA5jAKPkVNV`
 

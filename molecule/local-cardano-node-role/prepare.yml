@@ -14,3 +14,5 @@
       apt:
         upgrade: dist
         update_cache: true
+      retries: 12
+      delay: 10

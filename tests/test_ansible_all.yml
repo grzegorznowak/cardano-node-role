@@ -9,11 +9,13 @@
       register: cardano_node_version_result
 
     - set_fact:
-        cardano_node_current_version: >
-          {{ cardano_node_version_result.stdout | regex_search('[0-9]+\\.[0-9]+\\.[0-9]') }}
+        cardano_current_version: "{{ cardano_node_version_result.stdout | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') }}"
+
+    - debug:
+        var: cardano_current_version
 
     - assert:
-        that: cardano_node_wanted_version == cardano_node_current_version
+        that: cardano_node_wanted_version == cardano_current_version
 
 - name: Test Integration | Cardano service uptime monitoring
   block:
