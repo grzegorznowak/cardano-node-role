@@ -40,8 +40,7 @@ jobs:
           python -m pip install -r test-cloud-requirements.txt
 
       - name: Create molecule cache foder
-          run: |
-            mkdir -p tmp/molecule_ephemeral
+        run: mkdir -p tmp/molecule_ephemeral
 
       - name: Test with molecule
         run: molecule test --scenario-name cloud-cardano-node-role
