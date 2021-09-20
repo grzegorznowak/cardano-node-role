@@ -20,12 +20,17 @@ jobs:
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: 3.6
+          python-version: 2.7
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('test-cloud-requirements.txt') }}
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install -r test-cloud-requirements.txt
+          python -m pip install --upgrade pip
+          python -m pip install -r test-cloud-requirements.txt
 
       - name: Test with molecule
         run: >-
