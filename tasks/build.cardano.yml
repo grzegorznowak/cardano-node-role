@@ -59,7 +59,7 @@
     - name: Cardano | Execute the install script
       shell: >
         {{ installation_scripts_path }}/cardano.install.bash
-      async: 3600 * 4  # wait for up to 4 hours for the compilation to complete
+      async: "{{ 3600 * 4 }}"  # wait for up to 4 hours for the compilation to complete
       poll: 0
       register: cardano_install
 
