@@ -35,7 +35,8 @@ jobs:
       - name: Debugging
         env:
           NOT_SECRET: ${{ secrets.NOT_SECRET }}
-        run: echo $NOT_SECRET
+        run: >|
+          [ "$NOT_SECRET" = "not_secret" ] && echo "ok" || echo "not ok"
 
 #      - name: Test with molecule
 #        run: molecule test --scenario-name cloud-cardano-node-role
