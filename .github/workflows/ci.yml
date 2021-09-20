@@ -12,7 +12,7 @@ on:
 jobs:
   ci-test:
     # it's a test suite, however ran within a production environment in terms of infra etc.
-    environment: production
+    environment: ci
     runs-on: ubuntu-latest
 
     steps:
@@ -28,18 +28,12 @@ jobs:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('test-cloud-requirements.txt') }}
 
-#      - name: Install dependencies
-#        run: |
-#          python3 -m pip install --upgrade pip
-#          python3 -m pip install -r test-cloud-requirements.txt
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install -r test-cloud-requirements.txt
 
-      - name: Debugging
+      - name: Test with molecule
+        run: molecule test --scenario-name cloud-cardano-node-role
         env:
-          NOT_SECRET: ${{ secrets.NOT_SECRET }}
-        run: >-
-          [ "$NOT_SECRET" = "not_secret" ] && echo "ok" || echo "not ok"
-
-#      - name: Test with molecule
-#        run: molecule test --scenario-name cloud-cardano-node-role
-#        env:
-#          DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
+          DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
