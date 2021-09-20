@@ -59,6 +59,17 @@
     - name: Cardano | Execute the install script
       shell: >
         {{ installation_scripts_path }}/cardano.install.bash
+      async: 3600 * 4 # wait for up to 4 hours for the compilation to complete
+      poll: 0
+      register: cardano_install
+
+    - name: Cardano | Check if install is completed
+      async_status:
+        jid: "{{ cardano_install.ansible_job_id }}"
+      register: job_result
+      until: job_result.finished
+      poll: 120
+      retries: 300
 
     - name: "Cardano | Make sure the {{ cardano_bin_path }} directory exists"
       file:
