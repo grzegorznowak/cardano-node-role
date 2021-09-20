@@ -11,7 +11,8 @@ on:
 
 jobs:
   ci-test:
-
+    # it's a test suite, however ran within a production environment in terms of infra etc.
+    environment: production
     runs-on: ubuntu-latest
 
     steps:
