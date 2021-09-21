@@ -9,7 +9,6 @@ Currently builds and integrates on:
 ##### Ubuntu: 20.04, 18.04
 ##### Debian: bullseye
  
-Please note this is an early version of documentation.
 
 ## Integration Testing
 
@@ -23,8 +22,8 @@ Compilation of the required binaries is a CPU heavy tasks, so be prepared for a 
 
 ### on Cloud via CI pipeline
 
-CI built on top of DO infrastructure and tested against every commit to `main`.
-To limit running costs the role integrates on Focal Fossa. 
+CI built on top of DO infrastructure and getting triggered against every meaningful changeset in the `main` branch.
+To limit running costs the role integrates on Focal Fossa only atm.
 The other supported platforms are being assessed locally.
 
 ## Installation ##
@@ -65,7 +64,7 @@ journalctl -xe
 ```
 
 By default installs cardano for a `cardano` user and group. Which is a recommended practice. 
-All the other cogs to fiddle with can be found under `defaults/main.yml`, and the most noteworthy ones are:
+All other cogs to fiddle with can be found under `defaults/main.yml`. The most noteworthy ones are:
 ```yaml
 # Cardano user
 cardano_home_directory: /home/cardano
@@ -82,12 +81,12 @@ cardano_listen_addr: 127.0.0.1
 cardano_listen_port: 22322  # has to be in the upper bracket if it's running as non-privileged user
 ``` 
 
-There's more so to fine-grain control the installation mechanisms just head on to the default's file directly
+There's more, so to fine-grain control the installation mechanisms just head on to the `defaults/main.yml` file directly
 
 ## Motivation
 
-This role is a rolling exploring of cardano backend and services' configuration, with functionality
-that will grow over time as we explore the search space.
+This role is a rolling exploration of cardano backend and services' configuration, with functionality
+that will grow over time as we understand the search-space better.
 
 Brewed using high TDD and coding standards, making sure changes don't break any of the existing components. 
 
