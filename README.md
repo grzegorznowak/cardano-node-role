@@ -18,7 +18,7 @@ LXD should already be installed and configured.
 
 Trigger the full suite with `./test-local.sh`
 
-Compilation of the required binaries is a CPU heavy tasks, so be prepared for a long-haul process.
+Compilation of the required binaries is a CPU heavy task, so be prepared for a long-haul process.
 
 ### on Cloud via CI pipeline
 
