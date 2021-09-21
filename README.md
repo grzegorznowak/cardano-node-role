@@ -23,7 +23,9 @@ Compilation of the required binaries is a CPU heavy tasks, so be prepared for a 
 
 ### on Cloud via CI pipeline
 
-Work in progress, tbd as soon as we understand github actions better
+CI built on top of DO infrastructure and tested against every commit to `main`.
+To limit running costs the role integrates on Focal Fossa. 
+The other supported platforms are being assessed locally.
 
 ## Installation ##
 
@@ -124,7 +126,7 @@ Developers and Ops
 ## Roadmap
 
 * ~~A baseline Cardano Node installation~~
-* Full CI/CD
+* ~~Full CI/CD~~
 * More/better provisioning examples
 * Exposition of what would be the result of running this role as a public node
 * Automation of keys management
