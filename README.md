@@ -86,11 +86,12 @@ There's more so to fine-grain control the installation mechanisms just head on t
 
 ## Motivation
 
-This role is meant to be a battleground for exploring cardano backend and services' configuration.
+This role is a rolling exploring of cardano backend and services' configuration, with functionality
+that will grow over time as we explore the search space.
 
-Despite being a battleground is still brewed using high TDD and coding standards, making sure 
-changes don't break any of the existing components. 
-Please remember to always ask for your tests when ordering your ansible pizza. 
+Brewed using high TDD and coding standards, making sure changes don't break any of the existing components. 
+
+**Remember to always ask for tests when ordering your ansible pizza.** 
 
 #### When should I use this role over the official docker image ?
 
