@@ -1,0 +1,6 @@
+ 106  CARDANO_NODE_SOCKET_PATH=~/cardano_node/db/node.socket ./cardano-cli transaction submit --tx-file tx.signed --testnet-magic 1097911063
+  107  CARDANO_NODE_SOCKET_PATH=~/cardano_node/db/node.socket ./cardano-cli query tip --testnet-magic 1097911063
+  108  ./cardano-cli transaction build-raw --tx-in 9129e55f0941f0ed6c4f7fc06233a5b1db1a580c15a8ef53e101b00ceca83f0c#0 --tx-out addr_test1qp62mu0ufxpz8p9802tq5xfwrgsfv3uee8cv0t6yparxnkwjd5g5pmt62gec97pn5jfu9jkw0uukv3mjjxujmy4evdnqtjluug+10000000 --invalid-hereafter 37990620 --fee 176721 --tx-out $(cat payment.addr)+989823279 --out-file tx.raw
+  109  ./cardano-cli transaction sign     --tx-body-file tx.raw     --signing-key-file payment.skey --testnet-magic 1097911063 --out-file tx.signed
+  110  CARDANO_NODE_SOCKET_PATH=~/cardano_node/db/node.socket ./cardano-cli transaction submit --tx-file tx.signed --testnet-magic 1097911063
+  111  CARDANO_NODE_SOCKET_PATH=~/cardano_node/db/node.socket ./cardano-cli query utxo --address $(cat payment.addr) --testnet-magic 1097911063
