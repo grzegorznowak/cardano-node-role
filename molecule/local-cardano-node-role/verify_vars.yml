@@ -13,3 +13,5 @@ cardano_service_name: cardano-node
 cardano_node_wanted_version: 1.29.0
 cardano_home_directory: /home/cardano
 cardano_bin_path: "{{ cardano_home_directory }}/bin"
+cardano_node_socket: "{{ cardano_node_runtime }}/db/node.socket"
+cardano_node_runtime: "{{ cardano_home_directory }}/cardano_node"

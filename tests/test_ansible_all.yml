@@ -28,6 +28,14 @@
         port: "{{ cardano_listen_port }}"
         timeout: 120  # it's a slow-ass process to get it back online...
 
+    - name: Test Integration | See if the socket file exists after restarting the service
+        stat:
+          path: "{{ cardano_node_socket }}"
+        register: socket_check_result
+
+    - assert:
+        that: socket_check_result.stat.exists
+
 - name: Test | SecOps | Can't be reached on public port
   block:
     - name: "Test | SecOps | Make sure port {{ cardano_listen_port }} is inaccessible from the outside world"
