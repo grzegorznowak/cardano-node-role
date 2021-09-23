@@ -68,8 +68,8 @@
         jid: "{{ cardano_install.ansible_job_id }}"
       register: job_result
       until: job_result.finished
-      poll: 120
-      retries: 300
+      retries: 120  # 4 hours in total, to keep in unison with the async task
+      delay: 120
 
     - name: "Cardano | Make sure the {{ cardano_bin_path }} directory exists"
       file:
