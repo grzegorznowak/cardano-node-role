@@ -9,10 +9,12 @@ on:
     branches: [ main ]
     paths-ignore:
       - 'README.md'
+      - meta/*
   pull_request:
     branches: [ main ]
     paths-ignore:
       - 'README.md'
+      - meta/*
 
 jobs:
   lint:

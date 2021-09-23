@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: grzegorznowak
-  description: Compiles and installs cardano node on Debians and Ubuntus
+  description: Cardano node service for Debians and Ubuntus with very tight quality control
   company: "strange3.com"
   license: "license (BSD, MIT)"
   role_name: cardano_node
