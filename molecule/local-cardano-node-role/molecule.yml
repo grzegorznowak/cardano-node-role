@@ -18,19 +18,19 @@ platforms:
       privileged: "false"
       image: "ubuntu/focal/amd64"
 
-#    - groups:
-#          - all
-#      name: test-cardano-node-bionic
-#      nested: "false"
-#      privileged: "false"
-#      image: "ubuntu/bionic/amd64"
-#
-#    - groups:
-#          - all
-#      name: test-cardano-node-bullseye
-#      nested: "false"
-#      privileged: "false"
-#      image: "debian/bullseye/amd64"
+    - groups:
+          - all
+      name: test-cardano-node-bionic
+      nested: "false"
+      privileged: "false"
+      image: "ubuntu/bionic/amd64"
+
+    - groups:
+          - all
+      name: test-cardano-node-bullseye
+      nested: "false"
+      privileged: "false"
+      image: "debian/bullseye/amd64"
 
 provisioner:
     config_options:
