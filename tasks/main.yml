@@ -1,6 +1,3 @@
 ---
 
-- include: user.yml
-- include: dependencies.yml
-- include: build.cardano.yml
-- include: service.cardano.yml
+- include: infrastructure/main.yml
