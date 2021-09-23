@@ -10,12 +10,20 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: molecule-test-cardano-node-role
+  - name: molecule-test-cardano-node-role-testnet
     image_id: ubuntu-20-04-x64
     region_id: ams3
     size_id: c-8
     groups:
       - all
+      - testnet
+  - name: molecule-test-cardano-node-role-mainnet
+    image_id: ubuntu-20-04-x64
+    region_id: ams3
+    size_id: c-8
+    groups:
+      - all
+      - mainnet
 provisioner:
   name: ansible
   config_options:
@@ -33,6 +41,14 @@ provisioner:
   playbooks:   # DRY playbooks by reusing what we can from the production scenario
     prepare: ../local-cardano-node-role/prepare.yml
     verify: ../local-cardano-node-role/verify.yml
+  inventory:
+    group_vars:
+      testnet:
+        active_network: test
+
+      mainnet:
+        active_network: main
+
 scenario:
   name: cloud-test-cardano-node-role
   test_sequence:
