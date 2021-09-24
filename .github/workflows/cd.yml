@@ -1,11 +1,10 @@
 ---
 
-name: CI
+name: CD
 
 on:
   workflow_run:
     workflows: ["Publish | Ansible Galaxy"]
-    branches: [main]
     types:
       - completed
 
