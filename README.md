@@ -130,6 +130,7 @@ Developers and Ops
 * More/better provisioning examples
 * Exposition of what would be the result of running this role as a public node
 * Automation of keys management
+* Research the possiblity of Block Producing Node be ephemeral
 * Complete stacking pool implementation  
 
  
