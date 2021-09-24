@@ -4,7 +4,7 @@ name: CI
 
 on:
   workflow_run:
-    workflows: ["Ansible Lint"]
+    workflows: ["Publish | Ansible Galaxy"]
     branches: [main]
     types:
       - completed
@@ -28,6 +28,11 @@ jobs:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('cloud-requirements.txt') }}
 
+      - uses: actions/cache@v2
+        with:
+          path: /tmp/molecule_ephemeral
+          key: molecule_ephemeral
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -37,7 +42,7 @@ jobs:
         run: mkdir -p /tmp/molecule_ephemeral
 
       - name: Test with molecule
-        run: molecule test --scenario-name cloud-test-cardano-node-role
+        run: molecule converge --scenario-name cloud-prod-cardano-node
         env:
           DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
           MOLECULE_EPHEMERAL_DIRECTORY: /tmp/molecule_ephemeral

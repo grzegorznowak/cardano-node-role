@@ -1,0 +1,9 @@
+---
+- name: Destroy
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  no_log: false
+  tasks:
+    - debug:
+        msg: You have no power here

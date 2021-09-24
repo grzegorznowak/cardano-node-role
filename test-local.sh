@@ -11,4 +11,4 @@ python -m pip install --upgrade pip
 pip install -r local-requirements.txt
 
 ansible-lint
-molecule test -s local-cardano-node-role
+molecule test -s local-test-cardano-node-role
