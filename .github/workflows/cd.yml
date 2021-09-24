@@ -9,7 +9,7 @@ on:
       - completed
 
 jobs:
-  ci-test:
+  prod-release:
     # it's a test suite, however ran within a production environment in terms of infra etc.
     environment: ci
     runs-on: ubuntu-latest
