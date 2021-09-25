@@ -14,5 +14,6 @@
       apt:
         upgrade: dist
         update_cache: true
-      retries: 12
-      delay: 10
+      register: apt_prepare_res
+      until: apt_prepare_res is success
+      retries: 6
