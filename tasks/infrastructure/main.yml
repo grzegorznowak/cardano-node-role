@@ -8,6 +8,4 @@
 
 - include: build.cardano.yml
 
-- include: install.cardano.yml
-
 - include: service.cardano.yml

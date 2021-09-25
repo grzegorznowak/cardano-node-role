@@ -1,7 +1,7 @@
 ---
 
-# Sanity checks
-- assert:
+- name: Cardano | Sanity checks
+  assert:
     that:
       - cardano_install_method is defined
       - cardano_install_method == "src" or cardano_install_method == "dist"
