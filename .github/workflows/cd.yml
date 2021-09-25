@@ -11,7 +11,7 @@ on:
 
 jobs:
   cd-build:
-    environment: ci
+    environment: production
     runs-on: ubuntu-latest
 
     steps:
