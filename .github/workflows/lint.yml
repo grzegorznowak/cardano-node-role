@@ -16,6 +16,7 @@ on:
     paths-ignore:
       - 'README.md'
       - meta/*
+      - .github
 
 jobs:
   lint:
