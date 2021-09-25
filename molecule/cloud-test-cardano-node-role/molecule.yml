@@ -13,14 +13,14 @@ platforms:
   - name: molecule-test-cardano-node-role-testnet
     image_id: ubuntu-20-04-x64
     region_id: ams3
-    size_id: c-8
+    size_id: c-4
     groups:
       - all
       - testnet
   - name: molecule-test-cardano-node-role-mainnet
     image_id: ubuntu-20-04-x64
     region_id: ams3
-    size_id: c-8
+    size_id: c-4
     groups:
       - all
       - mainnet
@@ -43,6 +43,10 @@ provisioner:
     verify: ../local-test-cardano-node-role/verify.yml
   inventory:
     group_vars:
+
+      all:
+        cardano_install_method: dist
+
       testnet:
         active_network: test
 

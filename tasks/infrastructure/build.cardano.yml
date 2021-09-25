@@ -6,8 +6,6 @@
     state: directory
     mode: '600'
 
-- include: build.libsodium.yml
-
 - name: Cardano | Wrap version fetching
   block:
     - name: Cardano | Get the current cardano-cli version
@@ -42,35 +40,6 @@
 - name: Cardano | Wrap the install process
   block:
 
-    - name: Cardano | Checkout the project
-      git:
-        repo: "{{ cardano_repo }}"
-        dest: "{{ cardano_src_path }}/cardano-node"
-        force: true
-        accept_hostkey: true
-        version: "{{ cardano_node_version }}"
-
-    - name: Cardano | Hydrate the install template
-      template:
-        src: cardano.install.j2.bash
-        dest: "{{ installation_scripts_path }}/cardano.install.bash"
-        mode: "a+x"
-
-    - name: Cardano | Execute the install script
-      shell: >
-        {{ installation_scripts_path }}/cardano.install.bash
-      async: "{{ 3600 * 4 }}"  # wait for up to 4 hours for the compilation to complete
-      poll: 0
-      register: cardano_install
-
-    - name: Cardano | Check if install is completed
-      async_status:
-        jid: "{{ cardano_install.ansible_job_id }}"
-      register: job_result
-      until: job_result.finished
-      retries: 120  # 4 hours in total, to keep in unison with the async task
-      delay: 120
-
     - name: "Cardano | Make sure the {{ cardano_bin_path }} directory exists"
       file:
         path: "{{ cardano_bin_path }}"
@@ -79,23 +48,11 @@
         group: "{{ cardano_group }}"
         mode: '777'
 
-    - name: Cardano | Make sure the service is stopped before we start changing it's binaries
-      service:
-        name: "{{ cardano_service_name }}.service"
-        state: stopped
-      ignore_errors: true  # if it's a first run, the service won't be there. TODO: evade that better!
+    - include: install_src.cardano.yml
+      when: cardano_install_method == "src"
 
-    - name: Cardano | get cardno-node version
-      shell: >
-        cp -p "$(./scripts/bin-path.sh cardano-node)" {{ cardano_bin_path }}
-      args:
-        chdir: "{{ cardano_src_path }}/cardano-node"
-
-    - name: Cardano | get cardno-cli version
-      shell: >
-        cp -p "$(./scripts/bin-path.sh cardano-cli)" {{ cardano_bin_path }}
-      args:
-        chdir: "{{ cardano_src_path }}/cardano-node"
+    - include: install_dist.cardano.yml
+      when: cardano_install_method == "dist"
 
     - name: Cardano | cardano-node ownership
       file:
@@ -113,7 +70,3 @@
     - cardano_cli_current_version != cardano_node_version
     - cardano_node_current_version != cardano_node_version
 
-- name: Cardano | Cleanup sources
-  file:
-    path: "{{ cardano_src_path }}/cardano-node"
-    state: absent
