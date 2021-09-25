@@ -28,6 +28,7 @@
   until: job_result.finished
   retries: 120  # 4 hours in total, to keep in unison with the async task
   delay: 120
+  changed_when: false
 
 - name: Cardano Src | Make sure the service is stopped before we start changing it's binaries
   service:
@@ -35,17 +36,19 @@
     state: stopped
   ignore_errors: true  # if it's a first run, the service won't be there. TODO: evade that better!
 
-- name: Cardano Src | get cardno-node version
+- name: Cardano Src | install cardno-node bin
   shell: >
     cp -p "$(./scripts/bin-path.sh cardano-node)" {{ cardano_bin_path }}
   args:
     chdir: "{{ cardano_src_path }}/cardano-node"
+    creates: "{{ cardano_bin_path }}/cardano-node"
 
-- name: Cardano Src | get cardno-cli version
+- name: Cardano Src | install cardno-cli bin
   shell: >
     cp -p "$(./scripts/bin-path.sh cardano-cli)" {{ cardano_bin_path }}
   args:
     chdir: "{{ cardano_src_path }}/cardano-node"
+    creates: "{{ cardano_bin_path }}/cardano-cli"
 
 - name: Cardano Src | Cleanup sources
   file:
