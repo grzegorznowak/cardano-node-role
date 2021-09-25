@@ -46,6 +46,7 @@ provisioner:
       all:
         swap_file_size_mb: 4000  # 4GB of swap, bc our production servers are puny
         swap_swappiness: 1
+        cardano_install_method: dist
 
       testnet:
         active_network: test
