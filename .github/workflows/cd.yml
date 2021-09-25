@@ -4,12 +4,10 @@ name: CD
 
 on:
   workflow_dispatch:
-      tags:
-        description: 'CD Build'
-#  workflow_run:
-#    workflows: ["Publish | Ansible Galaxy"]
-#    types:
-#      - completed
+  workflow_run:
+    workflows: ["Publish | Ansible Galaxy"]
+    types:
+      - completed
 
 jobs:
   cd-build:
