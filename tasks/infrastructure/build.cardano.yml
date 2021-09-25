@@ -69,4 +69,3 @@
   when:
     - cardano_cli_current_version != cardano_node_version
     - cardano_node_current_version != cardano_node_version
-
