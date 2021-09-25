@@ -3,7 +3,7 @@
   hosts: localhost
   connection: local
   gather_facts: false
-  no_log: false
+  no_log: true
   vars:
     ssh_user: root
     ssh_port: 22
