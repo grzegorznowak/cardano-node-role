@@ -1,7 +1,8 @@
 # Cardano Node Role
 
 ![Ansible Lint](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/lint.yml/badge.svg)
-![CI Build](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci.yml/badge.svg)
+![CI Sources Integration](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci-sources.yml/badge.svg)
+![CI Binary Integration](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci-prebuilt.yml/badge.svg)
 
 Installs Cardano Node as a systemd service on Ubuntus and Debians.
 
@@ -23,7 +24,9 @@ Compilation of the required binaries is a CPU heavy task, so be prepared for a l
 ### on Cloud via CI pipeline
 
 CI built on top of DO infrastructure and getting triggered against every meaningful changeset in the `main` branch.
-To limit running costs the role integrates on Focal Fossa only atm.
+To limit running costs the from-source CI done against Focal Fossa only atm.
+The pre-built binary CI done against focal and bionic.
+
 The other supported platforms are being assessed locally.
 
 ## Installation ##
