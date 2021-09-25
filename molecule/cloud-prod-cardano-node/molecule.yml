@@ -10,14 +10,14 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: molecule-prod-cardano-node-testnet
+  - name: molecule-testnet-cardano-node
     image_id: ubuntu-20-04-x64
     region_id: ams3
     size_id: s-1vcpu-2gb
     groups:
       - all
       - testnet
-  - name: molecule-prod-cardano-node-mainnet
+  - name: molecule-mainnet-cardano-node-mainnet
     image_id: ubuntu-20-04-x64
     region_id: ams3
     size_id: s-1vcpu-2gb
