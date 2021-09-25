@@ -27,11 +27,6 @@ jobs:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('cloud-requirements.txt') }}
 
-      - uses: actions/cache@v2
-        with:
-          path: /tmp/molecule_ephemeral
-          key: molecule_ephemeral
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
