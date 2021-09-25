@@ -1,5 +1,4 @@
 ---
-
 - name: Cardano Src | Checkout the project
   git:
     repo: "{{ cardano_repo }}"

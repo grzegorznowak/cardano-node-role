@@ -33,6 +33,16 @@ one of:
 * clone the repo directly
 
 ## Example playbook 
+
+There are 2 main mode of installation:
+* Compilation from source
+* Using pre-built dist binaries from IOHK
+
+and it's controllable with the `cardano_install_method` flag. 
+See the `Configuration` section further down.
+ 
+This role attempts to test both of the approaches.
+ 
 ##### when cloned from github
 ```YAML
 - name: Converge Cardano Node
@@ -63,6 +73,8 @@ systemctl restart cardano-node
 journalctl -xe 
 ```
 
+## Configuration
+
 By default installs cardano for a `cardano` user and group. Which is a recommended practice. 
 All other cogs to fiddle with can be found under `defaults/main.yml`. The most noteworthy ones are:
 ```yaml
@@ -71,10 +83,18 @@ cardano_home_directory: /home/cardano
 cardano_user: cardano
 cardano_group: cardano
 
+# possible options:
+# src - compile from source
+# dist - use the official binary
+cardano_install_method: src
+
 # Version variables
 ghc_version: 8.10.4
 cabal_version: 3.4.0.0
 cardano_node_version: 1.29.0
+
+cardano_dist_url: "https://hydra.iohk.io/build/7408438/download/1/cardano-node-{{ cardano_node_version }}-linux.tar.gz"
+cardano_dist_sha_256: 5b15b65dead36e9cfb1bf0fdafe76c4d374988ca5b56270a00cdcc66815b08e0
 
 # Service Config
 cardano_listen_addr: 127.0.0.1

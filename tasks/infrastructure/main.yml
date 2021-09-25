@@ -1,11 +1,7 @@
 ---
 
 - include: user.yml
-
 - include: dependencies.yml
-
 - include: build.libsodium.yml
-
 - include: build.cardano.yml
-
 - include: service.cardano.yml
