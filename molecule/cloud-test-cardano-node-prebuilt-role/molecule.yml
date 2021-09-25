@@ -70,7 +70,7 @@ provisioner:
         active_network: main
 
 scenario:
-  name: cloud-test-cardano-node-role
+  name: cloud-test-cardano-node-prebuilt-role
   test_sequence:
     - lint
     - dependency
