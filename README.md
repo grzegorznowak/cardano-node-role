@@ -6,9 +6,19 @@
 
 Installs Cardano Node as a systemd service on Ubuntus and Debians.
 
-Currently builds and integrates on:
-##### Ubuntu: 20.04, 18.04
-##### Debian: bullseye
+## Supported Distros
+
+Adoption and support of more distributions will greatly depend on the users' feedback.
+
+Please add your use cases to the issue tracker and we will triage those as we go.
+
+### Ubuntu
+
+* 20.04
+* 18.04
+### Debian
+
+* bullseye
  
 
 ## Integration Testing
@@ -161,7 +171,7 @@ Developers and Ops
  
 ## Donations
 
-Running CI pipeline for this project is no fluff, so any donations are highly appreciated 
+Running CI pipeline for this project is no fluff, so your support is highly appreciated 
 
 ##### RVN wallet
 `RKcFiQxRpUv6GTVSX7HQZc4EA5jAKPkVNV`
