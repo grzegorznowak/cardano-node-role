@@ -1,13 +1,24 @@
 # Cardano Node Role
 
 ![Ansible Lint](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/lint.yml/badge.svg)
-![CI Build](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci.yml/badge.svg)
+![CI Sources Integration](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci-sources.yml/badge.svg)
+![CI Binary Integration](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci-prebuilt.yml/badge.svg)
 
 Installs Cardano Node as a systemd service on Ubuntus and Debians.
 
-Currently builds and integrates on:
-##### Ubuntu: 20.04, 18.04
-##### Debian: bullseye
+## Supported Distros
+
+Adoption and support of more distributions will greatly depend on the users' feedback.
+
+Please add your use cases to the issue tracker and we will triage those as we go.
+
+### Ubuntu
+
+* 20.04
+* 18.04
+### Debian
+
+* bullseye
  
 
 ## Integration Testing
@@ -23,7 +34,11 @@ Compilation of the required binaries is a CPU heavy task, so be prepared for a l
 ### on Cloud via CI pipeline
 
 CI built on top of DO infrastructure and getting triggered against every meaningful changeset in the `main` branch.
-To limit running costs the role integrates on Focal Fossa only atm.
+
+To limit running costs the from-source CI done against Focal Fossa only atm.
+
+The pre-built binary CI done against focal and bionic.
+
 The other supported platforms are being assessed locally.
 
 ## Installation ##
@@ -33,6 +48,16 @@ one of:
 * clone the repo directly
 
 ## Example playbook 
+
+There are 2 main mode of installation:
+* Compilation from source
+* Using pre-built dist binaries from IOHK
+
+and it's controllable with the `cardano_install_method` flag. 
+See the `Configuration` section further down.
+ 
+This role attempts to test both of the approaches.
+ 
 ##### when cloned from github
 ```YAML
 - name: Converge Cardano Node
@@ -63,6 +88,8 @@ systemctl restart cardano-node
 journalctl -xe 
 ```
 
+## Configuration
+
 By default installs cardano for a `cardano` user and group. Which is a recommended practice. 
 All other cogs to fiddle with can be found under `defaults/main.yml`. The most noteworthy ones are:
 ```yaml
@@ -71,10 +98,18 @@ cardano_home_directory: /home/cardano
 cardano_user: cardano
 cardano_group: cardano
 
+# possible options:
+# src - compile from source
+# dist - use the official binary
+cardano_install_method: src
+
 # Version variables
 ghc_version: 8.10.4
 cabal_version: 3.4.0.0
 cardano_node_version: 1.29.0
+
+cardano_dist_url: "https://hydra.iohk.io/build/7408438/download/1/cardano-node-{{ cardano_node_version }}-linux.tar.gz"
+cardano_dist_sha_256: 5b15b65dead36e9cfb1bf0fdafe76c4d374988ca5b56270a00cdcc66815b08e0
 
 # Service Config
 cardano_listen_addr: 127.0.0.1
@@ -136,7 +171,7 @@ Developers and Ops
  
 ## Donations
 
-Running CI pipeline for this project is no fluff, so any donations are highly appreciated 
+Running CI pipeline for this project is no fluff, so your support is highly appreciated 
 
 ##### RVN wallet
 `RKcFiQxRpUv6GTVSX7HQZc4EA5jAKPkVNV`

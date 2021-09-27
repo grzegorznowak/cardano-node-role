@@ -5,10 +5,18 @@ cardano_home_directory: /home/cardano
 cardano_user: cardano
 cardano_group: cardano
 
-# Version variables
+# possible options:
+# src - compile from source
+# dist - use the official binary
+cardano_install_method: src
+
+# Versions
 ghc_version: 8.10.4
 cabal_version: 3.4.0.0
 cardano_node_version: 1.29.0
+
+cardano_dist_url: "https://hydra.iohk.io/build/7408438/download/1/cardano-node-{{ cardano_node_version }}-linux.tar.gz"
+cardano_dist_sha_256: 5b15b65dead36e9cfb1bf0fdafe76c4d374988ca5b56270a00cdcc66815b08e0
 
 # Service Config
 cardano_listen_addr: 127.0.0.1

@@ -10,20 +10,38 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: molecule-testnet-cardano-node
+  - name: molecule-focal-test-cardano-node-role-testnet-dist
     image_id: ubuntu-20-04-x64
     region_id: ams3
-    size_id: s-1vcpu-2gb
+    size_id: c-4
     groups:
       - all
       - testnet
-  - name: molecule-mainnet-cardano-node-mainnet
+      - from_dist
+  - name: molecule-focal-test-cardano-node-role-mainnet-dist
     image_id: ubuntu-20-04-x64
     region_id: ams3
-    size_id: s-1vcpu-2gb
+    size_id: c-4
     groups:
       - all
       - mainnet
+      - from_dist
+  - name: molecule-bionic-test-cardano-node-role-testnet-dist
+    image_id: ubuntu-18-04-x64
+    region_id: ams3
+    size_id: c-4
+    groups:
+      - all
+      - testnet
+      - from_dist
+  - name: molecule-bionic-test-cardano-node-role-mainnet-dist
+    image_id: ubuntu-18-04-x64
+    region_id: ams3
+    size_id: c-4
+    groups:
+      - all
+      - mainnet
+      - from_dist
 provisioner:
   name: ansible
   config_options:
@@ -43,19 +61,16 @@ provisioner:
     verify: ../local-test-cardano-node-role/verify.yml
   inventory:
     group_vars:
-      all:
-        swap_file_size_mb: 4000  # 4GB of swap, bc our production servers are puny
-        swap_swappiness: 1
-        cardano_install_method: dist
 
+      from_dist:
+        cardano_install_method: dist
       testnet:
         active_network: test
-
       mainnet:
         active_network: main
 
 scenario:
-  name: cloud-prod-cardano-node
+  name: cloud-test-cardano-node-prebuilt-role
   test_sequence:
     - lint
     - dependency

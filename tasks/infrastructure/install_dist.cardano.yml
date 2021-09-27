@@ -1,0 +1,23 @@
+---
+- name: Cardano Dist | Download file with check (sha256)
+  get_url:
+    url: "{{ cardano_dist_url }}"
+    dest: "/tmp/{{ cardano_node_version }}.tar.gz"
+    checksum: "sha256:{{ cardano_dist_sha_256 }}"
+
+- name: Cardano | Make sure the service is stopped before we start changing it's binaries
+  service:
+    name: "{{ cardano_service_name }}.service"
+    state: stopped
+  ignore_errors: true  # if it's a first run, the service won't be there. TODO: evade that better!
+
+- name: Cardano Dist | Unarchive to the bin folder
+  unarchive:
+    src: "/tmp/{{ cardano_node_version }}.tar.gz"
+    dest: "{{ cardano_bin_path }}/"
+    remote_src: true
+
+- name: Cardano Dist | Cleanup
+  file:
+    path: "/tmp/{{ cardano_node_version }}.tar.gz"
+    state: absent

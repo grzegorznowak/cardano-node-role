@@ -10,11 +10,13 @@ on:
     paths-ignore:
       - 'README.md'
       - meta/*
+      - .github
   pull_request:
     branches: [ main ]
     paths-ignore:
       - 'README.md'
       - meta/*
+      - .github
 
 jobs:
   lint:

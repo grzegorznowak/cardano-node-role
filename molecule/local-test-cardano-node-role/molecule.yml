@@ -52,7 +52,7 @@ provisioner:
         name: ansible-lint
     name: ansible
 scenario:
-    name: local-cardano-node-role
+    name: local-test-cardano-node-role
     destroy_sequence:
         - cleanup
         - destroy

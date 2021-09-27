@@ -1,6 +1,6 @@
 ---
 
-name: CI
+name: CI Sources
 
 on:
   workflow_run:
@@ -10,8 +10,7 @@ on:
       - completed
 
 jobs:
-  ci-test:
-    # it's a test suite, however ran within a production environment in terms of infra etc.
+  ci-test-from-src:
     environment: ci
     runs-on: ubuntu-latest
 
@@ -37,7 +36,7 @@ jobs:
         run: mkdir -p /tmp/molecule_ephemeral
 
       - name: Test with molecule
-        run: molecule test --scenario-name cloud-test-cardano-node-role
+        run: molecule test --scenario-name cloud-test-cardano-node-compilation-role
         env:
           DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
           MOLECULE_EPHEMERAL_DIRECTORY: /tmp/molecule_ephemeral

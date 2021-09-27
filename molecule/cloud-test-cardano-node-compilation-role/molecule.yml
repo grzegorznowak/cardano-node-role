@@ -10,20 +10,14 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: molecule-test-cardano-node-role-testnet
+  - name: molecule-focal-test-cardano-node-role-testnet-src
     image_id: ubuntu-20-04-x64
     region_id: ams3
     size_id: c-8
     groups:
       - all
       - testnet
-  - name: molecule-test-cardano-node-role-mainnet
-    image_id: ubuntu-20-04-x64
-    region_id: ams3
-    size_id: c-8
-    groups:
-      - all
-      - mainnet
+      - from_src
 provisioner:
   name: ansible
   config_options:
@@ -43,14 +37,14 @@ provisioner:
     verify: ../local-test-cardano-node-role/verify.yml
   inventory:
     group_vars:
+
+      from_src:
+        cardano_install_method: src
       testnet:
         active_network: test
 
-      mainnet:
-        active_network: main
-
 scenario:
-  name: cloud-test-cardano-node-role
+  name: cloud-test-cardano-node-compilation-role
   test_sequence:
     - lint
     - dependency
