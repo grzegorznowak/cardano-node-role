@@ -22,7 +22,7 @@
     - name: Test | stop the Cardano service
       shell: "pkill {{ cardano_service_name }}"
 
-    - name: Test Integration | wait for monit restart the service
+    - name: Test Integration | wait for systemd to restart the service
       wait_for:
         host: "{{ cardano_listen_addr }}"
         port: "{{ cardano_listen_port }}"

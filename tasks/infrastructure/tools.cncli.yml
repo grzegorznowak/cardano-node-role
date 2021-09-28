@@ -1,0 +1,78 @@
+---
+
+- name: Cardano Tools | Wrap CNCLI version fetching
+  block:
+    - name: Cardano Tools | Get the current cncli version
+      command: cncli --version
+      register: cncli_output
+      changed_when: false   # for idempodence
+
+    - name: Cardano Tools | set concrete CNCLI version's fact
+      set_fact:
+        cncli_current_version: "{{ cncli_output.stdout | regex_search('[0-9]+\\.[0-9]+\\.[0-9]') }}"
+  rescue:
+    - name: Cardano Tools | set empty CNCLI version's fact
+      set_fact:
+        cncli_current_version: ""
+
+- name: Cardano Tools | Wrap the CNCLI install process
+  block:
+
+    - name: "Cardano Tools | Make sure {{ cncli_scripts_folder }} exists"
+      file:
+        path: "{{ cncli_scripts_folder }}"
+        state: directory
+        owner: "{{ cardano_user }}"
+        group: "{{ cardano_group }}"
+        mode: '775'
+
+    - name: Cardano Tools | Download CNCLI binary while verifying checksum
+      get_url:
+        url: "{{ cncli_fetch_url }}"
+        dest: "/tmp/{{ cncli_v }}.tar.gz"
+        checksum: "sha256:{{ cncli_sha256 }}"
+
+    - name: Cardano Tools | Make sure the CNCLI service is stopped before we start changing it's binaries
+      service:
+        name: "{{ cncli_sync_service_name }}.service"
+        state: stopped
+      ignore_errors: true  # if it's a first run, the service won't be there. TODO: evade that better!
+
+    - name: Cardano Tools | Unarchive to the bin folder
+      unarchive:
+        src: "/tmp/{{ cncli_v }}.tar.gz"
+        dest: "{{ cncli_bin_folder }}/"
+        remote_src: true
+
+    - name: Cardano Tools | Cleanup
+      file:
+        path: "/tmp/{{ cncli_v }}.tar.gz"
+        state: absent
+
+    - name: Cardano Tools | Copy CNCLI sync service file template
+      template:
+        src: cncli-sync.service.j2
+        dest: "{{ cncli_sync_service_file }}"
+        mode: "775"
+      register: cncli_sync_service_file_result
+      notify: CNCLI Sync Restart
+
+    - name: Cardano Tools | reload systemctl
+      systemd:
+        daemon_reload: true
+      when: cncli_sync_service_file_result is defined and cncli_sync_service_file_result.changed
+      tags:
+        - skip_ansible_lint  # we do want to have this reloaded here and now
+
+    - name: Cardano Tools | Enable the CNCLI Sync service
+      service:
+        name: "{{ cncli_sync_service_name }}.service"
+        enabled: true
+
+    - name: Cardano Tools | Start the CNCLI Sync service
+      service:
+        name: "{{ cncli_sync_service_name }}.service"
+        state: started
+
+  when:
+    - cncli_current_version != cncli_v

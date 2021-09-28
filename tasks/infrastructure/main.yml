@@ -5,3 +5,5 @@
 - include: build.libsodium.yml
 - include: build.cardano.yml
 - include: service.cardano.yml
+- include: tools.cncli.yml
+  when: cncli_add

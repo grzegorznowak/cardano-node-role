@@ -16,6 +16,7 @@ cabal_version: 3.4.0.0
 cardano_node_version: 1.29.0
 
 cardano_dist_url: "https://hydra.iohk.io/build/7408438/download/1/cardano-node-{{ cardano_node_version }}-linux.tar.gz"
+# always confirm your sha, or a poison is coming
 cardano_dist_sha_256: 5b15b65dead36e9cfb1bf0fdafe76c4d374988ca5b56270a00cdcc66815b08e0
 
 # Service Config
@@ -68,3 +69,16 @@ cardano_node_runtime: "{{ cardano_home_directory }}/cardano_node"
 cardano_node_db: "{{ cardano_node_runtime }}/db"
 cardano_node_socket: "{{ cardano_node_runtime }}/db/node.socket"
 cardano_start_path: /var/lib/cardano_start.sh
+
+# ======= CNCLI section ======
+
+cncli_add: false
+# sha calculated manually based on the latest download, just to be sure we don't get poisoned
+cncli_sha256: "0d1bdba047cabeb99e26fdef284448a409f8c257802546fb2e51c2701b9818b9"
+cncli_repo: https://github.com/AndrewWestberg/cncli
+cncli_v: 4.0.1
+cncli_fetch_url: "{{ cncli_repo }}/releases/download/v{{ cncli_v }}/cncli-{{ cncli_v }}-x86_64-unknown-linux-gnu.tar.gz"
+cncli_sync_service_name: cncli-sync
+cncli_bin_folder: /usr/local/bin
+cncli_sync_service_file: "/lib/systemd/system/{{ cncli_sync_service_name }}.service"
+cncli_scripts_folder: "/var/lib/cncli"

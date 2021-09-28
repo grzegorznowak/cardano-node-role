@@ -5,7 +5,7 @@
     dest: "/tmp/{{ cardano_node_version }}.tar.gz"
     checksum: "sha256:{{ cardano_dist_sha_256 }}"
 
-- name: Cardano | Make sure the service is stopped before we start changing it's binaries
+- name: Cardano Dist | Make sure the service is stopped before we start changing it's binaries
   service:
     name: "{{ cardano_service_name }}.service"
     state: stopped

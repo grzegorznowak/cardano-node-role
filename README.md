@@ -160,14 +160,20 @@ Developers and Ops
 
 ## Roadmap
 
+The project is rolled with [weekly sprints][https://github.com/grzegorznowak/cardano-node-role/projects].
+Have a look there to see what's currently being worked.
+
+The very broad 10k feet view of what is planned generally:
 * ~~A baseline Cardano Node installation~~
 * ~~Full CI/CD~~
+* ~~Integrate CNCLI~~
 * More/better provisioning examples
 * Exposition of what would be the result of running this role as a public node
 * Automation of keys management
 * Research the possiblity of Block Producing Node be ephemeral
 * Complete stacking pool implementation  
 
+the above is subject to change or can be refactored into bespoke roles for modularity
  
 ## Donations
 
