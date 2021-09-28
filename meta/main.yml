@@ -15,6 +15,6 @@ galaxy_info:
     - name: Debian
       versions:
         - bullseye
-  galaxy_tags: ['cardano', 'crypto', 'molecule', 'tested']
+  galaxy_tags: ['cardano', 'cardano-node', 'cardano-cli', 'cncli', 'molecule', 'tested']
 
 dependencies: []
