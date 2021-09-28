@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   author: grzegorznowak
-  description: Cardano node service for Debians and Ubuntus with very tight quality control
+  description: Cardano node service with CNCLI for Debians and Ubuntus with very tight quality control
   company: "strange3.com"
   license: "license (BSD, MIT)"
   role_name: cardano_node

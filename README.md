@@ -5,6 +5,7 @@
 ![CI Binary Integration](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci-prebuilt.yml/badge.svg)
 
 Installs Cardano Node as a systemd service on Ubuntus and Debians.
+Can add and integrate [CNCLI](https://github.com/AndrewWestberg/cncli) when directed to.
 
 ## Supported Distros
 
@@ -49,7 +50,7 @@ one of:
 
 ## Example playbook 
 
-There are 2 main mode of installation:
+There are 2 main modes of installation:
 * Compilation from source
 * Using pre-built dist binaries from IOHK
 
@@ -58,11 +59,17 @@ See the `Configuration` section further down.
  
 This role attempts to test both of the approaches.
  
+### Toping up with CNCLI
+
+By default the extended CLI toolset for cardano node is not being included, 
+and that is steered with the `cncli_add` flag. See examples below.
+
 ##### when cloned from github
 ```YAML
 - name: Converge Cardano Node
   hosts: all
-
+  vars:
+    cncli_add: true  # will include CNCLI
   roles:
     - cardano-node-role
 ```        
@@ -71,22 +78,55 @@ This role attempts to test both of the approaches.
 ```YAML
 - name: Converge Cardano Node
   hosts: all
-
+  vars:
+    cncli_add: true  # will include CNCLI
   roles:
     - grzegorznowak.cardano_node
 ```        
 
-## Usage
+## Managing the Services
 
 Use it as any other service
 ```shell script
-# managing the process:
+# managing the cardano-node process:
 systemctl status cardano-node
 systemctl restart cardano-node
 
 # looking at general logs
-journalctl -xe 
+journalctl -u cardano-node
 ```
+
+Interacting with CNCLI sync service, when it's enabled
+```shell script
+# managing the cncli-sync process
+systemctl status cncli-sync
+systemctl restart cncli-sync
+
+# looking at general logs
+journalctl -u cncli-sync
+```
+
+## Usage
+
+One of the end goals of this repository is to abstract cardano Ops with ansible tasks,
+but there is no stopping you to interact with services and binaries directly.
+
+A short list to get you started: 
+
+### Cardano CLI
+
+By default installs for `cardano` user, so make sure you change your user accordingly.
+
+```shell script
+su cardano
+cd ~/bin
+./cardano-cli --help
+```
+
+For usage details go to [cardano-cli documentation](https://github.com/input-output-hk/cardano-node/tree/master/cardano-cli) directly
+### CNCLI
+
+For usage details see the [original repository](https://github.com/AndrewWestberg/cncli/blob/develop/USAGE.md)
 
 ## Configuration
 
@@ -114,9 +154,12 @@ cardano_dist_sha_256: 5b15b65dead36e9cfb1bf0fdafe76c4d374988ca5b56270a00cdcc6681
 # Service Config
 cardano_listen_addr: 127.0.0.1
 cardano_listen_port: 22322  # has to be in the upper bracket if it's running as non-privileged user
+
+# CNCLI config
+cncli_add: false  # set to 'true' to enable cncli with cncli-sync service 
 ``` 
 
-There's more, so to fine-grain control the installation mechanisms just head on to the `defaults/main.yml` file directly
+There's more, so head on to the `defaults/main.yml` file directly to see all the little details.
 
 ## Motivation
 
@@ -160,8 +203,8 @@ Developers and Ops
 
 ## Roadmap
 
-The project is rolled with [weekly sprints][https://github.com/grzegorznowak/cardano-node-role/projects].
-Have a look there to see what's currently being worked.
+The project is rolled with [weekly sprints](https://github.com/grzegorznowak/cardano-node-role/projects).
+Have a look there to see what's currently being worked on.
 
 The very broad 10k feet view of what is planned generally:
 * ~~A baseline Cardano Node installation~~
@@ -170,10 +213,10 @@ The very broad 10k feet view of what is planned generally:
 * More/better provisioning examples
 * Exposition of what would be the result of running this role as a public node
 * Automation of keys management
-* Research the possiblity of Block Producing Node be ephemeral
+* Research the possibility of Block Producing Node be ephemeral
 * Complete stacking pool implementation  
 
-the above is subject to change or can be refactored into bespoke roles for modularity
+the above is subject to change or can be refactored into bespoke roles for modularity.
  
 ## Donations
 
