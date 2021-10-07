@@ -39,4 +39,5 @@ jobs:
         run: molecule test --scenario-name cloud-test-cardano-node-compilation-role
         env:
           DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
+          TESTNET_SNAPSHOT_NAME: ${{ secrets.TESTNET_SNAPSHOT_NAME }}
           MOLECULE_EPHEMERAL_DIRECTORY: /tmp/molecule_ephemeral
