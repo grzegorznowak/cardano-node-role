@@ -1,0 +1,21 @@
+---
+
+
+- name: Test Integration | CNCLI Sync service uptime monitoring
+  block:
+    - name: Test | stop the CNCLI Sync service
+      shell: "pkill {{ cardano_service_name }}"
+
+    - name: Test Integration | wait for systemd to restart the service
+      wait_for:
+        host: "{{ cardano_listen_addr }}"
+        port: "{{ cardano_listen_port }}"
+        timeout: 240  # it's a slow-ass process to get it back online...
+
+    - name: Test Integration | See if the socket file exists after restarting the service
+      stat:
+        path: "{{ cardano_node_socket }}"
+      register: socket_check_result
+
+    - assert:
+        that: socket_check_result.stat.exists

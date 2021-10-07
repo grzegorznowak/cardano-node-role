@@ -1,18 +1,17 @@
 ---
 
-name: CI
+name: CD
 
 on:
+  workflow_dispatch:
   workflow_run:
-    workflows: ["Ansible Lint"]
-    branches: [main]
+    workflows: ["Publish | Ansible Galaxy"]
     types:
       - completed
 
 jobs:
-  ci-test:
-    # it's a test suite, however ran within a production environment in terms of infra etc.
-    environment: ci
+  cd-build:
+    environment: production
     runs-on: ubuntu-latest
 
     steps:
@@ -30,9 +29,8 @@ jobs:
 
       - uses: actions/cache@v2
         with:
-          path: /tmp/molecule_ephemeral
-          key: molecule_ephemeral
-
+          path: /tmp/molecule_cd_ephemeral
+          key: molecule_cd_ephemeral_002
 
       - name: Install dependencies
         run: |
@@ -43,7 +41,7 @@ jobs:
         run: mkdir -p /tmp/molecule_ephemeral
 
       - name: Test with molecule
-        run: molecule test --scenario-name cloud-test-cardano-node-role
+        run: molecule converge --scenario-name cloud-prod-cardano-node
         env:
           DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
           MOLECULE_EPHEMERAL_DIRECTORY: /tmp/molecule_ephemeral

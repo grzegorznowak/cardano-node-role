@@ -1,0 +1,24 @@
+---
+
+- name: Verify Common
+  hosts: all
+  become: true
+  tasks:
+    - include_vars: verify_vars.yml
+    - include: install_goss.yml
+    - include: ../../tests/test_ansible_all.yml
+    - include: verify_goss_group.yml
+      vars:
+        goss_test_group: "all"
+
+- name: Verify CNCLI Users
+  hosts: cncli_users
+  become: true
+  vars:
+    cncli_add: true
+  tasks:
+    - include_vars: verify_vars.yml
+    - include: install_goss.yml
+    - include: verify_goss_group.yml
+      vars:
+        goss_test_group: "cncli_users"

@@ -13,6 +13,14 @@ lint:
 platforms:
     - groups:
           - all
+          - cncli_users
+      name: test-cardano-node-focal-cncli
+      nested: "false"
+      privileged: "false"
+      image: "ubuntu/focal/amd64"
+
+    - groups:
+          - all
       name: test-cardano-node-focal
       nested: "false"
       privileged: "false"
@@ -51,8 +59,14 @@ provisioner:
     lint:
         name: ansible-lint
     name: ansible
+    inventory:
+        group_vars:
+            all:
+                cardano_install_method: dist
+            cncli_users:
+                cncli_add: true
 scenario:
-    name: local-cardano-node-role
+    name: local-test-cardano-node-role
     destroy_sequence:
         - cleanup
         - destroy

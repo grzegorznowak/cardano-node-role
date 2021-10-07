@@ -1,0 +1,12 @@
+---
+service:
+  cncli-sync:
+    enabled: true
+    running: true
+command:
+  cncli-version:
+    exit-status: 0
+    exec: cncli --version
+    stdout:
+      - "cncli 4.0.1"
+    skip: false

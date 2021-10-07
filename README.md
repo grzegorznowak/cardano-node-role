@@ -1,13 +1,25 @@
 # Cardano Node Role
 
 ![Ansible Lint](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/lint.yml/badge.svg)
-![CI Build](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci.yml/badge.svg)
+![CI Sources Integration](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci-sources.yml/badge.svg)
+![CI Binary Integration](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci-prebuilt.yml/badge.svg)
 
 Installs Cardano Node as a systemd service on Ubuntus and Debians.
+Can add and integrate [CNCLI](https://github.com/AndrewWestberg/cncli) when directed to.
 
-Currently builds and integrates on:
-##### Ubuntu: 20.04, 18.04
-##### Debian: bullseye
+## Supported Distros
+
+Adoption and support of more distributions will greatly depend on the users' feedback.
+
+Please add your use cases to the issue tracker and we will triage those as we go.
+
+### Ubuntu
+
+* 20.04
+* 18.04
+### Debian
+
+* bullseye
  
 
 ## Integration Testing
@@ -18,12 +30,16 @@ LXD should already be installed and configured.
 
 Trigger the full suite with `./test-local.sh`
 
-Compilation of the required binaries is a CPU heavy tasks, so be prepared for a long-haul process.
+Compilation of the required binaries is a CPU heavy task, so be prepared for a long-haul process.
 
 ### on Cloud via CI pipeline
 
 CI built on top of DO infrastructure and getting triggered against every meaningful changeset in the `main` branch.
-To limit running costs the role integrates on Focal Fossa only atm.
+
+To limit running costs the from-source CI done against Focal Fossa only atm.
+
+The pre-built binary CI done against focal and bionic.
+
 The other supported platforms are being assessed locally.
 
 ## Installation ##
@@ -33,11 +49,27 @@ one of:
 * clone the repo directly
 
 ## Example playbook 
+
+There are 2 main modes of installation:
+* Compilation from source
+* Using pre-built dist binaries from IOHK
+
+and it's controllable with the `cardano_install_method` flag. 
+See the `Configuration` section further down.
+ 
+This role attempts to test both of the approaches.
+ 
+### Toping up with CNCLI
+
+By default the extended CLI toolset for cardano node is not being included, 
+and that is steered with the `cncli_add` flag. See examples below.
+
 ##### when cloned from github
 ```YAML
 - name: Converge Cardano Node
   hosts: all
-
+  vars:
+    cncli_add: true  # will include CNCLI
   roles:
     - cardano-node-role
 ```        
@@ -46,22 +78,57 @@ one of:
 ```YAML
 - name: Converge Cardano Node
   hosts: all
-
+  vars:
+    cncli_add: true  # will include CNCLI
   roles:
     - grzegorznowak.cardano_node
 ```        
 
-## Usage
+## Managing the Services
 
 Use it as any other service
 ```shell script
-# managing the process:
+# managing the cardano-node process:
 systemctl status cardano-node
 systemctl restart cardano-node
 
 # looking at general logs
-journalctl -xe 
+journalctl -u cardano-node
 ```
+
+Interacting with CNCLI sync service, when it's enabled
+```shell script
+# managing the cncli-sync process
+systemctl status cncli-sync
+systemctl restart cncli-sync
+
+# looking at general logs
+journalctl -u cncli-sync
+```
+
+## Usage
+
+One of the end goals of this repository is to abstract cardano Ops with ansible tasks,
+but there is no stopping you to interact with services and binaries directly.
+
+A short list to get you started: 
+
+### Cardano CLI
+
+By default installs for `cardano` user, so make sure you change your user accordingly.
+
+```shell script
+su cardano
+cd ~/bin
+./cardano-cli --help
+```
+
+For usage details go to [cardano-cli documentation](https://github.com/input-output-hk/cardano-node/tree/master/cardano-cli) directly
+### CNCLI
+
+For usage details see the [original repository](https://github.com/AndrewWestberg/cncli/blob/develop/USAGE.md)
+
+## Configuration
 
 By default installs cardano for a `cardano` user and group. Which is a recommended practice. 
 All other cogs to fiddle with can be found under `defaults/main.yml`. The most noteworthy ones are:
@@ -71,17 +138,28 @@ cardano_home_directory: /home/cardano
 cardano_user: cardano
 cardano_group: cardano
 
+# possible options:
+# src - compile from source
+# dist - use the official binary
+cardano_install_method: src
+
 # Version variables
 ghc_version: 8.10.4
 cabal_version: 3.4.0.0
 cardano_node_version: 1.29.0
 
+cardano_dist_url: "https://hydra.iohk.io/build/7408438/download/1/cardano-node-{{ cardano_node_version }}-linux.tar.gz"
+cardano_dist_sha_256: 5b15b65dead36e9cfb1bf0fdafe76c4d374988ca5b56270a00cdcc66815b08e0
+
 # Service Config
 cardano_listen_addr: 127.0.0.1
 cardano_listen_port: 22322  # has to be in the upper bracket if it's running as non-privileged user
+
+# CNCLI config
+cncli_add: false  # set to 'true' to enable cncli with cncli-sync service 
 ``` 
 
-There's more, so to fine-grain control the installation mechanisms just head on to the `defaults/main.yml` file directly
+There's more, so head on to the `defaults/main.yml` file directly to see all the little details.
 
 ## Motivation
 
@@ -125,17 +203,24 @@ Developers and Ops
 
 ## Roadmap
 
+The project is rolled with [weekly sprints](https://github.com/grzegorznowak/cardano-node-role/projects).
+Have a look there to see what's currently being worked on.
+
+The very broad 10k feet view of what is planned generally:
 * ~~A baseline Cardano Node installation~~
 * ~~Full CI/CD~~
+* ~~Integrate CNCLI~~
 * More/better provisioning examples
 * Exposition of what would be the result of running this role as a public node
 * Automation of keys management
+* Research the possibility of Block Producing Node be ephemeral
 * Complete stacking pool implementation  
 
+the above is subject to change or can be refactored into bespoke roles for modularity.
  
 ## Donations
 
-Running CI pipeline for this project is no fluff, so any donations are highly appreciated 
+Running CI pipeline for this project is no fluff, so your support is highly appreciated 
 
 ##### RVN wallet
 `RKcFiQxRpUv6GTVSX7HQZc4EA5jAKPkVNV`

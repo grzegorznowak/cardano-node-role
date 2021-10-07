@@ -71,12 +71,12 @@
   tags:
     - skip_ansible_lint  # we do want to have this reloaded here and now
 
-- name: Enable the custom service
+- name: "Cardano Service | Enable the {{ cardano_service_name }} service"
   service:
     name: "{{ cardano_service_name }}.service"
     enabled: true
 
-- name: Start the custom service
+- name: "Cardano Service | Start the {{ cardano_service_name }} service"
   service:
     name: "{{ cardano_service_name }}.service"
     state: started

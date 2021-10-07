@@ -1,0 +1,8 @@
+---
+
+- name: Converge Cardano Node
+  hosts: all
+
+  roles:
+    - shareable-ansible-toolkit/common_ssh
+    - cardano-node-role

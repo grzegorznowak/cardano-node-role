@@ -1,0 +1,19 @@
+[Unit]
+Description=CNCLI Sync
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+LimitNOFILE=131072
+ExecStart={{ cncli_bin_folder }}/cncli sync --host 127.0.0.1 --port {{ cardano_listen_port }} \
+--db {{ cncli_scripts_folder }}/cncli.db --network-magic {{ cardano_nets[active_network].magic }}
+KillSignal=SIGINT
+SuccessExitStatus=143
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier={{ cncli_sync_service_name }}
+
+[Install]
+WantedBy=multi-user.target

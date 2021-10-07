@@ -4,3 +4,8 @@
   service:
     name: "{{ cardano_service_name }}.service"
     state: restarted
+
+- name: CNCLI Sync Restart
+  service:
+    name: "{{ cncli_sync_service_name }}.service"
+    state: restarted
