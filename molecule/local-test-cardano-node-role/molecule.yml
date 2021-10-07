@@ -14,6 +14,7 @@ platforms:
     - groups:
           - all
           - cncli_users
+          - wallet_holders
       name: test-cardano-node-focal-cncli
       nested: "false"
       privileged: "false"

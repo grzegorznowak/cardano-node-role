@@ -10,6 +10,9 @@
 
     keypair_name: molecule_key
     keypair_path: "{{ lookup('env', 'MOLECULE_EPHEMERAL_DIRECTORY') }}/ssh_key"
+
+    # we test Operations against pre-built cardano node, that is already synced to some extend
+    testnet_snapshot_name: "{{ lookup('env', 'TESTNET_SNAPSHOT_NAME') }}"
   tasks:
     - name: Create local keypair
       user:
@@ -25,6 +28,19 @@
         state: present
       register: remote_keypair
 
+    # did I mention DO's API is f... up ?
+    - name: fetch the master capsule snapshot id
+      shell: >-
+        curl -X GET -H 'Content-Type: application/json' -H 'Authorization: Bearer {{ lookup('env', 'DO_API_KEY') }}'
+        "https://api.digitalocean.com/v2/snapshots?page=1&per_page=1000&resource_type=droplet" |
+        jq -r '.snapshots[] | select(.name=="{{ testnet_snapshot_name }}").id'
+      register: snapshot_fetch_result
+
+    - name: calculate image ids to work on
+      set_fact:
+        testnet_snapshot_id: "{{ snapshot_fetch_result.stdout }}"
+      changed_when: true
+
     - name: Create molecule instance(s)
       digital_ocean:
         backups_enabled: false
@@ -32,7 +48,7 @@
         name: "{{ item.name }}"
         unique_name: true
         region_id: "{{ item.region_id }}"
-        image_id: "{{ item.image_id }}"
+        image_id: "{{ testnet_snapshot_id }}"
         size_id: "{{ item.size_id }}"
         ssh_key_ids: "{{ remote_keypair.data.ssh_key.id }}"
         wait: true

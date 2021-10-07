@@ -1,0 +1,43 @@
+---
+
+name: CI Sources
+
+on:
+  workflow_run:
+    workflows: ["Ansible Lint"]
+    branches:
+      - feature/2
+    types:
+      - completed
+
+jobs:
+  ci-test-ops:
+    environment: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 2.7
+
+      - uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('cloud-requirements.txt') }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r cloud-requirements.txt
+
+      - name: Create molecule cache foder
+        run: mkdir -p /tmp/molecule_ephemeral
+
+      - name: Test with molecule
+        run: molecule test --scenario-name cloud-test-cardano-wallet-creation-ops
+        env:
+          DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
+          MOLECULE_EPHEMERAL_DIRECTORY: /tmp/molecule_ephemeral

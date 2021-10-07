@@ -1,0 +1,40 @@
+---
+
+
+- name: Test Ops | Wallet Creation
+  block:
+    - name: Test Ops | Verification key stats as seen by the cardano user
+      become: true
+      become_user: "{{ cardano_user }}"
+      stat:
+        path: "{{ cardano_wallet_fullpath }}/{{ cardano_vkey_file }}"
+      register: vkey_stat
+
+    - name: Test Ops | Signing key stats as seen by the cardano user
+      become: true
+      become_user: "{{ cardano_user }}"
+      stat:
+        path: "{{ cardano_wallet_fullpath }}/{{ cardano_skey_file }}"
+      register: skey_stat
+
+    - name: Test Ops | Payment address stats as seen by the cardano user
+      become: true
+      become_user: "{{ cardano_user }}"
+      stat:
+        path: "{{ cardano_wallet_fullpath }}/{{ cardano_payment_addr_file }}"
+      register: addr_stat
+
+    - assert:
+        that:
+          - vkey_stat.stat.exists
+          - skey_stat.stat.exists
+          - addr_stat.stat.exists
+          - vkey_stat.stat.isreg
+          - skey_stat.stat.isreg
+          - addr_stat.stat.isreg
+          - vkey_stat.stat.readable
+          - skey_stat.stat.readable
+          - addr_stat.stat.readable
+          - vkey_stat.stat.size > 10   # arbitrary heuristic, just to make sure it's not an empty file
+          - skey_stat.stat.size > 10
+          - addr_stat.stat.size > 10
