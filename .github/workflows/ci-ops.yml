@@ -5,8 +5,7 @@ name: CI Ops
 on:
   workflow_run:
     workflows: ["Ansible Lint"]
-    branches:
-      - feature/2
+    branches: ['**']
     types:
       - completed
 
