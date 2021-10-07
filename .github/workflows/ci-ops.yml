@@ -1,6 +1,6 @@
 ---
 
-name: CI Sources
+name: CI Ops
 
 on:
   workflow_run:
