@@ -1,0 +1,8 @@
+---
+
+- name: Create wallets we want
+  cardano_wallet:
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    name: "{{ cardano_wallets }}"
+  become: yes
+  become_user: "{{ cardano_user }}"

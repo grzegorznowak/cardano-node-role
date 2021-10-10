@@ -7,3 +7,4 @@
       - cardano_install_method == "src" or cardano_install_method == "dist"
 
 - include: infrastructure/main.yml
+- include: operation/main.yml

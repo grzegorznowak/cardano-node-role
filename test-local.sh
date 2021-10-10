@@ -10,5 +10,7 @@ test -d localenv || virtualenv localenv --python=python3
 python -m pip install --upgrade pip
 pip install -r local-requirements.txt
 
+python -m pytest tests
+
 ansible-lint
 molecule test -s local-test-cardano-node-role

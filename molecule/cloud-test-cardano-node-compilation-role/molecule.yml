@@ -57,7 +57,7 @@ scenario:
     - cleanup
     - destroy
 verifier:
-  directory: ../../tests
+  directory: ../../tests/integration
   name: goss
   lint:
     name: yamllint
