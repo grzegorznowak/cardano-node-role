@@ -114,12 +114,12 @@ def main():
     if not module.params['name']:
         module.exit_json(changed=False, wallets=[])
 
-    cardano_bin_path = module.params('cardano_bin_path')
     wallets_path = module.params('wallets_path')
     wallet_names = module.params('name')
     vkey_file = module.params('vkey_file')
     skey_file = module.params('skey_file')
     addr_file = module.params('addr_file')
+    cardano_bin_path = module.params('cardano_bin_path')
 
     try:
         wallets_info = collect_wallets(wallets_path=wallets_path,
