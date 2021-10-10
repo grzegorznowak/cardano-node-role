@@ -30,7 +30,7 @@ def build_wallet_paths(wallets_path, wallet_name, vkey_file, skey_file, addr_fil
                                       wallet_name,
                                       skey_file),
             'name': wallet_name}
-def collet_wallets(wallets_path, wallet_names, vkey_file, skey_file, addr_file):
+def collect_wallets(wallets_path, wallet_names, vkey_file, skey_file, addr_file):
 
     wallets_library = [build_wallet_paths(wallets_path,
                                           wallet_name,
@@ -40,7 +40,9 @@ def collet_wallets(wallets_path, wallet_names, vkey_file, skey_file, addr_file):
                        for wallet_name
                        in wallet_names]
 
-    broken_wallets = filter(is_wallet_broken, wallets_library)
+    broken_wallets = [wallet for wallet in wallets_library
+                        if is_wallet_broken(wallet)]
+
     if len(broken_wallets):
         raise BrokenWalletsError("Broken wallet(s) found: \n {}".format(
             " | ".join([broken_wallet['name'] for broken_wallet in broken_wallets])))
@@ -64,7 +66,7 @@ def build_wallet_cmds(active_network, testnet_magic, cardano_bin_path, wallet):
 
     wallet_creation_cmds = []
 
-    wallet_creation_cmds.append("mkdir {}".format(os.path.dirname(vkey_file)))
+    wallet_creation_cmds.append("mkdir -p {}".format(os.path.dirname(vkey_file)))
 
     wallet_creation_cmds.append("{0}/cardano-cli address key-gen " \
                      "--verification-key-file {1} " \
@@ -103,23 +105,21 @@ def main():
         state=dict(type='str', default='present', choices=['present']),
         active_network=dict(type='str', default='test',
                             choices=['test', 'main']),
-        testnet_magic=dict(type='str'),
-    )
+        testnet_magic=dict(type='str'))
 
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        supports_check_mode=True)
+    module = AnsibleModule(argument_spec=argument_spec,
+                           supports_check_mode=True)
 
     state = module.params['state']
-    if not module.params['name']:
-        module.exit_json(changed=False, wallets=[])
 
-    wallets_path = module.params('wallets_path')
-    wallet_names = module.params('name')
-    vkey_file = module.params('vkey_file')
-    skey_file = module.params('skey_file')
-    addr_file = module.params('addr_file')
-    cardano_bin_path = module.params('cardano_bin_path')
+    active_network = module.params['active_network']
+    testnet_magic = module.params['testnet_magic']
+    wallets_path = module.params['wallets_path']
+    wallet_names = module.params['name']
+    vkey_file = module.params['vkey_file']
+    skey_file = module.params['skey_file']
+    addr_file = module.params['addr_file']
+    cardano_bin_path = module.params['cardano_bin_path']
 
     try:
         wallets_info = collect_wallets(wallets_path=wallets_path,
@@ -133,18 +133,26 @@ def main():
     existing_wallets = wallets_info['existing']
     new_wallets = wallets_info['new']
 
+    # we don't really handle removal of wallets
+    if not module.params['name']:
+        module.exit_json(changed=False, wallets=existing_wallets)
+
     if state == "present":
         if module.check_mode:
             module.exit_json(changed=bool(len(new_wallets)))
         changed = False
         if len(new_wallets):
-            wallet_cmds = [build_wallet_cmds(active_network,
+            wallets_cmds = [build_wallet_cmds(active_network,
                                              testnet_magic,
                                              cardano_bin_path,
                                              wallet)
                            for wallet in new_wallets]
-            (module.run_command(wallet_cmds) for wallet_cmd in wallet_cmds)
+
+            [module.run_command(cmd, check_rc=True)
+             for wallet_cmds in wallets_cmds
+             for cmd in wallet_cmds]
             changed = True
+            # module.exit_json(wallets=wallets_cmds)
 
     module.exit_json(changed=changed, wallets=wallet_names)
 

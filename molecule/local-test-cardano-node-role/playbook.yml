@@ -4,4 +4,7 @@
   hosts: all
 
   roles:
-    - cardano-node-role
+    - role: cardano-node-role
+      cardano_wallets:
+        - wallet1
+        - wallet2

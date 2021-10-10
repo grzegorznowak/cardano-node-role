@@ -8,3 +8,8 @@
     testnet_magic: "{{ cardano_nets.test.magic }}"  # only used on testnet
   become: true
   become_user: "{{ cardano_user }}"
+  register: wallet_results
+
+- debug:
+    var: wallet_results
+  changed_when: true
