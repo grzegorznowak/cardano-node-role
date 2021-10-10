@@ -4,5 +4,5 @@
   cardano_wallet:
     cardano_bin_path: "{{ cardano_bin_path }}"
     name: "{{ cardano_wallets }}"
-  become: yes
+  become: true
   become_user: "{{ cardano_user }}"
