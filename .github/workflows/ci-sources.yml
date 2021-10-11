@@ -4,7 +4,8 @@ name: CI Sources
 
 on:
   workflow_run:
-    workflows: ["Ansible Lint"]
+    # building sources is a long process, do it only after we have confirmed the general functionality works A OK
+    workflows: ["CI Prebuilt"]
     branches: [main]
     types:
       - completed
