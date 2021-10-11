@@ -39,6 +39,9 @@ provisioner:
       all:
         cardano_install_method: dist
         active_network: test
+        cardano_wallets:
+          - savings
+          - operations
 
 scenario:
   name: cloud-test-cardano-wallet-creation-ops

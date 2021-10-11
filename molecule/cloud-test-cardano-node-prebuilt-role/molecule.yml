@@ -61,7 +61,6 @@ provisioner:
     verify: ../local-test-cardano-node-role/verify.yml
   inventory:
     group_vars:
-
       from_dist:
         cardano_install_method: dist
       testnet:

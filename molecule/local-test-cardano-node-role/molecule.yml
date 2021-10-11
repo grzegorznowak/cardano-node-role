@@ -64,6 +64,9 @@ provisioner:
         group_vars:
             all:
                 cardano_install_method: dist
+                cardano_wallets:
+                  - savings
+                  - operations
             cncli_users:
                 cncli_add: true
 scenario:
