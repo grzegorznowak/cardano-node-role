@@ -37,7 +37,6 @@ provisioner:
     verify: ../local-test-cardano-node-role/verify.yml
   inventory:
     group_vars:
-
       from_src:
         cardano_install_method: src
       testnet:
@@ -57,7 +56,7 @@ scenario:
     - cleanup
     - destroy
 verifier:
-  directory: ../../tests
+  directory: ../../tests/integration
   name: goss
   lint:
     name: yamllint

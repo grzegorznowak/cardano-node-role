@@ -14,6 +14,7 @@ platforms:
     - groups:
           - all
           - cncli_users
+          - wallet_holders
       name: test-cardano-node-focal-cncli
       nested: "false"
       privileged: "false"
@@ -63,6 +64,9 @@ provisioner:
         group_vars:
             all:
                 cardano_install_method: dist
+                cardano_wallets:
+                    - savings
+                    - operations
             cncli_users:
                 cncli_add: true
 scenario:
@@ -71,7 +75,7 @@ scenario:
         - cleanup
         - destroy
 verifier:
-    directory: ../../tests
+    directory: ../../tests/integration
     name: goss
     lint:
         name: yamllint

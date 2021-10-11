@@ -28,7 +28,6 @@
     - name: Create molecule instance(s)
       digital_ocean:
         backups_enabled: false
-        private_networking: true
         command: droplet
         name: "{{ item.name }}"
         unique_name: true

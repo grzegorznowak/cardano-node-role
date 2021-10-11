@@ -10,38 +10,13 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: molecule-focal-test-cardano-node-role-testnet-dist
-    image_id: ubuntu-20-04-x64
+  - name: molecule-focal-test-cardano-wallet-creation-ops
     region_id: ams3
-    size_id: c-4
+    size_id: c-8
     groups:
       - all
-      - testnet
-      - from_dist
-  - name: molecule-focal-test-cardano-node-role-mainnet-dist
-    image_id: ubuntu-20-04-x64
-    region_id: ams3
-    size_id: c-4
-    groups:
-      - all
-      - mainnet
-      - from_dist
-  - name: molecule-bionic-test-cardano-node-role-testnet-dist
-    image_id: ubuntu-18-04-x64
-    region_id: ams3
-    size_id: c-4
-    groups:
-      - all
-      - testnet
-      - from_dist
-  - name: molecule-bionic-test-cardano-node-role-mainnet-dist
-    image_id: ubuntu-18-04-x64
-    region_id: ams3
-    size_id: c-4
-    groups:
-      - all
-      - mainnet
-      - from_dist
+      - wallet_holders
+
 provisioner:
   name: ansible
   config_options:
@@ -61,15 +36,15 @@ provisioner:
     verify: ../local-test-cardano-node-role/verify.yml
   inventory:
     group_vars:
-      from_dist:
+      all:
         cardano_install_method: dist
-      testnet:
         active_network: test
-      mainnet:
-        active_network: main
+        cardano_wallets:
+          - savings
+          - operations
 
 scenario:
-  name: cloud-test-cardano-node-prebuilt-role
+  name: cloud-test-cardano-wallet-creation-ops
   test_sequence:
     - lint
     - dependency
