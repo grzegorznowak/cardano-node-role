@@ -38,11 +38,11 @@ jobs:
           python -m pytest tests
 
       - name: Create molecule cache foder
-        run: mkdir -p /tmp/molecule_ephemeral
+        run: mkdir -p /tmp/molecule_ephemeral/${{ github.run_id }}
 
       - name: Test with molecule
         run: molecule test --scenario-name cloud-test-cardano-wallet-creation-ops
         env:
           DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
           TESTNET_SNAPSHOT_NAME: ${{ secrets.TESTNET_SNAPSHOT_NAME }}
-          MOLECULE_EPHEMERAL_DIRECTORY: /tmp/molecule_ephemeral
+          MOLECULE_EPHEMERAL_DIRECTORY: /tmp/molecule_ephemeral/${{ github.run_id }}
