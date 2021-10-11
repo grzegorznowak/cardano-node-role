@@ -3,13 +3,11 @@
 name: CI Ops
 
 on:
-  push:
-    branches:
-      - 'feature/2'
-    paths-ignore:
-      - 'README.md'
-      - meta/*
-      - .github
+  workflow_run:
+    workflows: ["Ansible Lint"]
+    branches: [main]
+    types:
+      - completed
 
 jobs:
   ci-test-ops:
