@@ -1,5 +1,9 @@
 ---
 
+# Wallets to track
+
+cardano_wallets: []  # don't create anything by default, let the use decide
+
 # Cardano user
 cardano_home_directory: /home/cardano
 cardano_user: cardano
