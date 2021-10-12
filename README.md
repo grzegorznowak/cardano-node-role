@@ -107,6 +107,13 @@ cardano_wallets:
   - operations
 ```
 
+Based on the sample above - assuming all default values are used - materialized wallet addresses will be located under: 
+
+* `/home/cardano/wallets/savings/payment.addr`
+* `/home/cardano/wallets/operations/payment.addr`
+
+alongside wallets' private keys
+
 ### Native Tokens
 
 #### === WIP === 
