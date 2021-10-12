@@ -89,7 +89,7 @@ This role attempts to test both of the approaches.
 ## Configuration & Usage
 
 By default installs cardano for a `cardano` user and group. Which is a recommended practice. 
-All other cogs to fiddle with can be found under `defaults/main.yml`. The most noteworthy ones are:
+All other cogs to fiddle with can be found under `defaults/main.yml`. 
 
 ### Wallets
 
@@ -122,6 +122,7 @@ See the list of [weekly sprints](https://github.com/grzegorznowak/cardano-node-r
 for the most up to date roadmap 
 
 ### General Settings
+
 ```yaml
 # Cardano user
 cardano_home_directory: /home/cardano
