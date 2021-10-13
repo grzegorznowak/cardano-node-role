@@ -91,11 +91,11 @@ This role attempts to test both of the approaches.
 By default installs cardano for a `cardano` user and group. Which is a recommended practice. 
 All other cogs to fiddle with can be found under `defaults/main.yml`. 
 
-### Wallets
+### Payment Addresses
 
-We can keep track of Ada wallets.
+We can keep track of ADA addresses at our disposal.
 The current limitation is it will only attempt to create wallets that do not exist, as well as report
-if it finds wallets that a broken - aka missing private keys.
+if it finds ones that a broken - aka missing private keys.
 
 The functionality is rudimentary at this stage, but is enough to enable minting tokens in subsequent sprints,
 and is covered with automated testing to detect broken behaviour.
