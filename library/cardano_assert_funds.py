@@ -54,6 +54,7 @@ def main():
     skey_file = module.params['skey_file']
     addr_file = module.params['addr_file']
     cardano_bin_path = module.params['cardano_bin_path']
+    expected_lovelace = module.params['expected_lovelace']
 
     # make sure we're checking against a non-broken wallet
     try:
@@ -75,26 +76,10 @@ def main():
 
         total_lovelace = get_lovelace_from_utxo(query_utxo(active_network, testnet_magic, cardano_bin_path, wallet_address))
 
-
-    if state == "present":
-        if module.check_mode:
-            module.exit_json(changed=bool(len(new_wallets)))
-        changed = False
-        if len(new_wallets):
-            wallets_cmds = [build_wallet_cmds(active_network,
-                                             testnet_magic,
-                                             cardano_bin_path,
-                                             wallet)
-                            for wallet in new_wallets]
-
-            [module.run_command(cmd, check_rc=True)
-             for wallet_cmds in wallets_cmds
-             for cmd in wallet_cmds]
-            changed = True
-            # module.exit_json(wallets=wallets_cmds)
-
-    module.exit_json(changed=changed, wallets=wallet_names)
-
+    if total_lovelace < expected_lovelace:
+        module.fail_json(msg="Expected amount of lovelace not present", lovelace=total_lovelace)
+    else:
+        module.exit_json(changed=False, lovelace=total_lovelace)
 
 if __name__ == '__main__':
     main()
