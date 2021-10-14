@@ -2,16 +2,20 @@ from ansible.module_utils.basic import AnsibleModule
 
 import os
 
+
 class BrokenWalletsError(Exception):
     pass
 
+
 def sanitize_wallets(wallets_raw):
     sanitied_wallets = [wallet.strip() for wallet in wallets_raw]
+
 
 def is_wallet_broken(wallet_files):
     return os.path.exists(wallet_files['addr']) and not \
         (os.path.exists(wallet_files['vkey']) and \
         os.path.exists(wallet_files['skey']))
+
 
 def is_wallet_installed(wallet_files):
     return os.path.exists(wallet_files['addr']) and \
@@ -30,6 +34,8 @@ def build_wallet_paths(wallets_path, wallet_name, vkey_file, skey_file, addr_fil
                                       wallet_name,
                                       skey_file),
             'name': wallet_name}
+
+
 def collect_wallets(wallets_path, wallet_names, vkey_file, skey_file, addr_file):
 
     wallets_library = [build_wallet_paths(wallets_path,
@@ -55,10 +61,12 @@ def collect_wallets(wallets_path, wallet_names, vkey_file, skey_file, addr_file)
     return {'existing': existing_wallets,
             'new': new_wallets}
 
+
 """
 return commands needed to create a wallet
 """
 def build_wallet_cmds(active_network, testnet_magic, cardano_bin_path, wallet):
+
     vkey_file = wallet['vkey']
     skey_file = wallet['skey']
     addr_file = wallet['addr']
@@ -69,35 +77,33 @@ def build_wallet_cmds(active_network, testnet_magic, cardano_bin_path, wallet):
     wallet_creation_cmds.append("mkdir -p {}".format(os.path.dirname(vkey_file)))
 
     wallet_creation_cmds.append("{0}/cardano-cli address key-gen " \
-                     "--verification-key-file {1} " \
-                     "--signing-key-file {2}".format(cardano_bin_path,
-                                                         vkey_file,
-                                                         skey_file))
+                                "--verification-key-file {1} " \
+                                "--signing-key-file {2}".format(cardano_bin_path,
+                                                                vkey_file,
+                                                                skey_file))
     if active_network == "test":
         wallet_creation_cmds.append("{0}/cardano-cli address build "
-                               "--payment-verification-key-file {1} "
-                               "--out-file {2} "
-                               "--testnet-magic {3}".format(cardano_bin_path,
-                                                            vkey_file,
-                                                            addr_file,
-                                                            testnet_magic))
+                                    "--payment-verification-key-file {1} "
+                                    "--out-file {2} "
+                                    "--testnet-magic {3}".format(cardano_bin_path,
+                                                                 vkey_file,
+                                                                 addr_file,
+                                                                 testnet_magic))
     elif active_network == "main":
         wallet_creation_cmds.append("{0}/cardano-cli address build "
-                               "--payment-verification-key-file {1} "
-                               "--out-file {2} "
-                               "--mainnet".format(cardano_bin_path,
-                                                  vkey_file,
-                                                  addr_file))
+                                    "--payment-verification-key-file {1} "
+                                    "--out-file {2} "
+                                    "--mainnet".format(cardano_bin_path,
+                                                       vkey_file,
+                                                       addr_file))
     return wallet_creation_cmds
 
 
 def main():
 
     argument_spec = dict(
-        cardano_bin_path=dict(type='path',
-                           default='~/bin'),
-        wallets_path=dict(type='path',
-                           default='~/wallets'),
+        cardano_bin_path=dict(type='path', default='~/bin'),
+        wallets_path=dict(type='path', default='~/wallets'),
         name=dict(type='list', required=True),
         vkey_file=dict(type='str', default='payment.vkey'),
         skey_file=dict(type='str', default='payment.skey'),
@@ -146,7 +152,7 @@ def main():
                                              testnet_magic,
                                              cardano_bin_path,
                                              wallet)
-                           for wallet in new_wallets]
+                            for wallet in new_wallets]
 
             [module.run_command(cmd, check_rc=True)
              for wallet_cmds in wallets_cmds
@@ -155,6 +161,7 @@ def main():
             # module.exit_json(wallets=wallets_cmds)
 
     module.exit_json(changed=changed, wallets=wallet_names)
+
 
 if __name__ == '__main__':
     main()
