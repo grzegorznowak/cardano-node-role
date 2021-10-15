@@ -30,7 +30,7 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: /tmp/molecule_cd_ephemeral
-          key: molecule_cd_ephemeral_002
+          key: molecule_cd_ephemeral_003
 
       - name: Install dependencies
         run: |
@@ -40,7 +40,7 @@ jobs:
       - name: Create molecule cache foder
         run: mkdir -p /tmp/molecule_ephemeral
 
-      - name: Test with molecule
+      - name: CD Converge
         run: molecule converge --scenario-name cloud-prod-cardano-node
         env:
           DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}

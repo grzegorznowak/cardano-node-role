@@ -17,7 +17,7 @@ platforms:
     groups:
       - all
       - testnet
-  - name: molecule-mainnet-cardano-node-mainnet
+  - name: molecule-mainnet-cardano-node
     image_id: ubuntu-20-04-x64
     region_id: ams3
     size_id: s-1vcpu-2gb
@@ -47,6 +47,8 @@ provisioner:
         swap_file_size_mb: 4000  # 4GB of swap, bc our production servers are puny
         swap_swappiness: 1
         cardano_install_method: dist
+        cardano_wallets:
+          - default
 
       testnet:
         active_network: test
