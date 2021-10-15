@@ -41,7 +41,7 @@
         name: "{{ item.name }}"
         unique_name: true
         region_id: "{{ item.region_id }}"
-        image_id: "{{ snapshot_fetch_results.results[index_var] }}"
+        image_id: "{{ snapshot_fetch_results.results[loop_idx] }}"
         size_id: "{{ item.size_id }}"
         ssh_key_ids: "{{ remote_keypair.data.ssh_key.id }}"
         wait: true
