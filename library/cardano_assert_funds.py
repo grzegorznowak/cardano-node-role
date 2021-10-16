@@ -30,6 +30,7 @@ def get_lovelace_from_utxo(raw_utxo_table):
 
 
 def main():
+    module.fail_json(msg="I'm under-construction. Do not use me yet")
 
     argument_spec = dict(
         cardano_bin_path=dict(type='path', default='~/bin'),
