@@ -1,0 +1,18 @@
+---
+
+- name: Test Integration | Pristine Sync status
+  block:
+    - name: Test Integration | Sync check that should fail on pristine nodes
+      assert_cardano_synced:
+        cardano_bin_path: "{{ cardano_bin_path }}"
+        active_network: "{{ active_network }}"
+        testnet_magic: "{{ cardano_nets.test.magic }}"  # only used on testnet
+
+    - name: Test Integration | We should never reach this
+      fail:
+        msg: Sync status assertion should fail and not get here
+
+  rescue:
+    - name: Test Integration | Affirm all ok
+      debug:
+        msg: Sync status assertion succesfully failed
