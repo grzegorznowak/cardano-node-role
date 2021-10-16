@@ -3,7 +3,7 @@
   hosts: localhost
   connection: local
   gather_facts: false
-  no_log: true
+  no_log: false
   vars:
     ssh_user: root
     ssh_port: 22
@@ -25,6 +25,15 @@
         state: present
       register: remote_keypair
 
+    # did I mention DO's API is pure s..t ?
+    - name: Calculate base image ids to work with
+      shell: >-
+        curl -X GET -H 'Content-Type: application/json' -H 'Authorization: Bearer {{ lookup('env', 'DO_API_KEY') }}'
+        "https://api.digitalocean.com/v2/snapshots?page=1&per_page=1000&resource_type=droplet" |
+        jq -r '.snapshots[] | select(.name=="{{ item.name }}").id'
+      register: snapshot_fetch_results
+      with_items: "{{ molecule_yml.platforms }}"
+
     - name: Create molecule instance(s)
       digital_ocean:
         backups_enabled: false
@@ -32,14 +41,16 @@
         name: "{{ item.name }}"
         unique_name: true
         region_id: "{{ item.region_id }}"
-        image_id: "{{ item.image_id }}"
+        image_id: "{{ snapshot_fetch_results.results[loop_idx].stdout }}"
         size_id: "{{ item.size_id }}"
         ssh_key_ids: "{{ remote_keypair.data.ssh_key.id }}"
         wait: true
-        wait_timeout: 300
+        wait_timeout: 900
         state: present
       register: server
-      with_items: "{{ molecule_yml.platforms }}"
+      loop: "{{ molecule_yml.platforms }}"
+      loop_control:
+        index_var: loop_idx
       async: 7200
       poll: 0
 
@@ -48,7 +59,7 @@
         jid: "{{ item.ansible_job_id }}"
       register: digitalocean_jobs
       until: digitalocean_jobs.finished
-      retries: 300
+      retries: 900
       with_items: "{{ server.results }}"
 
     # Mandatory configuration for Molecule to function.
