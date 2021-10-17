@@ -5,6 +5,7 @@
 
   roles:
     - shareable-ansible-toolkit/common_ssh
+    # Make sure the upgrade path works OK
     - role: cardano-node-role
       cardano_hydra_build: 7408438  # 1.29.0
       cardano_dist_sha_256: 5b15b65dead36e9cfb1bf0fdafe76c4d374988ca5b56270a00cdcc66815b08e0

@@ -11,7 +11,6 @@ on:
 
 jobs:
   cd-build:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     environment: production
     runs-on: ubuntu-latest
 

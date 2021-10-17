@@ -39,8 +39,7 @@ jobs:
 
       - name: Test with molecule
         run: |
-          echo "skipme"
-          echo "molecule test --scenario-name cloud-test-cardano-node-compilation-role"
+          molecule test --scenario-name cloud-test-cardano-node-compilation-role
         env:
           DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
           MOLECULE_EPHEMERAL_DIRECTORY: /tmp/molecule_ephemeral/${{ github.run_id }}
