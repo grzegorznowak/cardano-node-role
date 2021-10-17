@@ -12,7 +12,7 @@ lint:
 platforms:
   - name: molecule-focal-test-cardano-wallet-creation-ops
     region_id: ams3
-    size_id: c-8
+    size_id: s-4vcpu-8gb
     groups:
       - all
       - wallet_holders

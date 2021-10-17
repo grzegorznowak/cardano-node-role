@@ -23,9 +23,8 @@ cardano_node_version: 1.30.0
 cardano_hydra_build: 7981360
 # always confirm your sha, or a poison might be coming
 cardano_dist_sha_256: 3bf8dae2457e647600180ceda094637b46bcab9da837c769d6e8c9e3e8dc157c
-cardano_dist_url: >-
-  https://hydra.iohk.io/build/{{ cardano_hydra_build }}
-  /download/1/cardano-node-{{ cardano_node_version }}-linux.tar.gz
+cardano_dist_url: "https://hydra.iohk.io/build/{{ cardano_hydra_build }}\
+  /download/1/cardano-node-{{ cardano_node_version }}-linux.tar.gz"
 
 # Service Config
 cardano_listen_addr: 127.0.0.1
