@@ -12,12 +12,20 @@
         goss_test_group: "all"
 
 - name: Verify Pristine Nodes
-  hosts: all
+  hosts: pristine
   become: true
   tasks:
     - include_vars: verify_vars.yml
     - include: install_goss.yml
     - include: ../../tests/integration/test_ansible_pristine.yml
+
+- name: Verify Mature Nodes
+  hosts: mature
+  become: true
+  tasks:
+    - include_vars: verify_vars.yml
+    - include: install_goss.yml
+    - include: ../../tests/integration/test_ansible_mature.yml
 
 - name: Verify CNCLI Users
   hosts: cncli_users
