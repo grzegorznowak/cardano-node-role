@@ -18,6 +18,7 @@ platforms:
       - all
       - testnet
       - from_dist
+      - pristine
   - name: molecule-focal-test-cardano-node-role-mainnet-dist
     image_id: ubuntu-20-04-x64
     region_id: ams3
@@ -26,6 +27,7 @@ platforms:
       - all
       - mainnet
       - from_dist
+      - pristine
   - name: molecule-bionic-test-cardano-node-role-testnet-dist
     image_id: ubuntu-18-04-x64
     region_id: ams3
@@ -34,6 +36,7 @@ platforms:
       - all
       - testnet
       - from_dist
+      - pristine
   - name: molecule-bionic-test-cardano-node-role-mainnet-dist
     image_id: ubuntu-18-04-x64
     region_id: ams3
@@ -42,6 +45,7 @@ platforms:
       - all
       - mainnet
       - from_dist
+      - pristine
 provisioner:
   name: ansible
   config_options:
@@ -61,12 +65,15 @@ provisioner:
     verify: ../local-test-cardano-node-role/verify.yml
   inventory:
     group_vars:
+
       from_dist:
         cardano_install_method: dist
       testnet:
         active_network: test
+        network_magic: 1097911063
       mainnet:
         active_network: main
+        network_magic: 764824073
 
 scenario:
   name: cloud-test-cardano-node-prebuilt-role

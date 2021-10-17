@@ -1,0 +1,34 @@
+---
+
+- name: Test Integration | Pristine Sync status
+  block:
+    - name: Test Integration | Sync check that should fail on pristine nodes
+      assert_cardano_synced:
+        cardano_node_socket: "{{ cardano_node_socket }}"
+        cardano_bin_path: "{{ cardano_bin_path }}"
+        active_network: "{{ active_network }}"
+        testnet_magic: "{{ network_magic }}"  # only used on testnet
+      become: true
+      become_user: "{{ cardano_user }}"
+      register: assert_result
+
+    - debug:
+        var: assert_result
+
+    - name: Test Integration | We should never reach this
+      fail:
+        msg: Sync status assertion should fail and not get here
+
+  rescue:
+
+    - debug:
+        var: assert_result
+
+    - assert:
+        that:
+          - assert_result.msg == "Expected progress not achieved yet"
+          - (assert_result.progress | int) < 100
+
+    - name: Test Integration | Affirm all ok
+      debug:
+        msg: Sync status assertion succesfully failed
