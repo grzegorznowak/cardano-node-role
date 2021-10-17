@@ -65,12 +65,15 @@ provisioner:
     verify: ../local-test-cardano-node-role/verify.yml
   inventory:
     group_vars:
+
       from_dist:
         cardano_install_method: dist
       testnet:
         active_network: test
+        network_magic: 1097911063
       mainnet:
         active_network: main
+        network_magic: 764824073
 
 scenario:
   name: cloud-test-cardano-node-prebuilt-role

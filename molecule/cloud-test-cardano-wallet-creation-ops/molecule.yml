@@ -39,6 +39,7 @@ provisioner:
       all:
         cardano_install_method: dist
         active_network: test
+        network_magic: 1097911063
         cardano_wallets:
           - savings
           - operations
