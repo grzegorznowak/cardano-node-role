@@ -12,6 +12,7 @@ on:
 
 jobs:
   ci-test-from-src:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     environment: ci
     runs-on: ubuntu-latest
 
