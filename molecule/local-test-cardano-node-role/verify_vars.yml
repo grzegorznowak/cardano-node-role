@@ -10,7 +10,7 @@ public_ip: "{{ ansible_eth0.ipv4.address }}"
 cardano_listen_addr: 127.0.0.1
 cardano_listen_port: 22322
 cardano_service_name: cardano-node
-cardano_node_wanted_version: 1.29.0
+cardano_node_wanted_version: 1.30.0
 cardano_home_directory: /home/cardano
 cardano_bin_path: "{{ cardano_home_directory }}/bin"
 cardano_node_socket: "{{ cardano_node_runtime }}/db/node.socket"

@@ -13,14 +13,14 @@ platforms:
   - name: molecule-testnet-cardano-node
     image_id: ubuntu-20-04-x64
     region_id: ams3
-    size_id: s-1vcpu-2gb
+    size_id: s-4vcpu-8gb
     groups:
       - all
       - testnet
   - name: molecule-mainnet-cardano-node
     image_id: ubuntu-20-04-x64
     region_id: ams3
-    size_id: s-1vcpu-2gb
+    size_id: s-4vcpu-8gb
     groups:
       - all
       - mainnet
