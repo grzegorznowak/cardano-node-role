@@ -17,11 +17,13 @@ cardano_install_method: src
 # Versions
 ghc_version: 8.10.4
 cabal_version: 3.4.0.0
-cardano_node_version: 1.30.1
+cardano_node_version: 1.30.0
 
-cardano_dist_url: "https://hydra.iohk.io/build/7408438/download/1/cardano-node-{{ cardano_node_version }}-linux.tar.gz"
-# always confirm your sha, or a poison is coming
-cardano_dist_sha_256: 5b15b65dead36e9cfb1bf0fdafe76c4d374988ca5b56270a00cdcc66815b08e0
+# Applicable only when installing from dist
+cardano_hydra_build: 7981360
+# always confirm your sha, or a poison might be coming
+cardano_dist_sha_256: 3bf8dae2457e647600180ceda094637b46bcab9da837c769d6e8c9e3e8dc157c
+cardano_dist_url: "https://hydra.iohk.io/build/{{ cardano_hydra_build }}/download/1/cardano-node-{{ cardano_node_version }}-linux.tar.gz"
 
 # Service Config
 cardano_listen_addr: 127.0.0.1
