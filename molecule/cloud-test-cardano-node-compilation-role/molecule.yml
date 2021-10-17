@@ -18,6 +18,7 @@ platforms:
       - all
       - testnet
       - from_src
+      - pristine
 provisioner:
   name: ansible
   config_options:

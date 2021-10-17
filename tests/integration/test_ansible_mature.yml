@@ -1,0 +1,17 @@
+---
+
+- name: Test Integration | Sync check that should succeed after a short while
+  assert_cardano_synced:
+    cardano_node_socket: "{{ cardano_node_socket }}"
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+  async: 600  # wait up to 10 minutes for the node to sync
+  poll: 10
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: assert_result
+
+- assert:
+    that:
+      - (assert_result.progress | int) == 100
