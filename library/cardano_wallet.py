@@ -59,7 +59,8 @@ def collect_wallets(wallets_path, wallet_names, vkey_file, skey_file, addr_file)
                         if not is_wallet_installed(wallet)]
 
     return {'existing': existing_wallets,
-            'new': new_wallets}
+            'new': new_wallets,
+            'all': wallets_library}
 
 
 """
@@ -138,10 +139,12 @@ def main():
 
     existing_wallets = wallets_info['existing']
     new_wallets = wallets_info['new']
+    all_wallets = wallets_info['all']
+    wallets_by_name = {wallet['name']: wallet for wallet in all_wallets}
 
     # we don't really handle removal of wallets
     if not module.params['name']:
-        module.exit_json(changed=False, wallets=existing_wallets)
+        module.exit_json(changed=False, wallets=wallets_by_name)
 
     if state == "present":
         if module.check_mode:
@@ -160,7 +163,7 @@ def main():
             changed = True
             # module.exit_json(wallets=wallets_cmds)
 
-    module.exit_json(changed=changed, wallets=wallet_names)
+    module.exit_json(changed=changed, wallets=wallets_by_name)
 
 
 if __name__ == '__main__':

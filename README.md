@@ -119,6 +119,59 @@ Based on the sample above - assuming all default values are used - materialized 
 
 alongside wallets' private keys
 
+### Node Sync Status Assertion
+
+Block execution of a playbook until cardano node is fully synced.
+
+```
+- name: Wait until we are fully synced
+  assert_cardano_synced:
+    cardano_node_socket: "{{ cardano_node_socket }}"
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+  async: 600  # wait up to 10 minutes for the node to sync
+  poll: 10
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: assert_result
+
+- assert:
+    that:
+      - (assert_result.progress | int) == 100
+```
+
+### Funds Assertion
+
+Make sure the specific address has at least the given amount of Ada at it's disposal.
+Useful for monitoring a service that has to have some Ada all times, or
+blocking specific Ops that require certain amounts to be available.
+
+```
+- name: Collect wallets
+  cardano_wallet:
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    name: "{{ cardano_wallets }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: wallet_results
+
+- name: Make sure we have some Lovelace
+  assert_address_funded:
+    cardano_node_socket: "{{ cardano_node_socket }}"
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+    expected_lovelace: 1000000000
+    address_file: "{{ wallet_results['wallets']['default']['addr'] }}"
+  async: 60  # given the node is synced we need not wait long
+  poll: 5
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: lovelace_result
+```
 ### Native Tokens
 
 #### === WIP === 

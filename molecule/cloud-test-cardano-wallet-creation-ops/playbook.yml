@@ -5,7 +5,5 @@
 
   roles:
     - shareable-ansible-toolkit/common_ssh
-    - role: cardano-node-role
-      cardano_wallets:
-        - wallet1
-        - wallet2
+    - cardano-node-role
+

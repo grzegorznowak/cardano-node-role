@@ -1,16 +1,16 @@
 ---
 
-- name: Verify Common
-  hosts: all
-  become: true
-  tasks:
-    - include_vars: verify_vars.yml
-    - include: install_goss.yml
-    - include: ../../tests/integration/test_ansible_all.yml
-    - include: verify_goss_group.yml
-      vars:
-        goss_test_group: "all"
-
+#- name: Verify Common
+#  hosts: all
+#  become: true
+#  tasks:
+#    - include_vars: verify_vars.yml
+#    - include: install_goss.yml
+#    - include: ../../tests/integration/test_ansible_all.yml
+#    - include: verify_goss_group.yml
+#      vars:
+#        goss_test_group: "all"
+#
 - name: Verify Pristine Nodes
   hosts: pristine
   become: true
@@ -26,24 +26,24 @@
     - include_vars: verify_vars.yml
     - include: install_goss.yml
     - include: ../../tests/integration/test_ansible_mature.yml
-
-- name: Verify CNCLI Users
-  hosts: cncli_users
-  become: true
-  vars:
-    cncli_add: true
-  tasks:
-    - include_vars: verify_vars.yml
-    - include: install_goss.yml
-    - include: verify_goss_group.yml
-      vars:
-        goss_test_group: "cncli_users"
-
-- name: Verify Wallet Holders
-  hosts: wallet_holders
-  become: true
-
-  tasks:
-    - include_vars: verify_vars.yml
-    - include: install_goss.yml
-    - include: ../../tests/integration/test_ansible_wallet_holders.yml
+#
+#- name: Verify CNCLI Users
+#  hosts: cncli_users
+#  become: true
+#  vars:
+#    cncli_add: true
+#  tasks:
+#    - include_vars: verify_vars.yml
+#    - include: install_goss.yml
+#    - include: verify_goss_group.yml
+#      vars:
+#        goss_test_group: "cncli_users"
+#
+#- name: Verify Wallet Holders
+#  hosts: wallet_holders
+#  become: true
+#
+#  tasks:
+#    - include_vars: verify_vars.yml
+#    - include: install_goss.yml
+#    - include: ../../tests/integration/test_ansible_wallet_holders.yml
