@@ -99,11 +99,11 @@ We can keep track of ADA addresses at our disposal.
 send and receive payments using cli commands. Wallets in this context mean a named path that holds files belonging
 together**
 
-The current limitation is it will only attempt to create wallets that do not exist, as well as report
-if it finds ones that a broken - aka missing private keys.
-
-The functionality is rudimentary at this stage, but is enough to enable minting tokens in subsequent sprints,
-and is covered with automated testing to detect broken behaviour.
+The current approach is to only create wallets that do not exist, as well as report
+if it finds ones that are broken - ie. missing private keys. 
+For security reasons we will not try to delete existing wallets,
+even though this stands opposite to the ansible philosophy of defining 
+and converging to specified state of the system. 
  
 ```yaml
 # populate with a list wallet names you wish to track with the role
