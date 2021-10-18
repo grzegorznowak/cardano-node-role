@@ -65,7 +65,11 @@ provisioner:
     verify: ../local-test-cardano-node-role/verify.yml
   inventory:
     group_vars:
-
+      all:
+        cardano_wallets:
+          - default
+          - wallet1
+          - wallet2
       from_dist:
         cardano_install_method: dist
       testnet:

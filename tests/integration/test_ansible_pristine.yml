@@ -1,8 +1,8 @@
 ---
 
-- name: Test Integration | Pristine Sync status
+- name: Test Integration | Wallet | Pristine Sync status
   block:
-    - name: Test Integration | Sync check that should fail on pristine nodes
+    - name: Test Integration | Wallet | Sync check that should fail on pristine nodes
       assert_cardano_synced:
         cardano_node_socket: "{{ cardano_node_socket }}"
         cardano_bin_path: "{{ cardano_bin_path }}"
@@ -12,10 +12,7 @@
       become_user: "{{ cardano_user }}"
       register: assert_result
 
-    - debug:
-        var: assert_result
-
-    - name: Test Integration | We should never reach this
+    - name: Test Integration | Wallet | We should never reach this
       fail:
         msg: Sync status assertion should fail and not get here
 
@@ -28,6 +25,47 @@
         that:
           - assert_result.msg == "Expected progress not achieved yet"
           - (assert_result.progress | int) < 100
+
+    - name: Test Integration | Affirm all ok
+      debug:
+        msg: Sync status assertion succesfully failed
+
+- name: Collect wallets
+  cardano_wallet:
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    name: "{{ cardano_wallets }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: wallet_results
+
+
+- name: Test Integration | Wallet | Pristine wallet status
+  block:
+
+    - name: Test Integration | Wallet | throw an error when executed on non-synced node
+      assert_address_funded:
+        cardano_node_socket: "{{ cardano_node_socket }}"
+        cardano_bin_path: "{{ cardano_bin_path }}"
+        active_network: "{{ active_network }}"
+        testnet_magic: "{{ network_magic }}"  # only used on testnet
+        address_file: "{{ wallet_results['wallets']['default']['addr'] }}"
+        expected_lovelace: 1000
+      become: true
+      become_user: "{{ cardano_user }}"
+      register: lovelace_result
+
+    - name: Test Integration | Wallet | We should never reach this
+      fail:
+        msg: Lovelace amount assertion should fail and not get here
+  rescue:
+
+    - name: Test Integration | Wallet | Check the expected outcome
+      assert:
+        that:
+          - lovelace_result.msg == "Error querying utxo. Make sure the node is fully synced."
+          - (lovelace_result.lovelace | int) == 0
 
     - name: Test Integration | Affirm all ok
       debug:

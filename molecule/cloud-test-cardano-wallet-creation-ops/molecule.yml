@@ -42,8 +42,9 @@ provisioner:
         active_network: test
         network_magic: 1097911063
         cardano_wallets:
-          - savings
-          - operations
+          - default
+          - wallet1
+          - wallet2
 
 scenario:
   name: cloud-test-cardano-wallet-creation-ops
