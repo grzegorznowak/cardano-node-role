@@ -148,10 +148,15 @@ Useful for monitoring a service that has to have some Ada all times, or
 blocking specific Ops that require certain amounts to be available.
 
 ```
+
+- set_fact
+      wallet_to_check: default
+      lovelace_needed: 1000000000
+
 - name: Collect wallets
   cardano_wallet:
     cardano_bin_path: "{{ cardano_bin_path }}"
-    name: "{{ cardano_wallets }}"
+    name: "{{ wallet_to_check }}"
     active_network: "{{ active_network }}"
     testnet_magic: "{{ network_magic }}"  # only used on testnet
   become: true
@@ -164,13 +169,18 @@ blocking specific Ops that require certain amounts to be available.
     cardano_bin_path: "{{ cardano_bin_path }}"
     active_network: "{{ active_network }}"
     testnet_magic: "{{ network_magic }}"  # only used on testnet
-    expected_lovelace: 1000000000
-    address_file: "{{ wallet_results['wallets']['default']['addr'] }}"
+    expected_lovelace: "{{ lovelace_needed }}"
+    address_file: "{{ wallet_results['wallets'][wallet_to_check]['addr'] }}"
   async: 60  # given the node is synced we need not wait long
   poll: 5
   become: true
   become_user: "{{ cardano_user }}"
   register: lovelace_result
+
+# double check if the balance is indeed as expected
+- assert:
+    that:
+      - lovelace_result.lovelace > lovelace_needed
 ```
 ### Native Tokens
 
