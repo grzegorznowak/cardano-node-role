@@ -61,10 +61,14 @@
         msg: Lovelace amount assertion should fail and not get here
   rescue:
 
+    - debug:
+        var: lovelace_result
+
     - name: Test Integration | Wallet | Check the expected outcome
       assert:
         that:
           - lovelace_result.msg == "Error querying utxo. Make sure the node is fully synced."
+            or lovelace_result.msg == "Expected amount of lovelace not present"
           - (lovelace_result.lovelace | int) == 0
 
     - name: Test Integration | Affirm all ok

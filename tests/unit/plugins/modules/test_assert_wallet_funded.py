@@ -19,7 +19,7 @@ def test_getting_progress_from_response():
 
     lovelace = 1234567
 
-    sample_response='''
+    sample_response = '''
                                TxHash                                 TxIx        Amount
 --------------------------------------------------------------------------------------
 21a4641241ff937c8bbb14bc4493089c9a9fe1b759195e07d66e506106b76adf     0        %d lovelace + TxOutDatumNone
@@ -29,8 +29,17 @@ def test_getting_progress_from_response():
 
     assert address_lovelace == lovelace
 
-    sample_response2=''''''
+    sample_response2 = ''''''
 
     address_lovelace2 = get_lovelace_from_utxo(sample_response2)
 
     assert address_lovelace2 == 0
+
+    sample_response3 = '''
+                               TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+    '''
+
+    address_lovelace3 = get_lovelace_from_utxo(sample_response3)
+
+    assert address_lovelace3 == 0
