@@ -15,3 +15,63 @@
 - assert:
     that:
       - (assert_result.progress | int) == 100
+
+- name: Collect wallets
+  cardano_wallet:
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    name: "{{ cardano_wallets }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: wallet_results
+
+- name: Test Integration | Make sure we have expected amounf of Lovelace
+  assert_address_funded:
+    cardano_node_socket: "{{ cardano_node_socket }}"
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+    expected_lovelace: 1000000000
+    address_file: "{{ wallet_results['wallets']['default']['addr'] }}"
+  async: 60  # given the node is synced we need not wait long
+  poll: 5
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: lovelace_result
+
+- debug:
+    var: lovelace_result
+
+- assert:
+    that:
+      - (lovelace_result.lovelace | int) >= 1000000000
+
+- name: Test Integration | Wallet | Throw an error if not enough Lovelace is had
+  block:
+
+    - name: Test Integration | Wallet | Check against absurdly big amount that we surelly don't have
+      assert_address_funded:
+        cardano_node_socket: "{{ cardano_node_socket }}"
+        cardano_bin_path: "{{ cardano_bin_path }}"
+        active_network: "{{ active_network }}"
+        testnet_magic: "{{ network_magic }}"  # only used on testnet
+        address_file: "{{ wallet_results['wallets']['default']['addr'] }}"
+        expected_lovelace: 9000000000000
+      become: true
+      become_user: "{{ cardano_user }}"
+      register: lovelace_result
+
+    - name: Test Integration | Wallet | We should never reach this
+      fail:
+        msg: Lovelace amount assertion should fail and not get here
+  rescue:
+
+    - assert:
+        that:
+          - lovelace_result.msg == "Expected amount of lovelace not present"
+          - (lovelace_result.lovelace | int) < 9000000000000
+
+    - name: Test Integration | Affirm all ok
+      debug:
+        msg: Sync status assertion succesfully failed

@@ -38,10 +38,16 @@ provisioner:
     verify: ../local-test-cardano-node-role/verify.yml
   inventory:
     group_vars:
+      all:
+        cardano_wallets:
+          - default
+          - wallet1
+          - wallet2
       from_src:
         cardano_install_method: src
       testnet:
         active_network: test
+        network_magic: 1097911063
 
 scenario:
   name: cloud-test-cardano-node-compilation-role
