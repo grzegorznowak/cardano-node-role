@@ -40,29 +40,11 @@
   become_user: "{{ cardano_user }}"
   register: wallet_results
 
-- name: Test Integration | Wallet | Make sure we dont have any lovelace on unsynced node
-  assert_address_funded:
-    cardano_node_socket: "{{ cardano_node_socket }}"
-    cardano_bin_path: "{{ cardano_bin_path }}"
-    active_network: "{{ active_network }}"
-    testnet_magic: "{{ network_magic }}"  # only used on testnet
-    address_file: "{{ wallet_results['wallets']['default']['addr'] }}"
-    expected_lovelace: 0
-  become: true
-  become_user: "{{ cardano_user }}"
-  register: lovelace_result
 
-- debug:
-    var: lovelace_result
-
-- assert:
-    that:
-      - (lovelace_result.lovelace | int) == 0
-
-- name: Test Integration | Pristine wallet status
+- name: Test Integration | Wallet | Pristine wallet status
   block:
 
-    - name: Test Integration | Make sure we throw an error
+    - name: Test Integration | Wallet | throw an error when executed on non-synced node
       assert_address_funded:
         cardano_node_socket: "{{ cardano_node_socket }}"
         cardano_bin_path: "{{ cardano_bin_path }}"
@@ -79,9 +61,10 @@
         msg: Lovelace amount assertion should fail and not get here
   rescue:
 
-    - assert:
+    - name: Test Integration | Wallet | Check the expected outcome
+      assert:
         that:
-          - lovelace_result.msg == "Expected amount of lovelace not present"
+          - lovelace_result.msg == "Error querying utxo. Make sure the node is fully synced."
           - (lovelace_result.lovelace | int) == 0
 
     - name: Test Integration | Affirm all ok

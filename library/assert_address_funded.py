@@ -62,9 +62,10 @@ def main():
                                                          use_unsafe_shell=True)
 
         if code != 0 or stderr != "":
-            module.fail_json(msg="Error runnig utxo",
+            module.fail_json(msg="Error querying utxo. Make sure the node is fully synced.",
                              code=code,
                              stderr=stderr,
+                             lovelace=0,
                              command=utxo_command)
 
         assert code == 0
@@ -76,6 +77,7 @@ def main():
             module.fail_json(msg="Expected amount of lovelace not present", lovelace=total_lovelace)
         else:
             module.exit_json(changed=False, lovelace=total_lovelace)
+
 
 if __name__ == '__main__':
     main()
