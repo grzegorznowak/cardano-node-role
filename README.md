@@ -56,8 +56,10 @@ There are 2 main modes of installation:
 * Compilation from source
 * Using pre-built dist binaries from IOHK
 
-and it's controllable with the `cardano_install_method` flag. 
+controllable with the `cardano_install_method` flag. 
 See the `Configuration` section further down.
+
+Binary dist install should generally fit most of the cases, but go ahead and use src to unlock the unltimate nerd-build.
  
 This role attempts to test both of the approaches.
  
