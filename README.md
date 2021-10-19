@@ -319,7 +319,7 @@ The very broad 10k feet view of what is planned generally:
 * ~~A baseline Cardano Node installation~~
 * ~~Full CI/CD~~
 * ~~Integrate CNCLI~~
-* Automate of native tokens minting
+* Automate native tokens minting
 * Automate NFT minting
 * Smart contracts' interfacing 
 * More/better provisioning examples
