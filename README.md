@@ -319,10 +319,15 @@ The very broad 10k feet view of what is planned generally:
 * ~~A baseline Cardano Node installation~~
 * ~~Full CI/CD~~
 * ~~Integrate CNCLI~~
+* Automate of native tokens minting
+* Automate NFT minting
+* Smart contracts' interfacing 
 * More/better provisioning examples
 * Exposition of what would be the result of running this role as a public node
-* Automation of keys management
-* Research the possibility of Block Producing Node be ephemeral
+* ~~Automation of keys management~~
+
+Some food for thought, but not really in plans as of now:
+* Research the possibility of Block Producing Node to be ephemeral
 * Complete stacking pool implementation  
 
 the above is subject to change or can be refactored into bespoke roles for modularity.
@@ -331,8 +336,6 @@ the above is subject to change or can be refactored into bespoke roles for modul
 
 Running CI pipeline for this project is no fluff, so your support is highly appreciated 
 
-##### RVN wallet
-`RKcFiQxRpUv6GTVSX7HQZc4EA5jAKPkVNV`
+##### Support with ADA
 
-##### ADA wallet
 `addr1q8ckqv8hm9zsvv8glxypmj3chfymjttnppfeypgt4zy09p6nzz27ada3sl2vhc30j64g2j6788fkqx4cqmgzxvxxyurs479zqu`
