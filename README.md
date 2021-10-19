@@ -100,7 +100,7 @@ All other cogs to fiddle with can be found under `defaults/main.yml`.
 We can keep track of ADA addresses at our disposal.
 
 **NOTE: This role doesn't (yet) integrate any sort of wallet software. What we do is creating needed files to 
-send and receive payments using cli commands. "Wallet" in this context mean a named path that holds files belonging
+send and receive payments using cli commands. "Wallet" in this context means a named path that holds files belonging
 together**
 
 The current approach is to only create wallets that do not exist, as well as report
