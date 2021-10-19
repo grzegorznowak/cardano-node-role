@@ -5,6 +5,8 @@
 ![CI Binary Integration](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci-prebuilt.yml/badge.svg)
 
 Installs Cardano Node as a systemd service on Ubuntus and Debians.
+Then wraps it with Ansible tortilla to make certain ops controllable, idempotent and way simpler in general.
+
 Can add and integrate [CNCLI](https://github.com/AndrewWestberg/cncli) when directed to.
 
 ## Supported Distros
@@ -238,6 +240,7 @@ cd ~/bin
 ```
 
 For usage details go to [cardano-cli documentation](https://github.com/input-output-hk/cardano-node/tree/master/cardano-cli) directly
+
 ### CNCLI
 
 For usage details see the [original repository](https://github.com/AndrewWestberg/cncli/blob/develop/USAGE.md)
