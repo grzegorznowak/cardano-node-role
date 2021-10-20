@@ -59,7 +59,7 @@ There are 2 main modes of installation:
 controllable with the `cardano_install_method` flag. 
 See the `Configuration` section further down.
 
-Binary dist install should generally fit most of the cases, but go ahead and use src to unlock the unltimate nerd-build.
+Binary dist install should generally fit most of the cases, but go ahead and use src to unlock the ultimate nerd-build.
  
 This role attempts to test both of the approaches.
  
