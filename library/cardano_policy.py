@@ -1,7 +1,7 @@
 from ansible.module_utils.basic import AnsibleModule
 
 import os
-
+import json
 
 class BrokenPolicyError(Exception):
     pass
@@ -16,6 +16,7 @@ def is_policy_broken(policy_files):
         not os.path.exists(policy_files['skey'])) or \
         (not os.path.exists(policy_files['vkey']) and \
         os.path.exists(policy_files['skey']))
+
 
 def is_policy_installed(wallet_files):
     return os.path.exists(wallet_files['vkey']) and \
@@ -53,26 +54,19 @@ def collect_policy(policies_path, policy_name, vkey_file, skey_file):
             'all': [policy]}
 
 
-"""
-return commands needed to create a wallet
-"""
 def build_policy_keys_cmds(cardano_bin_path, policy):
 
     vkey_file = policy['vkey']
     skey_file = policy['skey']
     policy_path = os.path.dirname(vkey_file)
-    name = policy['name']
 
-    cmds = []
+    return ["mkdir -p {}".format(policy_path),
+            "{0}/cardano-cli address key-gen " 
+            "--verification-key-file {1} " 
+            "--signing-key-file {2}".format(cardano_bin_path,
+                                            vkey_file,
+                                            skey_file)]
 
-    cmds.append("mkdir -p {}".format(policy_path))
-    cmds.append("{0}/cardano-cli address key-gen " \
-                                "--verification-key-file {1} " \
-                                "--signing-key-file {2}".format(cardano_bin_path,
-                                                                vkey_file,
-                                                                skey_file))
-
-    return cmds
 
 def build_policy_id_cmds(cardano_bin_path, policy, key_hash):
     vkey_file = policy['vkey']
@@ -82,6 +76,12 @@ def build_policy_id_cmds(cardano_bin_path, policy, key_hash):
         "keyHash": key_hash,
         "type": "sig"
     }
+
+    return ["{0}/cardano-cli transaction policyid " 
+            "--verification-key-file {1} " 
+            "--signing-key-file {2}".format(cardano_bin_path,
+                                            vkey_file,
+                                            skey_file)]
 
     "cardano-cli transaction policyid --script-file ./policy/policy.script >> policy/policyID"
 
