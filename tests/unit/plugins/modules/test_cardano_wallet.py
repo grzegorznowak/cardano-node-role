@@ -3,6 +3,7 @@ import pytest
 from library.cardano_wallet import (
     collect_wallets,
     BrokenWalletsError,
+    IncorrectWalletNameError,
     build_wallet_cmds
 )
 
@@ -10,6 +11,15 @@ VKEY_FILE = "vkey"
 SKEY_FILE = "skey"
 ADDR_FILE = "addr"
 def test_new_wallets(tmp_path):
+
+    with pytest.raises(IncorrectWalletNameError):
+        wallets_info = collect_wallets(wallets_path=tmp_path,
+                                       wallet_names=[" "],
+                                       vkey_file=VKEY_FILE,
+                                       skey_file=SKEY_FILE,
+                                       addr_file=ADDR_FILE)
+
+
     wallets_info = collect_wallets(wallets_path=tmp_path,
                                   wallet_names=[],
                                   vkey_file=VKEY_FILE,

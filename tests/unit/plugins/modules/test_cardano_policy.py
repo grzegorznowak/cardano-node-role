@@ -3,18 +3,22 @@ import pytest
 from library.cardano_policy import (
     collect_policy,
     build_policy_id_cmds,
-    BrokenPolicyError
+    BrokenPolicyError,
+    IncorrectPolicyNameError
 )
 
 VKEY_FILE = "vkey"
 SKEY_FILE = "skey"
-
+SCRIPT_FILE = "script"
+ID_FILE = "policyID"
 
 def test_policy_id_creation_cmds(tmp_path):
     policy_info = collect_policy(policies_path=tmp_path,
                                  policy_name="policy1",
                                  vkey_file=VKEY_FILE,
-                                 skey_file=SKEY_FILE)
+                                 skey_file=SKEY_FILE,
+                                 script_file=SCRIPT_FILE,
+                                 id_file=ID_FILE)
     new_policies = policy_info['new']
 
     policy_id_cmds = [build_policy_id_cmds(cardano_bin_path="dummy_path",
@@ -22,21 +26,26 @@ def test_policy_id_creation_cmds(tmp_path):
                                            key_hash="key_hash")
                       for policy in new_policies]
     print(policy_id_cmds)
+    assert(False)
 
 
 def test_collecting_policies(tmp_path):
-    policy_info = collect_policy(policies_path=tmp_path,
-                                 policy_name="",
-                                 vkey_file=VKEY_FILE,
-                                 skey_file=SKEY_FILE)
 
-    assert len(policy_info['existing']) == 0
-    assert len(policy_info['new']) == 0
+    with pytest.raises(IncorrectPolicyNameError):
+        policy_info = collect_policy(policies_path=tmp_path,
+                                     policy_name=" ",
+                                     vkey_file=VKEY_FILE,
+                                     skey_file=SKEY_FILE,
+                                     script_file=SCRIPT_FILE,
+                                     id_file=ID_FILE)
+
 
     policy_info = collect_policy(policies_path=tmp_path,
                                  policy_name="policy1",
                                  vkey_file=VKEY_FILE,
-                                 skey_file=SKEY_FILE)
+                                 skey_file=SKEY_FILE,
+                                 script_file=SCRIPT_FILE,
+                                 id_file=ID_FILE)
 
     assert len(policy_info['existing']) == 0
     assert len(policy_info['new']) == 1
@@ -51,7 +60,9 @@ def test_collecting_policies(tmp_path):
     policy_info = collect_policy(policies_path=tmp_path,
                                  policy_name="policy1",
                                  vkey_file=VKEY_FILE,
-                                 skey_file=SKEY_FILE)
+                                 skey_file=SKEY_FILE,
+                                 script_file=SCRIPT_FILE,
+                                 id_file=ID_FILE)
 
     assert len(policy_info['existing']) == 1
     assert len(policy_info['new']) == 0
@@ -59,7 +70,9 @@ def test_collecting_policies(tmp_path):
     policy_info = collect_policy(policies_path=tmp_path,
                                  policy_name="policy2",
                                  vkey_file=VKEY_FILE,
-                                 skey_file=SKEY_FILE)
+                                 skey_file=SKEY_FILE,
+                                 script_file=SCRIPT_FILE,
+                                 id_file=ID_FILE)
 
     assert len(policy_info['existing']) == 0
     assert len(policy_info['new']) == 1
@@ -77,7 +90,9 @@ def test_detecting_broken_policy(tmp_path):
         _ = collect_policy(policies_path=tmp_path,
                            policy_name="policy1",
                            vkey_file=VKEY_FILE,
-                           skey_file=SKEY_FILE)
+                           skey_file=SKEY_FILE,
+                           script_file=SCRIPT_FILE,
+                           id_file=ID_FILE)
 
     # Should raise error when vkey not present
     d = tmp_path / "policy2"
@@ -89,7 +104,9 @@ def test_detecting_broken_policy(tmp_path):
         _ = collect_policy(policies_path=tmp_path,
                            policy_name="policy2",
                            vkey_file=VKEY_FILE,
-                           skey_file=SKEY_FILE)
+                           skey_file=SKEY_FILE,
+                           script_file=SCRIPT_FILE,
+                           id_file=ID_FILE)
 
 #
 # def test_policy_creation_cmds(tmp_path):

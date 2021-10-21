@@ -3,7 +3,15 @@ from ansible.module_utils.basic import AnsibleModule
 import os
 
 
-class BrokenWalletsError(Exception):
+class WalletException(Exception):
+    pass
+
+
+class BrokenWalletsError(WalletException):
+    pass
+
+
+class IncorrectWalletNameError(WalletException):
     pass
 
 
@@ -24,6 +32,11 @@ def is_wallet_installed(wallet_files):
 
 
 def build_wallet_paths(wallets_path, wallet_name, vkey_file, skey_file, addr_file):
+
+    wallet_name = str(wallet_name).strip()
+    if wallet_name == "":
+        raise IncorrectWalletNameError(
+            "The wallet name is incorrect: '{}'".format(wallet_name))
     return {'addr': "{}/{}/{}".format(wallets_path,
                                       wallet_name,
                                       addr_file),
@@ -134,7 +147,7 @@ def main():
                                        vkey_file=vkey_file,
                                        skey_file=skey_file,
                                        addr_file=addr_file)
-    except BrokenWalletsError as wallets_error:
+    except WalletException as wallets_error:
         module.fail_json(msg=wallets_error)
 
     existing_wallets = wallets_info['existing']
