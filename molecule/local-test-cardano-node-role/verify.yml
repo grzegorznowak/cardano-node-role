@@ -47,3 +47,12 @@
     - include_vars: verify_vars.yml
     - include: install_goss.yml
     - include: ../../tests/integration/test_ansible_wallet_holders.yml
+
+- name: Verify Policy Holders
+  hosts: policy_holders
+  become: true
+
+  tasks:
+    - include_vars: verify_vars.yml
+    - include: install_goss.yml
+    - include: ../../tests/integration/test_ansible_policy_holders.yml

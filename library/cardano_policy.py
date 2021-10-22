@@ -7,21 +7,20 @@ import json
 class PolicyException(Exception):
     pass
 
+
 class BrokenPolicyError(PolicyException):
     pass
+
 
 class IncorrectPolicyNameError(PolicyException):
     pass
 
-def sanitize_wallets(wallets_raw):
-    sanitied_wallets = [wallet.strip() for wallet in wallets_raw]
-
 
 def is_policy_broken(policy_files):
-    return (os.path.exists(policy_files['vkey']) and \
-        not os.path.exists(policy_files['skey'])) or \
-        (not os.path.exists(policy_files['vkey']) and \
-        os.path.exists(policy_files['skey']))
+    return (os.path.exists(policy_files['vkey']) and
+            not os.path.exists(policy_files['skey'])) or \
+           (not os.path.exists(policy_files['vkey']) and
+            os.path.exists(policy_files['skey']))
 
 
 def is_policy_installed(wallet_files):
@@ -66,9 +65,9 @@ def collect_policy(policies_path, policy_name, vkey_file,
 
     # makes it cleaner if we go full LISP here
     existing_policies = [policy for policy in [policy]
-                        if is_policy_installed(policy)]
+                         if is_policy_installed(policy)]
     new_policies = [policy for policy in [policy]
-                        if not is_policy_installed(policy)]
+                    if not is_policy_installed(policy)]
 
     return {'existing': existing_policies,
             'new': new_policies,
@@ -92,7 +91,6 @@ def build_policy_keys_cmds(cardano_bin_path, policy):
 def build_policy_id_cmds(cardano_bin_path, policy, key_hash):
     script_file = policy['script']
     id_file = policy['id']
-    policy_path = policy['basepath']
 
     policy_data = {
         "keyHash": key_hash,
@@ -100,11 +98,64 @@ def build_policy_id_cmds(cardano_bin_path, policy, key_hash):
     }
     policy_data_json = json.dumps(policy_data)
 
-    return ["echo {} > {}".format(policy_data_json, script_file),
+    return ["echo '{}' > {}".format(policy_data_json, script_file),
             "{0}/cardano-cli transaction policyid "
             "--script-file {1} >> {2}".format(cardano_bin_path,
-                                               script_file,
-                                               id_file)]
+                                              script_file,
+                                              id_file)]
+
+
+def build_policy_key_hash_cmds(cardano_bin_path, policy):
+    vkey_file = policy['vkey']
+
+    return "{}/cardano-cli address key-hash " \
+           "--payment-verification-key-file {} | tr -d '\n'".format(cardano_bin_path,
+                                                                    vkey_file)
+
+
+def create_policy_keys(cardano_bin_path, policy, module):
+    policy_keys_cmds = build_policy_keys_cmds(cardano_bin_path,
+                                              policy)
+
+    results = [module.run_command(cmd, check_rc=True, use_unsafe_shell=True)
+               for cmd in policy_keys_cmds]
+
+    def assert_result_ok(result):
+        (rc, stdout, stderr) = result
+        assert rc == 0
+        assert stderr == ""
+
+    [assert_result_ok(result) for result in results]
+
+
+def create_policy_key_hash(cardano_bin_path, policy, module):
+
+    policy_key_hash_cmds = build_policy_key_hash_cmds(cardano_bin_path, policy)
+
+    rc, policy_key_hash, stderr = module.run_command(policy_key_hash_cmds, check_rc=True, use_unsafe_shell=True)
+    assert rc == 0
+    assert stderr == ""
+
+    return policy_key_hash
+
+
+def create_policy_id(cardano_bin_path, policy, module):
+    policy_key_hash = create_policy_key_hash(cardano_bin_path, policy, module)
+
+    policy_id_cmds = build_policy_id_cmds(cardano_bin_path,
+                                          policy,
+                                          policy_key_hash)
+
+    results = [module.run_command(cmd, check_rc=True, use_unsafe_shell=True)
+               for cmd in policy_id_cmds]
+
+    def assert_result_ok(result):
+        (rc, stdout, stderr) = result
+        assert rc == 0
+        assert stderr == ""
+
+    [assert_result_ok(result) for result in results]
+
 
 def main():
 
@@ -126,8 +177,8 @@ def main():
     policy_name = module.params['name']
     vkey_file = module.params['vkey_file']
     skey_file = module.params['skey_file']
-    script_file = module.params['script_file'],
-    id_file = module.params['id_file'],
+    script_file = module.params['script_file']
+    id_file = module.params['id_file']
     state = module.params['state']
 
     try:
@@ -137,36 +188,35 @@ def main():
                                      skey_file=skey_file,
                                      script_file=script_file,
                                      id_file=id_file)
-    except BrokenWalletsError as wallets_error:
-        module.fail_json(msg=wallets_error)
+    except BrokenPolicyError as policy_error:
+        module.fail_json(msg=policy_error)
 
-    existing_wallets = wallets_info['existing']
-    new_wallets = wallets_info['new']
-    all_wallets = wallets_info['all']
-    wallets_by_name = {wallet['name']: wallet for wallet in all_wallets}
+    existing_policies = policy_info['existing']
+    new_policies = policy_info['new']
+    all_policies = policy_info['all']
+    policies_by_name = {policy['name']: policy for policy in new_policies}
 
-    # we don't really handle removal of wallets
+    # we don't really handle removal of policies
     if not module.params['name']:
-        module.exit_json(changed=False, wallets=wallets_by_name)
+        module.exit_json(changed=False, policies=policies_by_name)
 
     if state == "present":
         if module.check_mode:
-            module.exit_json(changed=bool(len(new_wallets)))
+            module.exit_json(changed=bool(len(new_policies)))
         changed = False
-        if len(new_wallets):
-            wallets_cmds = [build_wallet_cmds(active_network,
-                                             testnet_magic,
-                                             cardano_bin_path,
-                                             wallet)
-                            for wallet in new_wallets]
+        if len(new_policies):
+            [create_policy_keys(cardano_bin_path,
+                                policy, module)
+             for policy in new_policies]
 
-            [module.run_command(cmd, check_rc=True)
-             for wallet_cmds in wallets_cmds
-             for cmd in wallet_cmds]
+            [create_policy_id(cardano_bin_path,
+                              policy, module)
+             for policy in new_policies]
+
             changed = True
             # module.exit_json(wallets=wallets_cmds)
 
-    module.exit_json(changed=changed, wallets=wallets_by_name)
+    module.exit_json(changed=changed, policies=policies_by_name)
 
 
 if __name__ == '__main__':

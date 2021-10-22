@@ -16,6 +16,7 @@ platforms:
     groups:
       - all
       - wallet_holders
+      - policy_holders
       - mature  # because the node is almost synced
 
 provisioner:
@@ -45,6 +46,9 @@ provisioner:
           - default
           - wallet1
           - wallet2
+        cardano_assets:
+          - name: asset1
+            quantity: 10000
 
 scenario:
   name: cloud-test-cardano-wallet-creation-ops
