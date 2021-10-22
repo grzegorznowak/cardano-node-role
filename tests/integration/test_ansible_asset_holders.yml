@@ -1,7 +1,7 @@
 ---
 
 
-- name: Test Ops | Policies
+- name: Test Ops | Native Assets
   block:
     - name: Test Ops | Policy | Verification key stats as seen by the cardano user
       become: true

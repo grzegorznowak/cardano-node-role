@@ -2,3 +2,4 @@
 
 - include: wallets.yml
 - include: policies.yml
+- include: native_assets.yml

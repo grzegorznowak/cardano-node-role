@@ -56,3 +56,12 @@
     - include_vars: verify_vars.yml
     - include: install_goss.yml
     - include: ../../tests/integration/test_ansible_policy_holders.yml
+
+- name: Verify Asset Holders
+  hosts: asset_holders
+  become: true
+
+  tasks:
+    - include_vars: verify_vars.yml
+    - include: install_goss.yml
+    - include: ../../tests/integration/test_ansible_asset_holders.yml

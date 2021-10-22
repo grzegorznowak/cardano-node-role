@@ -1,8 +1,11 @@
 ---
 galaxy_info:
   author: grzegorznowak
-  description: Cardano node service with CNCLI for Debians and Ubuntus with very tight quality control
-  company: "strange3.com"
+  description: >-
+    Cardano node for Debians and Ubuntus wrapped with Ops to simplify the most common use cases, like
+    payment address creation, sync status checks, held Ada balance assertions and more being added.
+    Developed using tests-first approach for unmatched stability.
+  company: "Strange 3 Studio"
   license: "license (BSD, MIT)"
   role_name: cardano_node
   min_ansible_version: 2.10
@@ -15,6 +18,6 @@ galaxy_info:
     - name: Debian
       versions:
         - bullseye
-  galaxy_tags: ['cardano', 'cardano-node', 'cardano-cli', 'cncli', 'molecule', 'tested']
+  galaxy_tags: ['cardano', 'cardano-node', 'cardano-cli', 'cardano wallet', 'native assets', 'cncli', 'molecule']
 
 dependencies: []

@@ -1,7 +1,7 @@
 ---
 
 
-- name: Test Ops | Wallet Creation
+- name: Test Ops | Wallets
   block:
     - name: Test Ops | Verification key stats as seen by the cardano user
       become: true
