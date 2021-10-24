@@ -44,12 +44,13 @@ provisioner:
         active_network: test
         network_magic: 1097911063
         cardano_wallets:
-          - default
+          - &wallet_default default
           - wallet1
           - wallet2
         cardano_assets:
           - name: asset1
             quantity: 10000
+            wallet: *wallet_default
 
 scenario:
   name: cloud-test-cardano-wallet-creation-ops

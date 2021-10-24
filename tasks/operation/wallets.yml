@@ -9,7 +9,3 @@
   become: true
   become_user: "{{ cardano_user }}"
   register: wallet_results
-
-- debug:
-    var: wallet_results
-  changed_when: true

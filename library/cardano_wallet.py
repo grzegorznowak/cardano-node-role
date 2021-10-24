@@ -19,16 +19,16 @@ def sanitize_wallets(wallets_raw):
     sanitied_wallets = [wallet.strip() for wallet in wallets_raw]
 
 
-def is_wallet_broken(wallet_files):
-    return os.path.exists(wallet_files['addr']) and not \
-        (os.path.exists(wallet_files['vkey']) and \
-        os.path.exists(wallet_files['skey']))
+def is_wallet_broken(wallet):
+    return os.path.exists(wallet['paths']['addr']) and not \
+        (os.path.exists(wallet['paths']['vkey']) and \
+        os.path.exists(wallet['paths']['skey']))
 
 
-def is_wallet_installed(wallet_files):
-    return os.path.exists(wallet_files['addr']) and \
-        os.path.exists(wallet_files['vkey']) and \
-        os.path.exists(wallet_files['skey'])
+def is_wallet_installed(wallet):
+    return os.path.exists(wallet['paths']['addr']) and \
+        os.path.exists(wallet['paths']['vkey']) and \
+        os.path.exists(wallet['paths']['skey'])
 
 
 def build_wallet_paths(wallets_path, wallet_name, vkey_file, skey_file, addr_file):
@@ -37,17 +37,23 @@ def build_wallet_paths(wallets_path, wallet_name, vkey_file, skey_file, addr_fil
     if wallet_name == "":
         raise IncorrectWalletNameError(
             "The wallet name is incorrect: '{}'".format(wallet_name))
-    return {'addr': "{}/{}/{}".format(wallets_path,
-                                      wallet_name,
-                                      addr_file),
-            'vkey': "{}/{}/{}".format(wallets_path,
-                                      wallet_name,
-                                      vkey_file),
-            'skey': "{}/{}/{}".format(wallets_path,
-                                      wallet_name,
-                                      skey_file),
+    return {'paths': {
+                'addr': "{}/{}/{}".format(wallets_path,
+                                          wallet_name,
+                                          addr_file),
+                'vkey': "{}/{}/{}".format(wallets_path,
+                                          wallet_name,
+                                          vkey_file),
+                'skey': "{}/{}/{}".format(wallets_path,
+                                          wallet_name,
+                                          skey_file)},
+            'address': '',
             'name': wallet_name}
 
+
+def materialize_addr(wallet):
+    with open(wallet['paths']['addr'], 'r') as file:
+        return file.read()
 
 def collect_wallets(wallets_path, wallet_names, vkey_file, skey_file, addr_file):
 
@@ -81,9 +87,9 @@ return commands needed to create a wallet
 """
 def build_wallet_cmds(active_network, testnet_magic, cardano_bin_path, wallet):
 
-    vkey_file = wallet['vkey']
-    skey_file = wallet['skey']
-    addr_file = wallet['addr']
+    vkey_file = wallet['paths']['vkey']
+    skey_file = wallet['paths']['skey']
+    addr_file = wallet['paths']['addr']
     name = wallet['name']
 
     wallet_creation_cmds = []
@@ -154,10 +160,13 @@ def main():
     new_wallets = wallets_info['new']
     all_wallets = wallets_info['all']
     wallets_by_name = {wallet['name']: wallet for wallet in all_wallets}
+    wallets_addr_by_name = {wallet['name']: materialize_addr(wallet) for wallet in existing_wallets}
 
     # we don't really handle removal of wallets
     if not module.params['name']:
-        module.exit_json(changed=False, wallets=wallets_by_name)
+        module.exit_json(changed=False,
+                         wallets=wallets_by_name,
+                         wallets_addresses=wallets_addr_by_name)
 
     if state == "present":
         if module.check_mode:
@@ -174,9 +183,12 @@ def main():
              for wallet_cmds in wallets_cmds
              for cmd in wallet_cmds]
             changed = True
+            wallets_addr_by_name = {wallet['name']: materialize_addr(wallet) for wallet in all_wallets}
             # module.exit_json(wallets=wallets_cmds)
 
-    module.exit_json(changed=changed, wallets=wallets_by_name)
+    module.exit_json(changed=changed,
+                     wallets=wallets_by_name,
+                     wallets_addresses=wallets_addr_by_name)
 
 
 if __name__ == '__main__':

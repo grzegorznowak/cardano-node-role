@@ -57,3 +57,26 @@ da7bcb251f3a90e74d8d661a55d2e8951f92932d9cdea0172ed70e8f2be47a5e     0        10
     address_lovelace4 = get_lovelace_from_utxo(sample_response4)
 
     assert address_lovelace4 == 2000000000
+
+    sample_response5 = '''
+                           TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+d82e82776b3588c1a2c75245a20a9703f971145d1ca9fba4ad11f50803a43190     0        999824071 lovelace + 10000000 45fb072eb2d45b8be940c13d1f235fa5a8263fc8ebe8c1af5194ea9c.SecondTesttoken + 10000000 45fb072eb2d45b8be940c13d1f235fa5a8263fc8ebe8c1af5194ea9c.Testtoken
+d82e82776b3588c1a2c75245a20a9703f971145d1ca9fba4ad11f50803a43190     0        1 lovelace + 10000000 45fb072eb2d45b8be940c13d1f235fa5a8263fc8ebe8c1af5194ea9c.SecondTesttoken + 10000000 45fb072eb2d45b8be940c13d1f235fa5a8263fc8ebe8c1af5194ea9c.Testtoken
+    '''
+
+    address_lovelace5 = get_lovelace_from_utxo(sample_response5)
+
+    assert address_lovelace5 == 999824072
+
+    sample_response6 = '''
+                           TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+d82e82776b3588c1a2c75245a20a9703f971145d1ca9fba4ad11f50803a43190     0        999824071 lovelace + 10000000 45fb072eb2d45b8be940c13d1f235fa5a8263fc8ebe8c1af5194ea9c.SecondTesttoken + 10000000 45fb072eb2d45b8be940c13d1f235fa5a8263fc8ebe8c1af5194ea9c.Testtoken
+d82e82776b3588c1a2c75245a20a9703f971145d1ca9fba4ad11f50803a43190     0        1 lovelace + 10000000 45fb072eb2d45b8be940c13d1f235fa5a8263fc8ebe8c1af5194ea9c.SecondTesttoken + 10000000 45fb072eb2d45b8be940c13d1f235fa5a8263fc8ebe8c1af5194ea9c.Testtoken
+d82e82776b3588c1a2c75245a20a9703f971145d1ca9fba4ad11f50803a43190     0        100 lovelace + 10000000 45fb072eb2d45b8be940c13d1f235fa5a8263fc8ebe8c1af5194ea9c.SecondTesttoken + 10000000 45fb072eb2d45b8be940c13d1f235fa5a8263fc8ebe8c1af5194ea9c.Testtoken
+    '''
+
+    address_lovelace6 = get_lovelace_from_utxo(sample_response6, 2)
+    print(address_lovelace6)
+    assert address_lovelace6 == 999824171

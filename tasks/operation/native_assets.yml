@@ -1,11 +1,20 @@
 ---
 
-- name: Ops | Create Native Assets
-  cardano_native_asset:
-    cardano_bin_path: "{{ cardano_bin_path }}"
+#- name: Ops |
+#- name: Ops | Create Native Assets
+#  cardano_native_asset:
+#    cardano_bin_path: "{{ cardano_bin_path }}"
+#    name: "{{ item.name }}"
+#    policy_name: "native_asset_{{ item.name }}_policy"
+#    quantity: "{{ item.quantity }}"
+#  become: true
+#  become_user: "{{ cardano_user }}"
+#  register: assets_results
+- include: _native_asset.yml
+  vars:
+    quantity: "{{ item.quantity }}"
     name: "{{ item.name }}"
+    wallet_addr: "{{ wallet_results['wallets_addresses'][item.wallet] }}"
+    payment_skey: "{{ wallet_results['wallets'][item.wallet]['paths']['skey'] }}"
     policy_name: "native_asset_{{ item.name }}_policy"
-  become: true
-  become_user: "{{ cardano_user }}"
-  register: assets_results
   loop: "{{ cardano_assets }}"

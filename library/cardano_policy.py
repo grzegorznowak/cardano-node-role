@@ -16,16 +16,16 @@ class IncorrectPolicyNameError(PolicyException):
     pass
 
 
-def is_policy_broken(policy_files):
-    return (os.path.exists(policy_files['vkey']) and
-            not os.path.exists(policy_files['skey'])) or \
-           (not os.path.exists(policy_files['vkey']) and
-            os.path.exists(policy_files['skey']))
+def is_policy_broken(policy):
+    return (os.path.exists(policy['vkey']) and
+            not os.path.exists(policy['skey'])) or \
+           (not os.path.exists(policy['vkey']) and
+            os.path.exists(policy['skey']))
 
 
-def is_policy_installed(wallet_files):
-    return os.path.exists(wallet_files['vkey']) and \
-        os.path.exists(wallet_files['skey'])
+def is_policy_installed(policy):
+    return os.path.exists(policy['vkey']) and \
+        os.path.exists(policy['skey'])
 
 
 def build_policy_paths(policies_path, policy_name, vkey_file,
@@ -34,7 +34,7 @@ def build_policy_paths(policies_path, policy_name, vkey_file,
 
     if policy_name == "":
         raise IncorrectPolicyNameError(
-            "The wallet name is incorrect: '{}'".format(policy_name))
+            "The policy name is incorrect: '{}'".format(policy_name))
 
     policy_basepath = "{}/{}".format(policies_path, policy_name)
 
@@ -156,6 +156,9 @@ def create_policy_id(cardano_bin_path, policy, module):
 
     [assert_result_ok(result) for result in results]
 
+def materialize_id(policy):
+    with open(policy['id'], 'r') as file:
+        return file.read().strip()
 
 def main():
 
@@ -194,8 +197,8 @@ def main():
     existing_policies = policy_info['existing']
     new_policies = policy_info['new']
     all_policies = policy_info['all']
-    policies_by_name = {policy['name']: policy for policy in new_policies}
-
+    policies_by_name = {policy['name']: policy for policy in all_policies}
+    policies_id_by_name = {policy['name']: materialize_id(policy) for policy in existing_policies}
     # we don't really handle removal of policies
     if not module.params['name']:
         module.exit_json(changed=False, policies=policies_by_name)
@@ -214,9 +217,12 @@ def main():
              for policy in new_policies]
 
             changed = True
-            # module.exit_json(wallets=wallets_cmds)
 
-    module.exit_json(changed=changed, policies=policies_by_name)
+    policies_id_by_name = {policy['name']: materialize_id(policy) for policy in all_policies}
+
+    module.exit_json(changed=changed,
+                     policies=policies_by_name,
+                     policies_ids=policies_id_by_name)
 
 
 if __name__ == '__main__':

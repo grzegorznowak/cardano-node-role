@@ -1,17 +1,22 @@
 ---
 
-# Wallets to track
-
+# Payment addresses to track
 cardano_wallets: []  # don't create anything by default, let us decide
 
 # Native Assets to mint
-
 cardano_assets: []
 
-# Cardano user
+
+# Cardano paths and users
 cardano_home_directory: /home/cardano
 cardano_user: cardano
 cardano_group: cardano
+### keeps track of assets we mint
+cardano_assets_directory: "{{ cardano_home_directory }}/assets"
+
+### tx
+# how many input transaction to take at most when building new transaction
+cardano_max_tx: 3
 
 # possible options:
 # src - compile from source
