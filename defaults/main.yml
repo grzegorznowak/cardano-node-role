@@ -66,6 +66,7 @@ cardano_nets:
       topology: >-
         https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/testnet-topology.json
 active_network: test
+network_magic: "{{ cardano_nets[active_network]['magic'] }}"
 
 # NON-essential variables. We use those to keep things more DRY or tight
 # feel free to adjust if you don't like those

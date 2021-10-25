@@ -1,5 +1,7 @@
 from ansible.module_utils.basic import AnsibleModule
-
+from functools import reduce
+from collections import Counter
+import operator
 
 def create_utxo_query_command(cardano_node_socket, active_network, testnet_magic, cardano_bin_path, wallet_address):
 
@@ -21,7 +23,7 @@ def create_utxo_query_command(cardano_node_socket, active_network, testnet_magic
     return command
 
 
-def largest_first(raw_utxo_table, token, wanted_amount, max_tx):
+def tokens_from_utxo(raw_utxo_table):
 
     rows_tokens = [zip(row.split()[5:][1::3], row.split()[5:][0::3])
                    for row
@@ -34,41 +36,13 @@ def largest_first(raw_utxo_table, token, wanted_amount, max_tx):
     return dict(reduce(operator.add,
                        map(Counter, all_tokens)))
 
-    utxo_processed = sorted([row
-                             for row
-                             in raw_utxo_table.strip().splitlines()[2:]],
-                            key=lambda x: int(x.split()[2]),
-                            reverse=True)
-
-    accumulated_amount = 0
-    txs = []
-    for row in utxo_processed:
-        if accumulated_amount < wanted_amount and (len(txs) < max_tx or not max_tx):
-            tx_details = row.split()
-            accumulated_amount += int(tx_details[2])
-            txs.append((tx_details[0], tx_details[1]))
-        else:
-            break
-
-    if accumulated_amount < wanted_amount:
-        return [], accumulated_amount
-
-    return txs, accumulated_amount
-
-
-def format_cli(txs):
-    return " ".join(["--tx-in {}#{}".format(tx[0], tx[1]) for tx in txs])
-
 
 def main():
 
     argument_spec = dict(
         cardano_node_socket=dict(type='str', required=True),
         cardano_bin_path=dict(type='path', default='~/bin'),
-        amount=dict(type='int', required=True),
-        token=dict(type='str', default='lovelace'),
         address=dict(type='str', default=True),
-        max_tx_count=dict(type='int', required=True),
         active_network=dict(type='str', default='test',
                             choices=['test', 'main']),
         testnet_magic=dict(type='str')
@@ -79,10 +53,7 @@ def main():
 
     cardano_node_socket = module.params['cardano_node_socket']
     cardano_bin_path = module.params['cardano_bin_path']
-    amount = module.params['amount']
-    token = module.params['token']
     payment_address = module.params['address']
-    max_tx_count = module.params['max_tx_count']
     active_network = module.params['active_network']
     testnet_magic = module.params['testnet_magic']
 
@@ -103,15 +74,11 @@ def main():
     assert code == 0
     assert stderr == ""
 
-    txs, txs_lovelace = largest_first(utxo_response, token, amount, max_tx_count)
-
-    if len(txs) == 0:
-        module.fail_json(msg="Unable to collect enough Lovelace from the transactions.")
+    tokens = tokens_from_utxo(utxo_response)
 
     module.exit_json(changed=False,
-                     cli_formatted=format_cli(txs),
-                     txs_lovelace=txs_lovelace,
-                     txs_used=len(txs))
+                     tokens=tokens,
+                     code=code)
 
 
 if __name__ == '__main__':

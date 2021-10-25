@@ -11,7 +11,7 @@
   become: true
   become_user: "{{ cardano_user }}"
   register: assert_result
-  until: assert_result.rc == 0
+  until: assert_result.progress == 100
 
 - assert:
     that:

@@ -51,6 +51,10 @@ provisioner:
           - name: asset1
             quantity: 10000
             wallet: *wallet_default
+        cardano_assets_burn:  # needed to maintain idempotence when testing against the distrubuted system
+          - name: asset1
+            quantity: 10000
+            wallet: *wallet_default
 
 scenario:
   name: cloud-test-cardano-wallet-creation-ops

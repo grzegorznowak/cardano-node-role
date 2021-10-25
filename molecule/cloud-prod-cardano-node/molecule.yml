@@ -48,13 +48,17 @@ provisioner:
         swap_swappiness: 1
         cardano_install_method: dist
         cardano_wallets:
-          - default
+          - &wallet_default default
 
       testnet:
         active_network: test
 
       mainnet:
         active_network: main
+        cardano_assets:
+          - name: FKL
+            quantity: 1000000
+            wallet: *wallet_default
 
 scenario:
   name: cloud-prod-cardano-node

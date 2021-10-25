@@ -58,17 +58,20 @@ def main():
                          code=code,
                          stderr=stderr,
                          rc=code,
+                         progress=0,
                          command=tip_cmd)
 
     sync_progress = float(get_progress_from_response(tip_responce))
 
     if sync_progress >= wanted_progress:
-        module.exit_json(changed=False, progress=sync_progress,
+        module.exit_json(changed=False,
+                         progress=sync_progress,
                          rc=code)
     else:
         module.fail_json(msg="Expected progress not achieved yet",
                          progress=sync_progress,
                          rc=code)
+
 
 if __name__ == '__main__':
     main()

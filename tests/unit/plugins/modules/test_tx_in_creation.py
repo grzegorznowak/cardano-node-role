@@ -15,21 +15,37 @@ def test_tx_calcs():
     c     0        100 lovelace + 13 x.SecondTesttoken + 103 y.Testtoken
         '''
 
+    # a happy path
     res, lovelace = largest_first(utxo1, 111, 3)
     assert len(res) == 3
     assert lovelace == 112
-    assert res[0] == ('c','0')
-    assert res[1] == ('b','1')
-    assert res[2] == ('a','0')
+    assert res[0] == ('c', '0')
+    assert res[1] == ('b', '1')
+    assert res[2] == ('a', '0')
 
+    # see if we detect there isn't enough lovelace
     res2, lovelace = largest_first(utxo1, 1000, 3)
     assert res2 == []
     assert lovelace == 112
 
+    # see if we are ordering from having most lovelace, descending
     res3, lovelace = largest_first(utxo1, 11, 3)
     assert len(res3) == 1
     assert lovelace == 100
-    assert res3[0] == ('c','0')
+    assert res3[0] == ('c', '0')
+
+    # see if we respect the max transaction count
+    res4, lovelace = largest_first(utxo1, 101, 1)
+    assert len(res4) == 0
+    assert lovelace == 100
+
+    # see if we respect no tx limit whatsoever
+    res5, lovelace = largest_first(utxo1, 111, 0)
+    assert len(res) == 3
+    assert lovelace == 112
+    assert res[0] == ('c', '0')
+    assert res[1] == ('b', '1')
+    assert res[2] == ('a', '0')
 
 def test_cli_formatting():
     txs = [('a', '0'), ('b', '2')]
