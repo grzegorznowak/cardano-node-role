@@ -56,11 +56,12 @@
     address: "{{ wallet_addr }}"
   register: existing_tokens
 
-- set_fact:
+- name: Ops | Native Assets | Set amount of token to 0
     existing_quantity: 0
   when: existing_tokens.tokens[asset_policy_name] is not defined
 
-- set_fact:
+- name: Ops | Native Assets | Calculate token amount we have
+  set_fact:
     existing_quantity: existing_tokens.tokens[asset_policy_name]
   when: existing_tokens.tokens[asset_policy_name] is defined
 
@@ -83,6 +84,7 @@
         state: directory
         owner: "{{ cardano_user }}"
         group: "{{ cardano_group }}"
+        mode: '0775'
 
     - name: Ops | Native Assets | Check if we can fund the transaction using our parameters
       assert_address_funded:
