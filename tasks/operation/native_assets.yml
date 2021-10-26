@@ -1,6 +1,6 @@
 ---
 
-- include: _native_asset.yml
+- include_tasks: _native_asset.yml
   vars:
     quantity: "{{ item.quantity }}"
     name: "{{ item.name }}"
@@ -9,8 +9,7 @@
     policy_name: "native_asset_{{ item.name }}_policy"
   loop: "{{ cardano_assets }}"
 
-
-- include: _native_asset_burn.yml
+- include_tasks: _native_asset_burn.yml
   vars:
     quantity: "{{ item.quantity }}"
     name: "{{ item.name }}"
