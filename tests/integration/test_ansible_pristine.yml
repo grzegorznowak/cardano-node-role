@@ -8,8 +8,6 @@
         cardano_bin_path: "{{ cardano_bin_path }}"
         active_network: "{{ active_network }}"
         testnet_magic: "{{ network_magic }}"  # only used on testnet
-      become: true
-      become_user: "{{ cardano_user }}"
       register: assert_result
 
     - name: Test Integration | Wallet | We should never reach this

@@ -1,0 +1,183 @@
+---
+
+# vars available:
+# quantity          how many tokens do we need
+# name              name of the token
+# wallet_addr       the address to use
+# payment_skey      skey correlated with the wallet_addr
+# policy_name       name of the policy to create this asset
+# cardano_bin_path  cardano-cli path
+
+- name: "Ops | Native Assets Burn {{ name }} | Make sure we're on a synced node"
+  assert_cardano_synced:
+    cardano_node_socket: "{{ cardano_node_socket }}"
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+  retries: 60
+  delay: 240    # wait up to 4h for full sync
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: sync_check_result
+  until: sync_check_result.progress | int == 100
+
+- assert:
+    that:
+      - (sync_check_result.progress | int) == 100
+
+- name: "Ops | Native Assets Burn {{ name }} | Create or grab the policy"
+  cardano_policy:
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    name: "{{ policy_name }}"
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: policies_results
+
+- set_fact:
+    dummy_fee: 500000  # 0.5 ADA, not important as long as it's "big enough"
+    burn_fee: 0
+    dummy_output: 0  # for initial fee cals
+    policy_id: "{{ policies_results['policies_ids'][policy_name] }}"
+    policy_skey: "{{ policies_results['policies'][policy_name]['skey'] }}"
+    policy_script: "{{ policies_results['policies'][policy_name]['script'] }}"
+    asset_path: "{{ cardano_assets_directory }}/native/{{ name }}"
+
+# since set_fact can't depend on the vars it defines itself, we need the second round here
+- set_fact:
+    asset_policy_name: "{{ policy_id }}.{{ name }}"  # token name with policy id as needed by utxo
+
+- name: "Ops | Native Assets Burn {{ asset_policy_name }} | Grab existing tokens"
+  cardano_token_lookup:
+    cardano_node_socket: "{{ cardano_node_socket }}"
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+    address: "{{ wallet_addr }}"
+  register: existing_tokens
+
+- name: "Ops | Native Assets Burn {{ asset_policy_name }} | Make sure we have stuff to burn"
+  assert:
+    that:
+      - existing_tokens.tokens[policy_id+'.'+name] is defined
+      # one final check to make sure we are not durning tokens on mainnet
+      # not that we couldn't but the burning mechanism is tailored for tests' idempotency atm.
+      # and not really tested as a stand-alone use-case
+      - active_network == "test"
+
+- set_fact:
+    network_param: "testnet-magic {{ network_magic }}"
+
+
+- name: "Ops | Native Assets Burn {{ asset_policy_name }} | Check if we can fund the transaction using our parameters"
+  assert_address_funded:
+    cardano_node_socket: "{{ cardano_node_socket }}"
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    active_network: "{{ active_network }}"
+    max_tx: "{{ cardano_max_tx }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+    address: "{{ wallet_addr }}"
+    expected_lovelace: "{{ dummy_fee }}"
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: lovelace_result
+
+- assert:
+    that:
+      - lovelace_result.lovelace | int >= dummy_fee
+
+- name: "Ops | Native Assets Burn {{ asset_policy_name }} | Create custom token tx"
+  cardano_tx:
+    cardano_node_socket: "{{ cardano_node_socket }}"
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+    lovelace_amount: "{{ dummy_fee }}"
+    token_amount: 0
+    token: "{{ asset_policy_name }}"
+    out_amount: 0
+    address: "{{ wallet_addr }}"
+    max_tx_count: 0  # no limit
+  register: tx_token_result
+
+- name: "Ops | Native Asset Burn {{ asset_policy_name }} | Build raw transaction"
+  shell: >-
+    {{ cardano_bin_path }}/cardano-cli transaction build-raw
+    --fee {{ burn_fee }}
+    {{ tx_token_result.tx_in_formatted }}
+    --tx-out {{ wallet_addr }}+{{ dummy_output }}+"{{ tx_token_result.tx_out_formatted }}"
+    --mint="-{{ existing_tokens.tokens[asset_policy_name] }} {{ asset_policy_name }}"
+    --minting-script-file {{ policy_script }}
+    --out-file {{ asset_path }}/burning.raw
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: raw_out
+
+- name: "Ops | Native Asset Burn {{ asset_policy_name }} | Calculate the actual fee"
+  shell: >-
+    {{ cardano_bin_path }}/cardano-cli
+    transaction calculate-min-fee --tx-body-file {{ asset_path }}/burning.raw
+    --tx-in-count {{ tx_token_result.txs_in_used }}
+    --tx-out-count 1 --witness-count 2
+    --{{ network_param }}
+    --protocol-params-file {{ asset_path }}/protocol.json | cut -d " " -f1
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: burn_fee
+
+- set_fact:
+    final_amount: "{{ tx_token_result.lovelace_available | int - (burn_fee.stdout | int) }}"
+
+- name: "Ops | Native Asset Burn {{ asset_policy_name }} | Make sure we can afford the burning in terms of ada balance"
+  assert:
+    that:
+      - final_amount > 0
+
+- name: "Ops | Native Asset Burn {{ asset_policy_name }} | Build the final transaction"
+  shell: >-
+    {{ cardano_bin_path }}/cardano-cli transaction build-raw
+    --fee {{ burn_fee.stdout | int }}
+    {{ tx_token_result.tx_in_formatted }}
+    --tx-out {{ wallet_addr }}+{{ final_amount }}+"{{ tx_token_result.tx_out_formatted }}"
+    --mint="-{{ existing_tokens.tokens[asset_policy_name] }} {{ asset_policy_name }}"
+    --minting-script-file {{ policy_script }}
+    --out-file {{ asset_path }}/burning.raw
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: final_transaction
+
+- name: "Ops | Native Asset Burn {{ asset_policy_name }} | Sign the transaction"
+  shell: >-
+    {{ cardano_bin_path }}/cardano-cli transaction sign
+    --signing-key-file {{ payment_skey }}
+    --signing-key-file {{ policy_skey }}
+    --{{ network_param }}
+    --tx-body-file {{ asset_path }}/burning.raw
+    --out-file {{ asset_path }}/burning.signed
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: signing_result
+
+- name: "Ops | Native Asset Burn {{ asset_policy_name }} | Submit the transaction"
+  shell: >-
+    {{ cardano_bin_path }}/cardano-cli transaction submit
+    --tx-file {{ asset_path }}/burning.signed
+    --{{ network_param }}
+  environment:
+    CARDANO_NODE_SOCKET_PATH: "{{ cardano_node_socket }}"
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: submit_result
+
+- name: "Ops | Native Assets Burn {{ asset_policy_name }} | Wait for changes to propagate"
+  cardano_token_lookup:
+    cardano_node_socket: "{{ cardano_node_socket }}"
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+    address: "{{ wallet_addr }}"
+  register: existing_tokens
+  retries: 60
+  delay: 2    # wait up to 2 min to pick up the transaction
+  become: true
+  become_user: "{{ cardano_user }}"
+  until: existing_tokens.tokens[asset_policy_name] is not defined

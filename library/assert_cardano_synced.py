@@ -45,21 +45,33 @@ def main():
     testnet_magic = module.params['testnet_magic']
     cardano_bin_path = module.params['cardano_bin_path']
 
-    code, tip_responce, stderr = module.run_command(query_tip_cmd(cardano_node_socket,
-                                                                  active_network,
-                                                                  testnet_magic,
-                                                                  cardano_bin_path),
+    tip_cmd = query_tip_cmd(cardano_node_socket,
+                            active_network,
+                            testnet_magic,
+                            cardano_bin_path)
+
+    code, tip_responce, stderr = module.run_command(tip_cmd,
                                                     use_unsafe_shell=True)
 
-    assert code == 0
-    assert stderr == ""
+    if code != 0 or stderr != "":
+        module.fail_json(msg="Error querying the tip",
+                         code=code,
+                         stderr=stderr,
+                         rc=code,
+                         progress=0,
+                         command=tip_cmd)
 
     sync_progress = float(get_progress_from_response(tip_responce))
 
     if sync_progress >= wanted_progress:
-        module.exit_json(changed=False, progress=sync_progress)
+        module.exit_json(changed=False,
+                         progress=sync_progress,
+                         rc=code)
     else:
-        module.fail_json(msg="Expected progress not achieved yet", progress=sync_progress)
+        module.fail_json(msg="Expected progress not achieved yet",
+                         progress=sync_progress,
+                         rc=code)
+
 
 if __name__ == '__main__':
     main()

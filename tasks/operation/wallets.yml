@@ -1,0 +1,11 @@
+---
+
+- name: Ops | Create wallets we want
+  cardano_wallet:
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    name: "{{ cardano_wallets }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ cardano_nets.test.magic }}"  # only used on testnet
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: wallet_results

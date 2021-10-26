@@ -1,0 +1,31 @@
+---
+
+- name: Test Ops | Native Assets | Read the wallet address
+  command: >-
+    cat {{ cardano_wallet_fullpath }}/{{ cardano_payment_addr_file }}
+  register: wallet_addr
+
+- name: Test Ops | Native Assets | Grab all the minted tokens
+  cardano_token_lookup:
+    cardano_node_socket: "{{ cardano_node_socket }}"
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+    address: "{{ wallet_addr.stdout }}"
+  register: existing_tokens
+
+- name: Test Ops | Native Assets | Grab the token's policy
+  cardano_policy:
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    name: "native_asset_TestAsset001_policy"
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: policies_results
+
+- set_fact:
+    policy_id: "{{ policies_results['policies_ids']['native_asset_TestAsset001_policy'] }}"
+
+- name: Test Ops  | Native Assets | Make sure we have the token in the expected quantity
+  assert:
+    that:
+      - existing_tokens.tokens[policy_id+'.TestAsset001'] == 10000

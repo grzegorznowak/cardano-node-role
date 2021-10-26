@@ -15,10 +15,13 @@ cardano_home_directory: /home/cardano
 cardano_bin_path: "{{ cardano_home_directory }}/bin"
 cardano_node_socket: "{{ cardano_node_runtime }}/db/node.socket"
 cardano_node_runtime: "{{ cardano_home_directory }}/cardano_node"
-cardano_wallets_path: "wallets"
-cardano_testing_wallet: wallet1
+
+cardano_wallets_path: wallets
+cardano_testing_wallet: default
 cardano_wallet_fullpath: "{{ cardano_home_directory }}/{{ cardano_wallets_path }}/{{ cardano_testing_wallet }}"
+
 cardano_vkey_file: payment.vkey
 cardano_skey_file: payment.skey
 cardano_payment_addr_file: payment.addr
+
 cardano_user: cardano

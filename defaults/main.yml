@@ -1,13 +1,22 @@
 ---
 
-# Wallets to track
-
+# Payment addresses to track
 cardano_wallets: []  # don't create anything by default, let us decide
 
-# Cardano user
+# Native Assets to mint
+cardano_assets: []
+
+
+# Cardano paths and users
 cardano_home_directory: /home/cardano
 cardano_user: cardano
 cardano_group: cardano
+### keeps track of assets we mint
+cardano_assets_directory: "{{ cardano_home_directory }}/assets"
+
+### tx
+# how many input transaction to take at most when building new transaction
+cardano_max_tx: 3
 
 # possible options:
 # src - compile from source
@@ -57,6 +66,7 @@ cardano_nets:
       topology: >-
         https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/testnet-topology.json
 active_network: test
+network_magic: "{{ cardano_nets[active_network]['magic'] }}"
 
 # NON-essential variables. We use those to keep things more DRY or tight
 # feel free to adjust if you don't like those

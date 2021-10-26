@@ -1,0 +1,23 @@
+---
+
+- include_tasks: _native_asset.yml
+  vars:
+    quantity: "{{ item.quantity }}"
+    name: "{{ item.name }}"
+    wallet_addr: "{{ wallet_results['wallets_addresses'][item.wallet] }}"
+    payment_skey: "{{ wallet_results['wallets'][item.wallet]['paths']['skey'] }}"
+    policy_name: "native_asset_{{ item.name }}_policy"
+  loop: "{{ cardano_assets }}"
+
+- include_tasks: _native_asset_burn.yml
+  vars:
+    quantity: "{{ item.quantity }}"
+    name: "{{ item.name }}"
+    wallet_addr: "{{ wallet_results['wallets_addresses'][item.wallet] }}"
+    payment_skey: "{{ wallet_results['wallets'][item.wallet]['paths']['skey'] }}"
+    policy_name: "native_asset_{{ item.name }}_policy"
+  loop: "{{ cardano_assets_burn }}"
+  tags:
+    - never
+    - native_assets_burn
+

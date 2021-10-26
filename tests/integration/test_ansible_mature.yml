@@ -6,11 +6,12 @@
     cardano_bin_path: "{{ cardano_bin_path }}"
     active_network: "{{ active_network }}"
     testnet_magic: "{{ network_magic }}"  # only used on testnet
-  async: 600  # wait up to 10 minutes for the node to sync
-  poll: 10
+  retries: 60  # wait up to 10 minutes for full sunc
+  delay: 10
   become: true
   become_user: "{{ cardano_user }}"
   register: assert_result
+  until: assert_result.progress == 100
 
 - assert:
     that:
@@ -33,15 +34,12 @@
     active_network: "{{ active_network }}"
     testnet_magic: "{{ network_magic }}"  # only used on testnet
     expected_lovelace: 1000000000
-    address_file: "{{ wallet_results['wallets']['default']['addr'] }}"
+    address: "{{ wallet_results['wallets_addresses']['default'] }}"
   async: 60  # given the node is synced we need not wait long
   poll: 5
   become: true
   become_user: "{{ cardano_user }}"
   register: lovelace_result
-
-- debug:
-    var: lovelace_result
 
 - assert:
     that:
@@ -56,7 +54,7 @@
         cardano_bin_path: "{{ cardano_bin_path }}"
         active_network: "{{ active_network }}"
         testnet_magic: "{{ network_magic }}"  # only used on testnet
-        address_file: "{{ wallet_results['wallets']['default']['addr'] }}"
+        address: "{{ wallet_results['wallets_addresses']['default'] }}"
         expected_lovelace: 9000000000000
       become: true
       become_user: "{{ cardano_user }}"

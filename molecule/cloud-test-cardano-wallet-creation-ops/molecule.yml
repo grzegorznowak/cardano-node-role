@@ -16,6 +16,7 @@ platforms:
     groups:
       - all
       - wallet_holders
+      - asset_holders
       - mature  # because the node is almost synced
 
 provisioner:
@@ -42,9 +43,23 @@ provisioner:
         active_network: test
         network_magic: 1097911063
         cardano_wallets:
-          - default
+          - &wallet_default default
           - wallet1
           - wallet2
+        cardano_assets:
+          - name: &test_asset TestAsset001
+            quantity: &test_asset_qty 10000
+            wallet: *wallet_default
+          - name: &test_asset_2 TestAsset002
+            quantity: &test_asset_qty_2 20000
+            wallet: *wallet_default
+        cardano_assets_burn:  # needed to maintain idempotence when testing against the distrubuted system
+          - name: *test_asset
+            quantity: *test_asset_qty
+            wallet: *wallet_default
+          - name: *test_asset_2
+            quantity: *test_asset_qty_2
+            wallet: *wallet_default
 
 scenario:
   name: cloud-test-cardano-wallet-creation-ops
