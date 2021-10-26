@@ -119,7 +119,7 @@ def test_creating_tx_in_using_custom_tokens():
 
 
 def test_cli_formatting_in():
-    txs = [('a#0'), ('b#2')]
+    txs = ['a#0', 'b#2']
     formatted = format_cli_in(txs)
 
     assert formatted == "--tx-in a#0 --tx-in b#2"

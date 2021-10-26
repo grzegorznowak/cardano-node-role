@@ -41,6 +41,10 @@
      policy_script: "{{ policies_results['policies'][policy_name]['script'] }}"
      asset_path: "{{ cardano_assets_directory }}/native/{{ name }}"
 
+# since set_fact can't depend on the vars it defines itself, we need the second round here
+- set_fact:
+    asset_policy_name: "{{ policy_id }}.{{ name }}"  # token name with policy id as needed by utxo
+
 - name: Ops | Native Assets | Grab existing tokens
   cardano_token_lookup:
     cardano_node_socket: "{{ cardano_node_socket }}"
@@ -49,6 +53,14 @@
     testnet_magic: "{{ network_magic }}"  # only used on testnet
     address: "{{ wallet_addr }}"
   register: existing_tokens
+
+- set_fact:
+    existing_quantity: 0
+  when: existing_tokens.tokens[asset_policy_name] is not defined
+
+- set_fact:
+    existing_quantity: existing_tokens.tokens[asset_policy_name]
+  when: existing_tokens.tokens[asset_policy_name] is defined
 
 - name: Ops | Native Assets | Wrap Asset Creation
   block:
@@ -112,7 +124,7 @@
         --fee {{ dummy_fee }}
         {{ tx_result.tx_in_formatted }}
         --tx-out {{ wallet_addr }}+{{ dummy_output }}+"{{ tx_out }}"
-        --mint="{{ quantity }} {{ policy_id }}.{{ name }}"
+        --mint="{{ quantity | int - existing_quantity | int }} {{ policy_id }}.{{ name }}"
         --minting-script-file {{ policy_script }}
         --out-file {{ asset_path }}/matx.raw
       become: true
@@ -158,7 +170,7 @@
         --fee {{ actual_fee.stdout | int }}
         {{ tx_result.tx_in_formatted }}
         --tx-out {{ wallet_addr }}+{{ final_amount }}+"{{ tx_out }}"
-        --mint="{{ quantity }} {{ policy_id }}.{{ name }}"
+        --mint="{{ quantity | int - existing_quantity | int }} {{ policy_id }}.{{ name }}"
         --minting-script-file {{ policy_script }}
         --out-file {{ asset_path }}/matx.raw
       become: true
@@ -196,5 +208,21 @@
 
     - debug:
         var: submit_result
-  when: existing_tokens.tokens[policy_id+"."+name] is not defined or
-    existing_tokens.tokens[policy_id+"."+name] < (quantity | int)
+
+    - name: "Ops | Native Assets | Wait for changes to propagate"
+      cardano_token_lookup:
+        cardano_node_socket: "{{ cardano_node_socket }}"
+        cardano_bin_path: "{{ cardano_bin_path }}"
+        active_network: "{{ active_network }}"
+        testnet_magic: "{{ network_magic }}"  # only used on testnet
+        address: "{{ wallet_addr }}"
+      register: existing_tokens
+      retries: 60
+      delay: 2    # wait up to 2 min to pick up the transaction
+      become: true
+      become_user: "{{ cardano_user }}"
+      register: existing_tokens
+      until: existing_tokens.tokens[asset_policy_name] is defined and
+        existing_tokens.tokens[asset_policy_name] >= (quantity | int)
+
+  when: existing_quantity < quantity

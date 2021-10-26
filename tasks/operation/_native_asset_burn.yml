@@ -95,7 +95,7 @@
     active_network: "{{ active_network }}"
     testnet_magic: "{{ network_magic }}"  # only used on testnet
     lovelace_amount: "{{ dummy_fee }}"
-    token_amount: "{{ quantity }}"
+    token_amount: 0
     token: "{{ asset_policy_name }}"
     out_amount: 0
     address: "{{ wallet_addr }}"
