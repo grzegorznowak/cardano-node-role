@@ -81,36 +81,43 @@
       register: lovelace_result
 
     - set_fact:
-        lovelace_had: "{{ (lovelace_result.lovelace | int) }}"
+        lovelace_had: "{{ lovelace_result.lovelace }}"
 
     - assert:
         that:
           - lovelace_had >= dummy_fee
 
     - name: Ops | Native Asset | Create tx-in based on the dummy fee
-      cardano_tx_in:
+      cardano_tx:
         cardano_node_socket: "{{ cardano_node_socket }}"
         cardano_bin_path: "{{ cardano_bin_path }}"
         active_network: "{{ active_network }}"
         testnet_magic: "{{ network_magic }}"  # only used on testnet
-        amount: "{{ dummy_fee }}"
+        lovelace_amount: "{{ dummy_fee }}"
+        token_amount: "{{ dummy_fee }}"
+        token: 'lovelace'  # just to make it clear which token we are using for this transaction
+        out_amount: "{{ lovelace_had | int - dummy_fee | int }}"
         address: "{{ wallet_addr }}"
         max_tx_count: "{{ cardano_max_tx }}"
-      register: tx_in_raw_result
+      register: tx_result
 
+    # account for the fact that the tail of it can be blank, and augment with + sign only when needed
+    - set_fact:
+        tx_out: "{{ [quantity+' '+policy_id+'.'+name, tx_result.tx_out_formatted] |
+          select() | join(' + ') }}"
 
     - name: Ops | Native Asset | Build raw transaction
       shell: >-
         {{ cardano_bin_path }}/cardano-cli transaction build-raw
         --fee {{ dummy_fee }}
-        {{ tx_in_raw_result.cli_formatted }}
-        --tx-out {{ wallet_addr }}+{{ dummy_output }}+"{{ quantity }}
-        {{ policy_id }}.{{ name }}"
+        {{ tx_result.tx_in_formatted }}
+        --tx-out {{ wallet_addr }}+{{ dummy_output }}+"{{ tx_out }}"
         --mint="{{ quantity }} {{ policy_id }}.{{ name }}"
         --minting-script-file {{ policy_script }}
         --out-file {{ asset_path }}/matx.raw
       become: true
       become_user: "{{ cardano_user }}"
+      register: raw_build
 
     - name: Ops | Native Asset | Create protocol.json
       shell: >-
@@ -126,7 +133,7 @@
       shell: >-
         {{ cardano_bin_path }}/cardano-cli
         transaction calculate-min-fee --tx-body-file {{ asset_path }}/matx.raw
-        --tx-in-count {{ tx_in_raw_result.txs_used }}
+        --tx-in-count {{ tx_result.txs_in_used }}
         --tx-out-count 1 --witness-count 2
         --{{ network_param }}
         --protocol-params-file {{ asset_path }}/protocol.json | cut -d " " -f1
@@ -138,19 +145,19 @@
         var: actual_fee
 
     - set_fact:
-        final_output: "{{ tx_in_raw_result.txs_lovelace | int - (actual_fee.stdout | int) }}"
+        final_amount: "{{ tx_result.lovelace_available | int - (actual_fee.stdout | int) }}"
 
-    - assert:
+    - name: Make sure we can afford minting in terms of ada balance
+      assert:
         that:
-          - final_output > 0
+          - final_amount > 0
 
     - name: Ops | Native Asset | Build the final transaction
       shell: >-
         {{ cardano_bin_path }}/cardano-cli transaction build-raw
         --fee {{ actual_fee.stdout | int }}
-        {{ tx_in_raw_result.cli_formatted }}
-        --tx-out {{ wallet_addr }}+{{ final_output }}+"{{ quantity }}
-        {{ policy_id }}.{{ name }}"
+        {{ tx_result.tx_in_formatted }}
+        --tx-out {{ wallet_addr }}+{{ final_amount }}+"{{ tx_out }}"
         --mint="{{ quantity }} {{ policy_id }}.{{ name }}"
         --minting-script-file {{ policy_script }}
         --out-file {{ asset_path }}/matx.raw
@@ -189,4 +196,5 @@
 
     - debug:
         var: submit_result
-  when: existing_tokens.tokens[policy_id+"."+name] is not defined
+  when: existing_tokens.tokens[policy_id+"."+name] is not defined or
+    existing_tokens.tokens[policy_id+"."+name] < (quantity | int)

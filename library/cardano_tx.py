@@ -21,43 +21,78 @@ def create_utxo_query_command(cardano_node_socket, active_network, testnet_magic
     return command
 
 
-def largest_first(raw_utxo_table, token, wanted_amount, max_tx):
-
+def create_utxo_struct(raw_utxo_table, token):
     rows_tokens = [{'tx': "#".join(row.split()[0:2]),
                     'tokens': dict(zip(row.split()[3:][0::3], row.split()[2:][0::3]))}
                    for row
                    in raw_utxo_table.strip().splitlines()[2:]
                    if token in row.split()[3:][0::3]]
-    sorted_token_txs = sorted(rows_tokens, key=lambda x: int(x['tokens'][token]), reverse=True)
-    print(sorted_token_txs)
+    rows_by_tx = {"#".join(row.split()[0:2]): {'tx': "#".join(row.split()[0:2]),
+                                               'tokens': dict(zip(row.split()[3:][0::3], row.split()[2:][0::3]))}
+                  for row
+                  in raw_utxo_table.strip().splitlines()[2:]
+                  if token in row.split()[3:][0::3]}
+    return sorted(rows_tokens, key=lambda x: int(x['tokens'][token]), reverse=True), rows_by_tx
+
+def tx_in(raw_utxo_table, token, wanted_amount, max_tx):
+    sorted_token_txs, rows_by_tx = create_utxo_struct(raw_utxo_table, token)
 
     accumulated_amount = 0
+    accumulated_lovelace = 0
     txs = []
-    for token_tx in sorted_token_txs:
+    for row in sorted_token_txs:
         if (accumulated_amount < wanted_amount or wanted_amount == 0) \
                 and (len(txs) < max_tx or not max_tx):
-            tx_details = row.split()
-            accumulated_amount += int(token_tx['tokens'][token])
-            txs.append(token_tx['tx'])
+
+            accumulated_amount += int(row['tokens'][token])
+            accumulated_lovelace += int(row['tokens']['lovelace'])  # some lovelace will always be there
+            txs.append(row['tx'])
         else:
             break
 
     if accumulated_amount < wanted_amount:
-        return [], accumulated_amount
+        return [], accumulated_amount, accumulated_lovelace
 
-    return txs, accumulated_amount
+    return txs, accumulated_amount, accumulated_lovelace
 
+def tx_out(raw_utxo_table, custom_token, token_new_amount, txs_in):
 
-def format_cli(txs):
+    # not very elegant, but let's just dumbly skip lovelace to solve an immediate problem
+    skip_token = 'lovelace'
+
+    sorted_token_txs, rows_by_tx = create_utxo_struct(raw_utxo_table, custom_token)
+
+    tx_out = {}
+    for row in txs_in:
+        tokens = rows_by_tx[row]['tokens']
+        for token in tokens:
+            if token != skip_token:
+                if not token in tx_out:
+                    tx_out[token] = 0
+                tx_out[token] += int(tokens[token])
+
+    # set the correct amount for the selected token
+    if custom_token != skip_token:
+        tx_out[custom_token] = token_new_amount
+
+    return tx_out
+
+def format_cli_in(txs):
     return " ".join(["--tx-in {}".format(tx) for tx in txs])
 
+def format_cli_out(txs_out):
+    return " + ".join(["{} {}".format(txs_out[tx], tx)
+                       for tx in txs_out
+                       if txs_out[tx] > 0])
 
 def main():
 
     argument_spec = dict(
         cardano_node_socket=dict(type='str', required=True),
         cardano_bin_path=dict(type='path', default='~/bin'),
-        amount=dict(type='int', required=True),
+        lovelace_amount=dict(type='int', required=True),
+        token_amount=dict(type='int', required=True),
+        out_amount=dict(type='int', required=True),
         token=dict(type='str', default='lovelace'),
         address=dict(type='str', default=True),
         max_tx_count=dict(type='int', required=True),
@@ -71,7 +106,9 @@ def main():
 
     cardano_node_socket = module.params['cardano_node_socket']
     cardano_bin_path = module.params['cardano_bin_path']
-    amount = module.params['amount']
+    lovelace_amount = module.params['lovelace_amount']
+    token_amount = module.params['token_amount']
+    out_amount = module.params['out_amount']
     token = module.params['token']
     payment_address = module.params['address']
     max_tx_count = module.params['max_tx_count']
@@ -95,15 +132,24 @@ def main():
     assert code == 0
     assert stderr == ""
 
-    txs, txs_lovelace = largest_first(utxo_response, token, amount, max_tx_count)
+    txs_in, txs_amount, lovelace_available = tx_in(utxo_response, token, token_amount, max_tx_count)
 
-    if len(txs) == 0:
-        module.fail_json(msg="Unable to collect enough Lovelace from the transactions.")
+    if lovelace_available < lovelace_amount:
+        module.fail_json(msg="Unable to collect enough amount of lovelace from transactions.")
+
+    txs_out = tx_out(utxo_response, token, out_amount, txs_in)
+
+    if len(txs_in) == 0:
+        module.fail_json(msg="Unable to collect enough amount of tokens from transactions.")
 
     module.exit_json(changed=False,
-                     cli_formatted=format_cli(txs),
-                     txs_lovelace=txs_lovelace,
-                     txs_used=len(txs))
+                     tx_in_formatted=format_cli_in(txs_in),
+                     tx_out_formatted=format_cli_out(txs_out),
+                     lovelace_available=lovelace_available,
+                     txs_token_available=txs_amount,
+                     txs_in_used=len(txs_in),
+                     txs_in=txs_in,
+                     txs_out=txs_out)
 
 
 if __name__ == '__main__':
