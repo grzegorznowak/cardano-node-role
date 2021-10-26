@@ -25,11 +25,11 @@ def create_utxo_query_command(cardano_node_socket, active_network, testnet_magic
 
 def tokens_from_utxo(raw_utxo_table):
 
-    rows_tokens = [zip(row.split()[5:][1::3], row.split()[5:][0::3])
+    rows_tokens = [zip(row.split()[2:][1::3], row.split()[2:][0::3])
                    for row
                    in raw_utxo_table.strip().splitlines()[2:]]
 
-    all_tokens = [{tokens[0].split(".")[1]: int(tokens[1])}
+    all_tokens = [{tokens[0]: int(tokens[1])}
            for row_tokens in rows_tokens
            for tokens in row_tokens]
 

@@ -93,15 +93,28 @@
     max_tx_count: 0  # no limit
   register: tx_in_raw_result
 
+- name: Ops | Create tx-out
+  cardano_tx_out:
+    cardano_node_socket: "{{ cardano_node_socket }}"
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+    token_amount: 0
+    token_name: "{{ policy_id }}.{{ name }}"
+    lovelace_amount: 0  # just a dummy tx-out
+    address: "{{ wallet_addr }}"
+  register: tx_out_result
+
 - name: Ops | Native Asset Burn | Build raw transaction
   shell: >-
-    {{ cardano_bin_path }}/cardano-cli transaction build-raw \
-     --fee {{ burn_fee }} \
-     --tx-in $txhash#$txix \
-     --tx-out $address+$burnoutput+"9999998 $policyid.$tokenname1 + 9995000 $policyid.$tokenname2"  \
-     --mint="-5000 $policyid.$tokenname2" \
-     --minting-script-file policy/policy.script \
-     --out-file burning.raw
+  {{ cardano_bin_path }}/cardano-cli transaction build-raw
+  --fee {{ burn_fee }}
+  {{ tx_in_raw_result.cli_formatted }}
+  {{ tx_out_result.cli_formatted }}
+#     --tx-out {{ wallet_addr }}+{{ dummy_output }}+"9999998 $policyid.$tokenname1 + 9995000 $policyid.$tokenname2"  \
+  --mint="-{{ existing_tokens.tokens[name] }} {{ policy_id }}.{{ name }}"
+  --minting-script-file {{ policy_script }}
+  --out-file {{ asset_path }}/burning.raw
 
     - name: Ops | Native Asset | Build raw transaction
       shell: >-

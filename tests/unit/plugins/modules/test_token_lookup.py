@@ -16,6 +16,8 @@ def test_token_listing():
 
     # a happy path
     tokens = tokens_from_utxo(utxo1)
-    assert len(tokens) == 2
-    assert tokens['token1'] == 122
-    assert tokens['token2'] == 103
+    assert len(tokens) == 4
+    assert tokens['lovelace'] == 112
+    assert tokens['x.token1'] == 2
+    assert tokens['y.token1'] == 120
+    assert tokens['z.token2'] == 103

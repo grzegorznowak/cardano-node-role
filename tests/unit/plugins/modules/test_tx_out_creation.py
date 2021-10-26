@@ -1,12 +1,12 @@
 import pytest
 
-from library.cardano_tx_in import (
-    largest_first,
+from library.cardano_tx_out import (
+    tx_out,
     format_cli
 )
 
 
-def test_creating_tx_in_using_native_token():
+def test_creating_tx_out():
     utxo1 = '''
                                TxHash                                 TxIx        Amount
     --------------------------------------------------------------------------------------
@@ -15,11 +15,11 @@ def test_creating_tx_in_using_native_token():
     c     0        100 lovelace + 13 x.SecondTesttoken + 103 y.Testtoken
         '''
 
-    # a happy path
-    res, lovelace = largest_first(utxo1, 'lovelace', 111, 3)
-    assert len(res) == 3
-    assert lovelace == 112
-    assert res[0] == ('c#0')
+    # test burning token fully
+    res = tx_out(utxo1, 'x.SecondTesttoken', 0)
+    assert len(res) == 2
+
+    assert res[0] == ('')
     assert res[1] == ('b#1')
     assert res[2] == ('a#0')
 
@@ -56,7 +56,7 @@ def test_creating_tx_in_using_native_token():
     assert res[2] == ('a#0')
 
 
-def test_creating_tx_in_using_custom_tokens():
+def test_fetching_tx_using_custom_tokens():
     utxo1 = '''
                                TxHash                                 TxIx        Amount
     --------------------------------------------------------------------------------------

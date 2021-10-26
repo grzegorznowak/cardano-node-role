@@ -48,12 +48,12 @@ provisioner:
           - wallet1
           - wallet2
         cardano_assets:
-          - name: asset1
-            quantity: 10000
+          - name: &test_asset TestAsset001
+            quantity: &test_asset_qty 10000
             wallet: *wallet_default
         cardano_assets_burn:  # needed to maintain idempotence when testing against the distrubuted system
-          - name: asset1
-            quantity: 10000
+          - name: *test_asset
+            quantity: *test_asset_qty
             wallet: *wallet_default
 
 scenario:

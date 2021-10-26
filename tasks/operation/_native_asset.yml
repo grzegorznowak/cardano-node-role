@@ -87,13 +87,13 @@
         that:
           - lovelace_had >= dummy_fee
 
-    - name: Ops | Create tx-in based on the dummy fee
+    - name: Ops | Native Asset | Create tx-in based on the dummy fee
       cardano_tx_in:
         cardano_node_socket: "{{ cardano_node_socket }}"
         cardano_bin_path: "{{ cardano_bin_path }}"
         active_network: "{{ active_network }}"
         testnet_magic: "{{ network_magic }}"  # only used on testnet
-        lovelace: "{{ dummy_fee }}"
+        amount: "{{ dummy_fee }}"
         address: "{{ wallet_addr }}"
         max_tx_count: "{{ cardano_max_tx }}"
       register: tx_in_raw_result
@@ -189,4 +189,4 @@
 
     - debug:
         var: submit_result
-  when: existing_tokens.tokens[name] is not defined
+  when: existing_tokens.tokens[policy_id+"."+name] is not defined
