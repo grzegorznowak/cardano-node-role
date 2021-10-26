@@ -17,12 +17,8 @@ cardano_node_socket: "{{ cardano_node_runtime }}/db/node.socket"
 cardano_node_runtime: "{{ cardano_home_directory }}/cardano_node"
 
 cardano_wallets_path: wallets
-cardano_testing_wallet: wallet1
+cardano_testing_wallet: default
 cardano_wallet_fullpath: "{{ cardano_home_directory }}/{{ cardano_wallets_path }}/{{ cardano_testing_wallet }}"
-
-cardano_policies_path: policies
-cardano_testing_policy: policy1
-cardano_policy_fullpath: "{{ cardano_home_directory }}/{{ cardano_policies_path }}/{{ cardano_testing_policy }}"
 
 cardano_vkey_file: payment.vkey
 cardano_skey_file: payment.skey
