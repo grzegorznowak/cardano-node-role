@@ -21,7 +21,8 @@
   register: sync_check_result
   until: sync_check_result.progress | int == 100
 
-- assert:
+- name: Ops | Native Assets | Double check node is indeed synced
+  assert:
     that:
       - (sync_check_result.progress | int) == 100
 
