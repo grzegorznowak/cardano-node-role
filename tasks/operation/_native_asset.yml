@@ -66,11 +66,14 @@
 
 - name: Ops | Native Assets | Wrap Asset Creation
   block:
-    - set_fact:
+
+    - name: Ops | Native Assets | Compile network params (testnet)
+      set_fact:
         network_param: "testnet-magic {{ network_magic }}"
       when: active_network == "test"
 
-    - set_fact:
+    - name: Ops | Native Assets | Compile network params (mainnet)
+      set_fact:
         network_param: "mainnet"
       when: active_network == "main"
 
@@ -94,10 +97,12 @@
       become_user: "{{ cardano_user }}"
       register: lovelace_result
 
-    - set_fact:
+    - name: Ops | Native Assets | Calc lovelace we have
+      set_fact:
         lovelace_had: "{{ lovelace_result.lovelace }}"
 
-    - assert:
+    - name: Ops | Native Assets | Make sure we have the bare minimum of ada
+      assert:
         that:
           - lovelace_had >= dummy_fee
 
@@ -116,7 +121,8 @@
       register: tx_result
 
     # account for the fact that the tail of it can be blank, and augment with + sign only when needed
-    - set_fact:
+    - name: Ops | Native Assets | Complie tx out for minting
+      set_fact:
         tx_out: "{{ [quantity+' '+policy_id+'.'+name, tx_result.tx_out_formatted] |
           select() | join(' + ') }}"
 
