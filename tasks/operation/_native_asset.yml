@@ -119,7 +119,7 @@
           select() | join(' + ') }}"
 
     - name: Ops | Native Asset | Build raw transaction
-      shell: >-
+      command: >-
         {{ cardano_bin_path }}/cardano-cli transaction build-raw
         --fee {{ dummy_fee }}
         {{ tx_result.tx_in_formatted }}
@@ -132,7 +132,7 @@
       register: raw_build
 
     - name: Ops | Native Asset | Create protocol.json
-      shell: >-
+      command: >-
         {{ cardano_bin_path }}/cardano-cli
         query protocol-parameters --{{ network_param }}
         --out-file {{ asset_path }}/protocol.json
@@ -165,7 +165,7 @@
           - final_amount > 0
 
     - name: Ops | Native Asset | Build the final transaction
-      shell: >-
+      command: >-
         {{ cardano_bin_path }}/cardano-cli transaction build-raw
         --fee {{ actual_fee.stdout | int }}
         {{ tx_result.tx_in_formatted }}
@@ -181,7 +181,7 @@
         var: final_transaction
 
     - name: Ops | Native Asset | Sign the transaction
-      shell: >-
+      command: >-
         {{ cardano_bin_path }}/cardano-cli transaction sign
         --signing-key-file {{ payment_skey }}
         --signing-key-file {{ policy_skey }}
@@ -196,7 +196,7 @@
         var: signing_result
 
     - name: Ops | Native Asset | Submit the transaction
-      shell: >-
+      command: >-
         {{ cardano_bin_path }}/cardano-cli transaction submit
         --tx-file {{ asset_path }}/matx.signed
         --{{ network_param }}
