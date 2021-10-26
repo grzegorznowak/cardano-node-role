@@ -55,9 +55,6 @@
     address: "{{ wallet_addr }}"
   register: existing_tokens
 
-- debug:
-    var: existing_tokens
-
 - name: "Ops | Native Assets Burn {{ asset_policy_name }} | Make sure we have stuff to burn"
   assert:
     that:
@@ -102,13 +99,6 @@
     max_tx_count: 0  # no limit
   register: tx_token_result
 
-- debug:
-    var: tx_lovelace_result
-
-- debug:
-    var: tx_token_result
-
-
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Build raw transaction"
   shell: >-
     {{ cardano_bin_path }}/cardano-cli transaction build-raw
@@ -122,9 +112,6 @@
   become_user: "{{ cardano_user }}"
   register: raw_out
 
-- debug:
-    var: raw_out
-
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Calculate the actual fee"
   shell: >-
     {{ cardano_bin_path }}/cardano-cli
@@ -136,9 +123,6 @@
   become: true
   become_user: "{{ cardano_user }}"
   register: burn_fee
-
-- debug:
-    var: burn_fee
 
 - set_fact:
     final_amount: "{{ tx_token_result.lovelace_available | int - (burn_fee.stdout | int) }}"
@@ -161,9 +145,6 @@
   become_user: "{{ cardano_user }}"
   register: final_transaction
 
-- debug:
-    var: final_transaction
-
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Sign the transaction"
   shell: >-
     {{ cardano_bin_path }}/cardano-cli transaction sign
@@ -176,9 +157,6 @@
   become_user: "{{ cardano_user }}"
   register: signing_result
 
-- debug:
-    var: signing_result
-
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Submit the transaction"
   shell: >-
     {{ cardano_bin_path }}/cardano-cli transaction submit
@@ -189,9 +167,6 @@
   become: true
   become_user: "{{ cardano_user }}"
   register: submit_result
-
-- debug:
-    var: submit_result
 
 - name: "Ops | Native Assets Burn {{ asset_policy_name }} | Wait for changes to propagate"
   cardano_token_lookup:

@@ -33,7 +33,8 @@
   become_user: "{{ cardano_user }}"
   register: policies_results
 
-- set_fact:
+- name: Ops | Native Assets | Pre-calc variables
+  set_fact:
     dummy_fee: 500000  # 0.5 ADA, not important as long as it's "big enough"
     dummy_output: 0  # for initial fee cals
     policy_id: "{{ policies_results['policies_ids'][policy_name] }}"
@@ -42,7 +43,8 @@
     asset_path: "{{ cardano_assets_directory }}/native/{{ name }}"
 
 # since set_fact can't depend on the vars it defines itself, we need the second round here
-- set_fact:
+- name: Ops | Native Assets | memoize asset's full name (with policy ID)
+  set_fact:
     asset_policy_name: "{{ policy_id }}.{{ name }}"  # token name with policy id as needed by utxo
 
 - name: Ops | Native Assets | Grab existing tokens
@@ -153,10 +155,8 @@
       become_user: "{{ cardano_user }}"
       register: actual_fee
 
-    - debug:
-        var: actual_fee
-
-    - set_fact:
+    - name: Ops | Native Asset | Calculate the final amount after fee
+      set_fact:
         final_amount: "{{ tx_result.lovelace_available | int - (actual_fee.stdout | int) }}"
 
     - name: Make sure we can afford minting in terms of ada balance
@@ -177,9 +177,6 @@
       become_user: "{{ cardano_user }}"
       register: final_transaction
 
-    - debug:
-        var: final_transaction
-
     - name: Ops | Native Asset | Sign the transaction
       command: >-
         {{ cardano_bin_path }}/cardano-cli transaction sign
@@ -192,9 +189,6 @@
       become_user: "{{ cardano_user }}"
       register: signing_result
 
-    - debug:
-        var: signing_result
-
     - name: Ops | Native Asset | Submit the transaction
       command: >-
         {{ cardano_bin_path }}/cardano-cli transaction submit
@@ -205,9 +199,6 @@
       become: true
       become_user: "{{ cardano_user }}"
       register: submit_result
-
-    - debug:
-        var: submit_result
 
     - name: "Ops | Native Assets | Wait for changes to propagate"
       cardano_token_lookup:
