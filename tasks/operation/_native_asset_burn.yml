@@ -205,5 +205,4 @@
   delay: 2    # wait up to 2 min to pick up the transaction
   become: true
   become_user: "{{ cardano_user }}"
-  register: existing_tokens
   until: existing_tokens.tokens[asset_policy_name] is not defined

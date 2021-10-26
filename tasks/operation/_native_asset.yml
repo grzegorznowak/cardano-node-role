@@ -34,12 +34,12 @@
   register: policies_results
 
 - set_fact:
-     dummy_fee: 500000  # 0.5 ADA, not important as long as it's "big enough"
-     dummy_output: 0  # for initial fee cals
-     policy_id: "{{ policies_results['policies_ids'][policy_name] }}"
-     policy_skey: "{{ policies_results['policies'][policy_name]['skey'] }}"
-     policy_script: "{{ policies_results['policies'][policy_name]['script'] }}"
-     asset_path: "{{ cardano_assets_directory }}/native/{{ name }}"
+    dummy_fee: 500000  # 0.5 ADA, not important as long as it's "big enough"
+    dummy_output: 0  # for initial fee cals
+    policy_id: "{{ policies_results['policies_ids'][policy_name] }}"
+    policy_skey: "{{ policies_results['policies'][policy_name]['skey'] }}"
+    policy_script: "{{ policies_results['policies'][policy_name]['script'] }}"
+    asset_path: "{{ cardano_assets_directory }}/native/{{ name }}"
 
 # since set_fact can't depend on the vars it defines itself, we need the second round here
 - set_fact:
@@ -216,7 +216,6 @@
         active_network: "{{ active_network }}"
         testnet_magic: "{{ network_magic }}"  # only used on testnet
         address: "{{ wallet_addr }}"
-      register: existing_tokens
       retries: 60
       delay: 2    # wait up to 2 min to pick up the transaction
       become: true

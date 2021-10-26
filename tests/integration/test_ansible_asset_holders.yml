@@ -14,4 +14,3 @@
   assert:
     that:
       - existing_tokens.tokens['asset1'] == 10000
-
