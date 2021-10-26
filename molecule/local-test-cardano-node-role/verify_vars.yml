@@ -28,8 +28,4 @@ cardano_vkey_file: payment.vkey
 cardano_skey_file: payment.skey
 cardano_payment_addr_file: payment.addr
 
-cardano_policy_vkey_file: policy.vkey
-cardano_policy_skey_file: policy.skey
-cardano_policy_script_file: policy.script
-cardano_policy_id_file: policyID
 cardano_user: cardano

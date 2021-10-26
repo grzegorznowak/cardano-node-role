@@ -16,7 +16,6 @@ platforms:
     groups:
       - all
       - wallet_holders
-      - policy_holders
       - asset_holders
       - mature  # because the node is almost synced
 

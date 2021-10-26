@@ -57,6 +57,7 @@
   register: existing_tokens
 
 - name: Ops | Native Assets | Set amount of token to 0
+  set_fact:
     existing_quantity: 0
   when: existing_tokens.tokens[asset_policy_name] is not defined
 
