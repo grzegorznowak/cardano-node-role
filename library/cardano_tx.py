@@ -82,8 +82,9 @@ def format_cli_in(txs):
 
 def format_cli_out(txs_out):
     return " + ".join(["{} {}".format(txs_out[tx], tx)
-                       for tx in txs_out
-                       if txs_out[tx] > 0])
+                       for tx in txs_out])
+                 #      if txs_out[tx] > 0])
+
 
 def main():
 
