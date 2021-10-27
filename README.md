@@ -80,7 +80,7 @@ More detailed usage examples and copy-pasteable commands will be arriving with s
 
 We can keep track of ADA addresses at our disposal.
 
-**NOTE: This role doesn't (yet) integrate any sort of wallet software. What we do is creating needed files to 
+**NOTE: This role doesn't (yet) integrate any sort of wallet software. What we do is create needed files to 
 send and receive payments using cli commands. "Wallet" in this context means a named path that holds files belonging
 together**
 
