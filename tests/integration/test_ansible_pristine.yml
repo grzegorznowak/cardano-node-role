@@ -48,7 +48,7 @@
         cardano_bin_path: "{{ cardano_bin_path }}"
         active_network: "{{ active_network }}"
         testnet_magic: "{{ network_magic }}"  # only used on testnet
-        address_file: "{{ wallet_results['wallets']['default']['addr'] }}"
+        address_file: "{{ wallet_results['wallets_addresses']['default'] }}"
         expected_lovelace: 1000
       become: true
       become_user: "{{ cardano_user }}"
