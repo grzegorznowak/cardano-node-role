@@ -22,27 +22,6 @@ Please add your use cases to the issue tracker and we will triage those as we go
 ### Debian
 
 * bullseye
- 
-
-## Integration Testing
-
-### locally on LXD
-
-LXD should already be installed and configured.
-
-Trigger the full suite with `./test-local.sh`
-
-Compilation of the required binaries is a CPU heavy task, so be prepared for a long-haul process.
-
-### on Cloud via CI pipeline
-
-CI built on top of DO infrastructure and getting triggered against every meaningful changeset in the `main` branch.
-
-To limit running costs the from-source CI done against Focal Fossa only atm.
-
-The pre-built binary CI done against focal and bionic.
-
-The other supported platforms are being assessed locally.
 
 ## Installation ##
 
@@ -94,6 +73,8 @@ This role attempts to test both of the approaches.
 
 By default installs cardano for a `cardano` user and group. Which is a recommended practice. 
 All other cogs to fiddle with can be found under `defaults/main.yml`. 
+
+More detailed usage examples and copy-pasteable commands will be arriving with subsequent sprints.
 
 ### Payment Addresses
 
@@ -186,12 +167,26 @@ blocking specific Ops that require certain amounts to be available.
     that:
       - lovelace_result.lovelace > lovelace_needed
 ```
+
 ### Native Tokens
 
-#### === WIP === 
-We will be able to idempotently mint native token with this role.
-See the list of [weekly sprints](https://github.com/grzegorznowak/cardano-node-role/projects)
-for the most up to date roadmap 
+Idempotently mint native tokens (not NFTs) with this role.
+It will not re-attempt to mint the token if it's already
+present and in the wanted quantity under the payment address specified.
+
+At this point minted tokens are sent to the wallet used for minting.   
+
+Minimal config needed on mainnet:
+```
+cardano_install_method: dist
+active_network: main
+cardano_wallets:
+  - &wallet_default default
+cardano_assets:
+  - name: MyAsset
+    quantity: 1000000
+    wallet: *wallet_default  
+```
 
 ### General Settings
 
@@ -270,6 +265,27 @@ journalctl -u cncli-sync
 ```
 
 
+## Integration Testing
+
+### locally on LXD
+
+LXD should already be installed and configured.
+
+Trigger the full suite with `./test-local.sh`
+
+Compilation of the required binaries is a CPU heavy task, so be prepared for a long-haul process.
+
+### on Cloud via CI pipeline
+
+CI built on top of DO infrastructure and getting triggered against every meaningful changeset in the `main` branch.
+
+To limit running costs the from-source CI done against Focal Fossa only atm.
+
+The pre-built binary CI done against focal and bionic.
+
+The other supported platforms are being assessed locally.
+
+
 ## Motivation
 
 This role is a rolling exploration of cardano backend and services' configuration, with functionality
@@ -334,8 +350,11 @@ the above is subject to change or can be refactored into bespoke roles for modul
  
 ## Donations
 
-Running CI pipeline for this project is no fluff, so your support is highly appreciated 
+Running CI pipeline for this project is no fluff, so your support is highly appreciated
 
-##### Support with ADA
+You can support this project by buying a native token minted using this very role and called a `FKL`,
+which pays tribute to Guy Richie's movies.
+
+Simply Send 2ADA to the following address and I will send you 1FKL + ~1.5ADA back, fees excluded. 
 
 `addr1q8ckqv8hm9zsvv8glxypmj3chfymjttnppfeypgt4zy09p6nzz27ada3sl2vhc30j64g2j6788fkqx4cqmgzxvxxyurs479zqu`
