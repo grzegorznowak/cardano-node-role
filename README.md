@@ -115,15 +115,13 @@ Block execution of a playbook until cardano node is fully synced.
     cardano_bin_path: "{{ cardano_bin_path }}"
     active_network: "{{ active_network }}"
     testnet_magic: "{{ network_magic }}"  # only used on testnet
-  async: 600  # wait up to 10 minutes for the node to sync
-  poll: 10
+  retries: 60
+  delay: 240    # wait up to 4h for full sync
   become: true
   become_user: "{{ cardano_user }}"
-  register: assert_result
+  register: sync_check_result
+  until: sync_check_result.progress | int == 100
 
-- assert:
-    that:
-      - (assert_result.progress | int) == 100
 ```
 
 ### Funds Assertion
@@ -133,7 +131,6 @@ Useful for monitoring a service that has to have some Ada all times, or
 blocking specific Ops that require certain amounts to be available.
 
 ```
-
 - set_fact
       wallet_to_check: default
       lovelace_needed: 1000000000
@@ -155,17 +152,13 @@ blocking specific Ops that require certain amounts to be available.
     active_network: "{{ active_network }}"
     testnet_magic: "{{ network_magic }}"  # only used on testnet
     expected_lovelace: "{{ lovelace_needed }}"
-    address_file: "{{ wallet_results['wallets'][wallet_to_check]['addr'] }}"
-  async: 60  # given the node is synced we need not wait long
-  poll: 5
+    address: "{{ wallet_results['wallets_addresses'][wallet_to_check] }}"    
+  retries: 60
+  delay: 240    # wait up to 4h for full sync
   become: true
   become_user: "{{ cardano_user }}"
   register: lovelace_result
-
-# double check if the balance is indeed as expected
-- assert:
-    that:
-      - lovelace_result.lovelace > lovelace_needed
+  until: lovelace_result.lovelace | int > lovelace_needed
 ```
 
 ### Native Tokens
