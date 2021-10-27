@@ -34,7 +34,7 @@ def test_policy_keys_creation_cmds(tmp_path):
                                      "--signing-key-file {0}/policy1/skey".format(str(tmp_path))
 
 
-def test_policy_id_creation_cmds(tmp_path):
+def test_tokens_policy_id_creation_cmds(tmp_path):
     key_hash = "key_hash"
 
     policy_info = collect_policy(policies_path=tmp_path,
@@ -47,7 +47,8 @@ def test_policy_id_creation_cmds(tmp_path):
 
     policy_id_cmds = [build_policy_id_cmds(cardano_bin_path="dummy_path",
                                            policy=policy,
-                                           key_hash=key_hash)
+                                           key_hash=key_hash,
+                                           type='token')
                       for policy in new_policies]
 
     assert len(policy_id_cmds) == 1
@@ -55,6 +56,30 @@ def test_policy_id_creation_cmds(tmp_path):
 
     assert policy_id_cmds[0][0] == "echo '{{\"keyHash\": \"{0}\", \"type\": \"sig\"}}' > " \
                                    "{1}/policy1/script".format(key_hash, str(tmp_path))
+
+
+def test_nfts_policy_id_creation_cmds(tmp_path):
+    key_hash = "key_hash"
+
+    policy_info = collect_policy(policies_path=tmp_path,
+                                 policy_name="policy1",
+                                 vkey_file=VKEY_FILE,
+                                 skey_file=SKEY_FILE,
+                                 script_file=SCRIPT_FILE,
+                                 id_file=ID_FILE)
+    new_policies = policy_info['new']
+
+    policy_id_cmds = [build_policy_id_cmds(cardano_bin_path="dummy_path",
+                                           policy=policy,
+                                           key_hash=key_hash,
+                                           type='nft')
+                      for policy in new_policies]
+
+    assert len(policy_id_cmds) == 1
+    assert len(policy_id_cmds[0]) == 2
+    assert policy_id_cmds[0][0] == "echo '{{\"type\": \"all\", \"scripts\": [{{\"slot\": 0, " \
+"\"type\": \"before\"}}, {{\"keyHash\": \"{0}\", \"type\": \"sig\"}}]}}\' " \
+"> {1}/policy1/script".format(key_hash, str(tmp_path))
 
 
 def test_collecting_policies(tmp_path):

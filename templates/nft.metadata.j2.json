@@ -1,0 +1,12 @@
+{
+    "721": {
+        "{{ policy_id }}": {
+          "{{ nft_slug }}": {
+            "description": "{{ nft_description }}",
+            "name": "{{ nft_name }}",
+            "id": {{ nft_id }},
+            "image": "{{ nft_image }}"
+          }
+        }
+    }
+}

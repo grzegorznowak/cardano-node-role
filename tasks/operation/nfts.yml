@@ -1,0 +1,27 @@
+---
+
+- include_tasks: _nft.yml
+  vars:
+    quantity: "{{ item.quantity }}"
+    nft_slug: "{{ item.slug }}"
+    name: "{{ item.slug }}"  # for DRYiness, will fix it at some point
+    nft_description: "{{ item.description }}"
+    nft_image: "{{ item.image }}"
+    nft_name: "{{ item.name }}"
+    nft_id: "{{ item.id }}"
+    wallet_addr: "{{ wallet_results['wallets_addresses'][item.wallet] }}"
+    payment_skey: "{{ wallet_results['wallets'][item.wallet]['paths']['skey'] }}"
+    policy_name: "nfs_{{ item.name }}_policy"
+  loop: "{{ cardano_nfts }}"
+
+- include_tasks: _nft_burn.yml
+  vars:
+    quantity: "{{ item.quantity }}"
+    name: "{{ item.name }}"
+    wallet_addr: "{{ wallet_results['wallets_addresses'][item.wallet] }}"
+    payment_skey: "{{ wallet_results['wallets'][item.wallet]['paths']['skey'] }}"
+    policy_name: "nfs_{{ item.name }}_policy"
+  loop: "{{ cardano_nfts_burn }}"
+  tags:
+    - never
+    - nft_burn

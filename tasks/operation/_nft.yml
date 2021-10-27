@@ -3,12 +3,24 @@
 # vars available:
 # quantity          how many tokens do we need
 # name              name of the token
+# open_period       number of slots before we lock the minting policy
 # wallet_addr       the address to use
 # payment_skey      skey correlated with the wallet_addr
 # policy_name       name of the policy to create this asset
 # cardano_bin_path  cardano-cli path
 
-- name: Ops | Native Assets | Make sure we're on a synced node
+
+- name: Ops | NFT | Compile network params (testnet)
+  set_fact:
+    network_param: "testnet-magic {{ network_magic }}"
+  when: active_network == "test"
+
+- name: Ops | NFT | Compile network params (mainnet)
+  set_fact:
+    network_param: "mainnet"
+  when: active_network == "main"
+
+- name: Ops | NFT | Make sure we're on a synced node
   assert_cardano_synced:
     cardano_node_socket: "{{ cardano_node_socket }}"
     cardano_bin_path: "{{ cardano_bin_path }}"
@@ -21,20 +33,34 @@
   register: sync_check_result
   until: sync_check_result.progress | int == 100
 
-- name: Ops | Native Assets | Double check node is indeed synced
+- name: Ops | NFT | Double check node is indeed synced
   assert:
     that:
       - (sync_check_result.progress | int) == 100
 
-- name: Ops | Native Assets | Create or grab the policy
+- name: Ops | NFT | Get the current slot number
+  shell: >-
+    {{ cardano_bin_path }}/cardano-cli query tip
+    --{{ network_param }} | jq .slot?"
+  environment:
+    CARDANO_NODE_SOCKET_PATH: "{{ cardano_node_socket }}"
+  register: current_slot_result
+
+- name: Ops | NFT | Calculate the expiration slot
+  set_fact:
+    expiration_slot: "{{ current_slot_result.stdout | int + open_period | int }}"
+
+- name: Ops | NFT | Create or grab the policy
   cardano_policy:
     cardano_bin_path: "{{ cardano_bin_path }}"
     name: "{{ policy_name }}"
+    type: "nft"
+    slot: "{{ expiration_slot }}"
   become: true
   become_user: "{{ cardano_user }}"
   register: policies_results
 
-- name: Ops | Native Assets | Pre-calc variables
+- name: Ops | NFT | Pre-calc variables
   set_fact:
     # 2 ADA, because otherwise we might be having hard time sending anything
     dummy_fee: 2000000
@@ -44,12 +70,12 @@
     policy_script: "{{ policies_results['policies'][policy_name]['script'] }}"
 
 # since set_fact can't depend on the vars it defines itself, we need the second round here
-- name: Ops | Native Assets | memoize asset's full name (with policy ID)
+- name: Ops | NFT | memoize asset's full name (with policy ID)
   set_fact:
     asset_policy_name: "{{ policy_id }}.{{ name }}"  # token name with policy id as needed by utxo
-    asset_path: "{{ cardano_assets_directory }}/native/{{ policy_id }}.{{ name }}"
+    asset_path: "{{ cardano_assets_directory }}/nft/{{ policy_id }}.{{ name }}"
 
-- name: Ops | Native Assets | Grab existing tokens
+- name: Ops | NFT | Grab existing tokens
   cardano_token_lookup:
     cardano_node_socket: "{{ cardano_node_socket }}"
     cardano_bin_path: "{{ cardano_bin_path }}"
@@ -58,30 +84,20 @@
     address: "{{ wallet_addr }}"
   register: existing_tokens
 
-- name: Ops | Native Assets | Set amount of tokens owned to 0 since we don't have it
+- name: Ops | NFT | Set amount of tokens owned to 0 since we don't have it
   set_fact:
     existing_quantity: 0
   when: existing_tokens.tokens[asset_policy_name] is not defined
 
-- name: Ops | Native Assets | Calculate token amount we have
+- name: Ops | NFT | Calculate token amount we have
   set_fact:
     existing_quantity: existing_tokens.tokens[asset_policy_name]
   when: existing_tokens.tokens[asset_policy_name] is defined
 
-- name: Ops | Native Assets | Wrap Asset Creation
+- name: Ops | NFT | Wrap Asset Creation
   block:
 
-    - name: Ops | Native Assets | Compile network params (testnet)
-      set_fact:
-        network_param: "testnet-magic {{ network_magic }}"
-      when: active_network == "test"
-
-    - name: Ops | Native Assets | Compile network params (mainnet)
-      set_fact:
-        network_param: "mainnet"
-      when: active_network == "main"
-
-    - name: Ops | Native Assets | Create paths
+    - name: Ops | NFT | Create paths
       file:
         path: "{{ asset_path }}"
         state: directory
@@ -89,7 +105,12 @@
         group: "{{ cardano_group }}"
         mode: '0775'
 
-    - name: Ops | Native Assets | Check if we can fund the transaction using our parameters
+    - name: Ops | NFT | Materialize metadata
+      template:
+        src: nft.metadata.j2.json
+        dest: "{{ asset_path }}/metadata.json"
+
+    - name: Ops | NFT | Check if we can fund the transaction using our parameters
       assert_address_funded:
         cardano_node_socket: "{{ cardano_node_socket }}"
         cardano_bin_path: "{{ cardano_bin_path }}"
@@ -102,7 +123,7 @@
       become_user: "{{ cardano_user }}"
       register: lovelace_result
 
-    - name: Ops | Native Assets | Calc lovelace we have
+    - name: Ops | NFT | Calc lovelace we have
       set_fact:
         lovelace_had: "{{ lovelace_result.lovelace }}"
 
@@ -121,7 +142,7 @@
       register: tx_result
 
     # account for the fact that the tail of it can be blank, and augment with + sign only when needed
-    - name: Ops | Native Assets | Complie tx out for minting
+    - name: Ops | NFT | Complie tx out for minting
       set_fact:
         tx_out: "{{ [quantity+' '+policy_id+'.'+name, tx_result.tx_out_formatted] |
           select() | join(' + ') }}"
@@ -134,6 +155,8 @@
         --tx-out {{ wallet_addr }}+{{ dummy_output }}+"{{ tx_out }}"
         --mint="{{ quantity | int - existing_quantity | int }} {{ policy_id }}.{{ name }}"
         --minting-script-file {{ policy_script }}
+        --metadata-json-file {{ asset_path }}/metadata.json
+        --invalid-hereafter {{ expiration_slot }}
         --out-file {{ asset_path }}/matx.raw
       become: true
       become_user: "{{ cardano_user }}"
@@ -178,6 +201,8 @@
         --tx-out {{ wallet_addr }}+{{ final_amount }}+"{{ tx_out }}"
         --mint="{{ quantity | int - existing_quantity | int }} {{ policy_id }}.{{ name }}"
         --minting-script-file {{ policy_script }}
+        --metadata-json-file {{ asset_path }}/metadata.json
+        --invalid-hereafter {{ expiration_slot }}
         --out-file {{ asset_path }}/matx.raw
       become: true
       become_user: "{{ cardano_user }}"
@@ -206,7 +231,7 @@
       become_user: "{{ cardano_user }}"
       register: submit_result
 
-    - name: "Ops | Native Assets | Wait for changes to propagate"
+    - name: "Ops | NFT | Wait for changes to propagate"
       cardano_token_lookup:
         cardano_node_socket: "{{ cardano_node_socket }}"
         cardano_bin_path: "{{ cardano_bin_path }}"
