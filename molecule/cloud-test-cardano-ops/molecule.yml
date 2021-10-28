@@ -17,6 +17,7 @@ platforms:
       - all
       - wallet_holders
       - asset_holders
+      - nft_holders
       - mature  # because the node is almost synced
 
 provisioner:
@@ -53,8 +54,8 @@ provisioner:
             image: ""
             name: NFT 001
             id: 1
-            open_period: 10
-            quantity: 1000000
+            open_period: 100
+            quantity: 1111111
             wallet: *wallet_default
         cardano_assets:
           - name: &test_asset TestAsset001
@@ -72,7 +73,7 @@ provisioner:
             wallet: *wallet_default
 
 scenario:
-  name: cloud-test-cardano-wallet-creation-ops
+  name: cloud-test-cardano-ops
   test_sequence:
     - lint
     - dependency

@@ -214,7 +214,7 @@
         testnet_magic: "{{ network_magic }}"  # only used on testnet
         address: "{{ wallet_addr }}"
       retries: 60
-      delay: 2    # wait up to 2 min to pick up the transaction
+      delay: 5    # wait up to 5 min to pick up the transaction
       become: true
       become_user: "{{ cardano_user }}"
       register: existing_tokens

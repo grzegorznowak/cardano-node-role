@@ -40,7 +40,7 @@ jobs:
         run: mkdir -p /tmp/molecule_ephemeral/${{ github.run_id }}
 
       - name: Test with molecule
-        run: molecule test --scenario-name cloud-test-cardano-wallet-creation-ops
+        run: molecule test --scenario-name cloud-test-cardano-ops
         env:
           DO_API_KEY: ${{ secrets.DO_INFRA_KEY }}
           TESTNET_SNAPSHOT_NAME: ${{ secrets.TESTNET_SNAPSHOT_NAME }}

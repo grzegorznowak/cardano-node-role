@@ -72,12 +72,13 @@ def test_nfts_policy_id_creation_cmds(tmp_path):
     policy_id_cmds = [build_policy_id_cmds(cardano_bin_path="dummy_path",
                                            policy=policy,
                                            key_hash=key_hash,
-                                           type='nft')
+                                           type='nft',
+                                           slot=1234)
                       for policy in new_policies]
 
     assert len(policy_id_cmds) == 1
     assert len(policy_id_cmds[0]) == 2
-    assert policy_id_cmds[0][0] == "echo '{{\"type\": \"all\", \"scripts\": [{{\"slot\": 0, " \
+    assert policy_id_cmds[0][0] == "echo '{{\"type\": \"all\", \"scripts\": [{{\"slot\": 1234, " \
 "\"type\": \"before\"}}, {{\"keyHash\": \"{0}\", \"type\": \"sig\"}}]}}\' " \
 "> {1}/policy1/script".format(key_hash, str(tmp_path))
 

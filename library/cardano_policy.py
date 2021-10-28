@@ -117,7 +117,7 @@ def build_policy_id_cmds(cardano_bin_path, policy, key_hash, type='token', slot=
 
     return ["echo '{}' > {}".format(policy_data_json, script_file),
             "{0}/cardano-cli transaction policyid "
-            "--script-file {1} >> {2}".format(cardano_bin_path,
+            "--script-file {1} > {2}".format(cardano_bin_path,
                                               script_file,
                                               id_file)]
 
@@ -229,15 +229,17 @@ def main():
         if module.check_mode:
             module.exit_json(changed=bool(len(new_policies)))
         changed = False
+        # generate keys only once
         if len(new_policies):
             [create_policy_keys(cardano_bin_path,
                                 policy, module)
              for policy in new_policies]
-
+        # but have script and policy id be regenerated according to the latest parameters
+        if len(all_policies):
             [create_policy_id(cardano_bin_path,
                               policy, module,
                               type, slot)
-             for policy in new_policies]
+             for policy in all_policies]
 
             changed = True
 
