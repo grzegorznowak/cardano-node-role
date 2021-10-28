@@ -111,7 +111,7 @@ def build_policy_id_cmds(cardano_bin_path, policy, key_hash, type='token', slot=
                 }]
         }
     else:
-        raise PolicyException("I don't really know this policy type")
+        raise PolicyException("I don't really know this policy type: {}".format(type))
 
     policy_data_json = json.dumps(policy_data)
 
@@ -203,6 +203,7 @@ def main():
     script_file = module.params['script_file']
     id_file = module.params['id_file']
     slot = module.params['slot']
+    type = module.params['type']
     state = module.params['state']
 
     try:

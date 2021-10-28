@@ -46,6 +46,16 @@ provisioner:
           - &wallet_default default
           - wallet1
           - wallet2
+        cardano_nfts:
+          - slug: NFT001
+            description:
+              a NFT used for automated integration testing of the cardano role
+            image: ""
+            name: NFT 001
+            id: 1
+            open_period: 10
+            quantity: 1000000
+            wallet: *wallet_default
         cardano_assets:
           - name: &test_asset TestAsset001
             quantity: &test_asset_qty 10000

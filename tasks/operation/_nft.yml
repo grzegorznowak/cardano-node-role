@@ -3,7 +3,12 @@
 # vars available:
 # quantity          how many tokens do we need
 # name              name of the token
-# open_period       number of slots before we lock the minting policy
+# nft_slug          same as 'name' kept for backward compat
+# nft_description   NFT's long description
+# nft_image         NFT's IPFS hash
+# nft_name          NFT's user readable name
+# nft_id            NFT's ID
+# nft_open_period   number of slots before we lock the minting policy
 # wallet_addr       the address to use
 # payment_skey      skey correlated with the wallet_addr
 # policy_name       name of the policy to create this asset
@@ -41,14 +46,14 @@
 - name: Ops | NFT | Get the current slot number
   shell: >-
     {{ cardano_bin_path }}/cardano-cli query tip
-    --{{ network_param }} | jq .slot?"
+    --{{ network_param }} | jq .slot?
   environment:
     CARDANO_NODE_SOCKET_PATH: "{{ cardano_node_socket }}"
   register: current_slot_result
 
 - name: Ops | NFT | Calculate the expiration slot
   set_fact:
-    expiration_slot: "{{ current_slot_result.stdout | int + open_period | int }}"
+    expiration_slot: "{{ current_slot_result.stdout | int + nft_open_period | int }}"
 
 - name: Ops | NFT | Create or grab the policy
   cardano_policy:
