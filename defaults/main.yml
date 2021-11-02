@@ -6,6 +6,8 @@ cardano_wallets: []  # don't create anything by default, let us decide
 # Native Assets to mint
 cardano_assets: []
 
+# NFTs to mint
+cardano_nfts: []
 
 # Cardano paths and users
 cardano_home_directory: /home/cardano

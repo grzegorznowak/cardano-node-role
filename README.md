@@ -76,6 +76,52 @@ All other cogs to fiddle with can be found under `defaults/main.yml`.
 
 More detailed usage examples and copy-pasteable commands will be arriving with subsequent sprints.
 
+### NFT Tokens
+
+Idempotently mint native NFT tokens with this role.
+I will not re-attempt to mint the token if it's already
+present and in the wanted quantity.
+
+At this point minted tokens are sent to the address we used for minting.   
+
+Minimal config needed on mainnet:
+```
+cardano_install_method: dist
+active_network: main
+cardano_wallets:
+  - &wallet_default default
+cardano_nfts:
+  - slug: BurningGiraffe
+    description: Burning Giraffe
+    image: ""  # an IPFS hash of the NFT
+    name: Burning Giraffe
+    id: 1
+    # how many slots to reserve for this NFT's policy metadata to be editable:
+    open_period: 1000000  
+    quantity: 10
+    wallet: *wallet_default
+```
+
+### Native Tokens
+
+Idempotently mint native tokens (not NFTs) with this role.
+I will not re-attempt to mint the token if it's already
+present and in the wanted quantity.
+
+At this point minted tokens are sent to the address we used for minting.  
+
+Minimal config needed on mainnet:
+```
+cardano_install_method: dist
+active_network: main
+cardano_wallets:
+  - &wallet_default default
+cardano_assets:
+  - name: MyAsset
+    quantity: 1000000
+    wallet: *wallet_default  
+```
+
 ### Payment Addresses
 
 We can keep track of ADA addresses at our disposal.
@@ -159,26 +205,6 @@ blocking specific Ops that require certain amounts to be available.
   become_user: "{{ cardano_user }}"
   register: lovelace_result
   until: lovelace_result.lovelace | int > lovelace_needed
-```
-
-### Native Tokens
-
-Idempotently mint native tokens (not NFTs) with this role.
-It will not re-attempt to mint the token if it's already
-present and in the wanted quantity under the payment address specified.
-
-At this point minted tokens are sent to the wallet used for minting.   
-
-Minimal config needed on mainnet:
-```
-cardano_install_method: dist
-active_network: main
-cardano_wallets:
-  - &wallet_default default
-cardano_assets:
-  - name: MyAsset
-    quantity: 1000000
-    wallet: *wallet_default  
 ```
 
 ### General Settings
