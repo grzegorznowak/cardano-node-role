@@ -44,11 +44,13 @@
       - (sync_check_result.progress | int) == 100
 
 - name: "Ops | NFT {{ nft_slug }} | Get the current slot number"
-  shell: >-
-    {{ cardano_bin_path }}/cardano-cli query tip
-    --{{ network_param }} | jq .slot?
+  shell: |-
+    set -o pipefail
+    {{ cardano_bin_path }}/cardano-cli query tip --{{ network_param }} | jq .slot?
   environment:
     CARDANO_NODE_SOCKET_PATH: "{{ cardano_node_socket }}"
+  args:
+    executable: /bin/bash
   register: current_slot_result
   changed_when: false
 
