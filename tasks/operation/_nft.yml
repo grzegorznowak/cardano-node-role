@@ -254,10 +254,5 @@
       delay: 60    # wait up to 10 min to pick up the transaction
       until: submit_result.lookup_result.tokens[asset_policy_name] is defined and
         submit_result.lookup_result.tokens[asset_policy_name] | int >= (quantity | int)
-  rescue:
-    - debug:
-        var: submit_result
-  always:
-    - debug:
-        var: submit_result
+
   when: existing_quantity | int < quantity | int
