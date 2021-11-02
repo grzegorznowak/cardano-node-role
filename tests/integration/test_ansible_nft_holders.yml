@@ -19,7 +19,7 @@
     cardano_bin_path: "{{ cardano_bin_path }}"
     name: "nft_NFT001_policy"
     type: "nft"
-    slot: "{{ expiration_slot }}"
+    slot: "0"
   become: true
   become_user: "{{ cardano_user }}"
   register: policies_results
@@ -30,4 +30,4 @@
 - name: Test Ops  | NFT | Make sure we have the token in the expected quantity
   assert:
     that:
-      - existing_tokens.tokens[policy_id+'.NFT001'] == 1111111
+      - existing_tokens.tokens[policy_id+'.NFT001'] == 1111112

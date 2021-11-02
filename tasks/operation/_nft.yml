@@ -50,19 +50,11 @@
   environment:
     CARDANO_NODE_SOCKET_PATH: "{{ cardano_node_socket }}"
   register: current_slot_result
-
-- debug:
-    var: current_slot_result
+  changed_when: false
 
 - name: "Ops | NFT {{ nft_slug }} | Calculate the expiration slot"
   set_fact:
     expiration_slot: "{{ current_slot_result.stdout | int + nft_open_period | int }}"
-
-- debug:
-    var: nft_open_period
-
-- debug:
-    var: expiration_slot
 
 - name: "Ops | NFT {{ nft_slug }} | Create or grab the policy"
   cardano_policy:
@@ -123,8 +115,11 @@
       template:
         src: nft.metadata.j2.json
         dest: "{{ asset_path }}/metadata.json"
+        owner: "{{ cardano_user }}"
+        group: "{{ cardano_group }}"
+        mode: '0775'
 
-    - name: "Ops | NFT {{ nft_slug }} | Check if we can fund the transaction using our parameters"
+    - name: "Ops | NFT {{ nft_slug }} | Check if wgie can fund the transaction using our parameters"
       assert_address_funded:
         cardano_node_socket: "{{ cardano_node_socket }}"
         cardano_bin_path: "{{ cardano_bin_path }}"
