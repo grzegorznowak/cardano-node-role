@@ -2,3 +2,4 @@
 
 - include: wallets.yml
 - include: native_assets.yml
+- include: nfts.yml

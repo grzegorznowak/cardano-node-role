@@ -88,19 +88,36 @@ def build_policy_keys_cmds(cardano_bin_path, policy):
                                             skey_file)]
 
 
-def build_policy_id_cmds(cardano_bin_path, policy, key_hash):
+def build_policy_id_cmds(cardano_bin_path, policy, key_hash, type='token', slot=0):
     script_file = policy['script']
     id_file = policy['id']
 
-    policy_data = {
-        "keyHash": key_hash,
-        "type": "sig"
-    }
+    if type == 'token':
+        policy_data = {
+            "keyHash": key_hash,
+            "type": "sig"
+        }
+    elif type == 'nft':
+        policy_data = {
+            "type": "all",
+            "scripts": [
+                {
+                    "type": "before",
+                    "slot": slot
+                },
+                {
+                    "type": "sig",
+                    "keyHash": key_hash
+                }]
+        }
+    else:
+        raise PolicyException("I don't really know this policy type: {}".format(type))
+
     policy_data_json = json.dumps(policy_data)
 
     return ["echo '{}' > {}".format(policy_data_json, script_file),
             "{0}/cardano-cli transaction policyid "
-            "--script-file {1} >> {2}".format(cardano_bin_path,
+            "--script-file {1} > {2}".format(cardano_bin_path,
                                               script_file,
                                               id_file)]
 
@@ -139,12 +156,13 @@ def create_policy_key_hash(cardano_bin_path, policy, module):
     return policy_key_hash
 
 
-def create_policy_id(cardano_bin_path, policy, module):
+def create_policy_id(cardano_bin_path, policy, module, type, slot):
     policy_key_hash = create_policy_key_hash(cardano_bin_path, policy, module)
 
     policy_id_cmds = build_policy_id_cmds(cardano_bin_path,
                                           policy,
-                                          policy_key_hash)
+                                          policy_key_hash,
+                                          type, slot)
 
     results = [module.run_command(cmd, check_rc=True, use_unsafe_shell=True)
                for cmd in policy_id_cmds]
@@ -170,6 +188,8 @@ def main():
         skey_file=dict(type='str', default='policy.skey'),
         script_file=dict(type='str', default='policy.script'),
         id_file=dict(type='str', default='policyID'),
+        slot=dict(type='int', default=0),
+        type=dict(type='str', default='token', choices=['token', 'nft']),
         state=dict(type='str', default='present', choices=['present']))
 
     module = AnsibleModule(argument_spec=argument_spec,
@@ -182,6 +202,8 @@ def main():
     skey_file = module.params['skey_file']
     script_file = module.params['script_file']
     id_file = module.params['id_file']
+    slot = module.params['slot']
+    type = module.params['type']
     state = module.params['state']
 
     try:
@@ -207,13 +229,15 @@ def main():
         if module.check_mode:
             module.exit_json(changed=bool(len(new_policies)))
         changed = False
+        # generate keys only once
         if len(new_policies):
             [create_policy_keys(cardano_bin_path,
                                 policy, module)
              for policy in new_policies]
 
             [create_policy_id(cardano_bin_path,
-                              policy, module)
+                              policy, module,
+                              type, slot)
              for policy in new_policies]
 
             changed = True

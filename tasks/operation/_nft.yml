@@ -3,12 +3,29 @@
 # vars available:
 # quantity          how many tokens do we need
 # name              name of the token
+# nft_slug          same as 'name' kept for backward compat
+# nft_description   NFT's long description
+# nft_image         NFT's IPFS hash
+# nft_name          NFT's user readable name
+# nft_id            NFT's ID
+# nft_open_period   number of slots before we lock the minting policy
 # wallet_addr       the address to use
 # payment_skey      skey correlated with the wallet_addr
 # policy_name       name of the policy used to create this asset
 # cardano_bin_path  cardano-cli path
 
-- name: "Ops | Native Asset {{ name }} | Make sure we're on a synced node"
+
+- name: "Ops | NFT {{ nft_slug }} | Compile network params (testnet)"
+  set_fact:
+    network_param: "testnet-magic {{ network_magic }}"
+  when: active_network == "test"
+
+- name: "Ops | NFT {{ nft_slug }} | Compile network params (mainnet)"
+  set_fact:
+    network_param: "mainnet"
+  when: active_network == "main"
+
+- name: "Ops | NFT {{ nft_slug }} | Make sure we're on a synced node"
   assert_cardano_synced:
     cardano_node_socket: "{{ cardano_node_socket }}"
     cardano_bin_path: "{{ cardano_bin_path }}"
@@ -21,20 +38,37 @@
   register: sync_check_result
   until: sync_check_result.progress | int == 100
 
-- name: "Ops | Native Asset {{ name }} | Double check node is indeed synced"
+- name: "Ops | NFT {{ nft_slug }} | Double check node is indeed synced"
   assert:
     that:
       - (sync_check_result.progress | int) == 100
 
-- name: "Ops | Native Asset {{ name }} | Create or grab the policy"
+- name: "Ops | NFT {{ nft_slug }} | Get the current slot number"
+  shell: |-
+    set -o pipefail
+    {{ cardano_bin_path }}/cardano-cli query tip --{{ network_param }} | jq .slot?
+  environment:
+    CARDANO_NODE_SOCKET_PATH: "{{ cardano_node_socket }}"
+  args:
+    executable: /bin/bash
+  register: current_slot_result
+  changed_when: false
+
+- name: "Ops | NFT {{ nft_slug }} | Calculate the expiration slot"
+  set_fact:
+    expiration_slot: "{{ current_slot_result.stdout | int + nft_open_period | int }}"
+
+- name: "Ops | NFT {{ nft_slug }} | Create or grab the policy"
   cardano_policy:
     cardano_bin_path: "{{ cardano_bin_path }}"
     name: "{{ policy_name }}"
+    type: "nft"
+    slot: "{{ expiration_slot }}"
   become: true
   become_user: "{{ cardano_user }}"
   register: policies_results
 
-- name: "Ops | Native Asset {{ name }} | Pre-calc variables"
+- name: "Ops | NFT {{ nft_slug }} | Pre-calc variables"
   set_fact:
     # 2 ADA, because otherwise we might be having hard time sending anything
     dummy_fee: 2000000
@@ -44,12 +78,12 @@
     policy_script: "{{ policies_results['policies'][policy_name]['script'] }}"
 
 # since set_fact can't depend on the vars it defines itself, we need the second round here
-- name: "Ops | Native Asset {{ name }} | memoize asset's full name (with policy ID)"
+- name: "Ops | NFT {{ nft_slug }} | memoize asset's full name (with policy ID)"
   set_fact:
     asset_policy_name: "{{ policy_id }}.{{ name }}"  # token name with policy id as needed by utxo
-    asset_path: "{{ cardano_assets_directory }}/native/{{ policy_id }}.{{ name }}"
+    asset_path: "{{ cardano_assets_directory }}/nft/{{ policy_id }}.{{ name }}"
 
-- name: "Ops | Native Asset {{ name }} | Grab existing tokens"
+- name: "Ops | NFT {{ nft_slug }} | Grab existing tokens"
   cardano_token_lookup:
     cardano_node_socket: "{{ cardano_node_socket }}"
     cardano_bin_path: "{{ cardano_bin_path }}"
@@ -58,30 +92,20 @@
     address: "{{ wallet_addr }}"
   register: existing_tokens
 
-- name: "Ops | Native Asset {{ name }} | Set amount of tokens owned to 0 since we don't have it"
+- name: "Ops | NFT {{ nft_slug }} | Set amount of tokens owned to 0 since we don't have it"
   set_fact:
     existing_quantity: 0
   when: existing_tokens.tokens[asset_policy_name] is not defined
 
-- name: "Ops | Native Asset {{ name }} | Calculate token amount we have"
+- name: "Ops | NFT {{ nft_slug }} | Calculate token amount we have"
   set_fact:
     existing_quantity: "{{ existing_tokens.tokens[asset_policy_name] }}"
   when: existing_tokens.tokens[asset_policy_name] is defined
 
-- name: "Ops | Native Asset {{ name }} | Wrap Asset Creation"
+- name: "Ops | NFT {{ nft_slug }} | Wrap Asset Creation"
   block:
 
-    - name: "Ops | Native Asset {{ name }} | Compile network params (testnet)"
-      set_fact:
-        network_param: "testnet-magic {{ network_magic }}"
-      when: active_network == "test"
-
-    - name: "Ops | Native Asset {{ name }} | Compile network params (mainnet)"
-      set_fact:
-        network_param: "mainnet"
-      when: active_network == "main"
-
-    - name: "Ops | Native Asset {{ name }} | Create paths"
+    - name: "Ops | NFT {{ nft_slug }} | Create paths"
       file:
         path: "{{ asset_path }}"
         state: directory
@@ -89,7 +113,15 @@
         group: "{{ cardano_group }}"
         mode: '0775'
 
-    - name: "Ops | Native Asset {{ name }} | Check if we can fund the transaction using our parameters"
+    - name: "Ops | NFT {{ nft_slug }} | Materialize metadata"
+      template:
+        src: nft.metadata.j2.json
+        dest: "{{ asset_path }}/metadata.json"
+        owner: "{{ cardano_user }}"
+        group: "{{ cardano_group }}"
+        mode: '0775'
+
+    - name: "Ops | NFT {{ nft_slug }} | Check if wgie can fund the transaction using our parameters"
       assert_address_funded:
         cardano_node_socket: "{{ cardano_node_socket }}"
         cardano_bin_path: "{{ cardano_bin_path }}"
@@ -102,11 +134,11 @@
       become_user: "{{ cardano_user }}"
       register: lovelace_result
 
-    - name: "Ops | Native Asset {{ name }} | Calc lovelace we have"
+    - name: "Ops | NFT {{ nft_slug }} | Calc lovelace we have"
       set_fact:
         lovelace_had: "{{ lovelace_result.lovelace }}"
 
-    - name: "Ops | Native Asset {{ name }} | Create tx-in based on the dummy fee"
+    - name: "Ops | NFT {{ nft_slug }} | Create tx-in based on the dummy fee"
       cardano_tx:
         cardano_node_socket: "{{ cardano_node_socket }}"
         cardano_bin_path: "{{ cardano_bin_path }}"
@@ -121,12 +153,12 @@
       register: tx_result
 
     # account for the fact that the tail of it can be blank, and augment with + sign only when needed
-    - name: "Ops | Native Asset {{ name }} | Compile tx out for minting"
+    - name: "Ops | NFT {{ nft_slug }} | Complie tx out for minting"
       set_fact:
         tx_out: "{{ [quantity+' '+policy_id+'.'+name, tx_result.tx_out_formatted] |
           select() | join(' + ') }}"
 
-    - name: "Ops | Native Asset {{ name }} | Build raw transaction"
+    - name: "Ops | NFT {{ nft_slug }} | Build raw transaction"
       command: >-
         {{ cardano_bin_path }}/cardano-cli transaction build-raw
         --fee {{ dummy_fee }}
@@ -134,12 +166,14 @@
         --tx-out {{ wallet_addr }}+{{ dummy_output }}+"{{ tx_out }}"
         --mint="{{ quantity | int - existing_quantity | int }} {{ policy_id }}.{{ name }}"
         --minting-script-file {{ policy_script }}
+        --metadata-json-file {{ asset_path }}/metadata.json
+        --invalid-hereafter {{ expiration_slot }}
         --out-file {{ asset_path }}/matx.raw
       become: true
       become_user: "{{ cardano_user }}"
       register: raw_build
 
-    - name: "Ops | Native Asset {{ name }} | Create protocol.json"
+    - name: "Ops | NFT {{ nft_slug }} | Create protocol.json"
       command: >-
         {{ cardano_bin_path }}/cardano-cli
         query protocol-parameters --{{ network_param }}
@@ -149,7 +183,7 @@
       become: true
       become_user: "{{ cardano_user }}"
 
-    - name: "Ops | Native Asset {{ name }} | Calculate the actual fee"
+    - name: "Ops | NFT {{ nft_slug }} | Calculate the actual fee"
       shell: >-
         {{ cardano_bin_path }}/cardano-cli
         transaction calculate-min-fee --tx-body-file {{ asset_path }}/matx.raw
@@ -161,16 +195,16 @@
       become_user: "{{ cardano_user }}"
       register: actual_fee
 
-    - name: "Ops | Native Asset {{ name }} | Calculate the final amount after fee"
+    - name: "Ops | NFT {{ nft_slug }} | Calculate the final amount after fee"
       set_fact:
         final_amount: "{{ tx_result.lovelace_available | int - (actual_fee.stdout | int) }}"
 
-    - name: "Ops | Native Asset {{ name }} | Make sure we can afford minting in terms of ada balance"
+    - name: "Ops | NFT {{ nft_slug }} | Make sure we can afford minting in terms of ada balance"
       assert:
         that:
           - final_amount > 0
 
-    - name: "Ops | Native Asset {{ name }} | Build the final transaction"
+    - name: "Ops | NFT {{ nft_slug }} | Build the final transaction"
       command: >-
         {{ cardano_bin_path }}/cardano-cli transaction build-raw
         --fee {{ actual_fee.stdout | int }}
@@ -178,12 +212,14 @@
         --tx-out {{ wallet_addr }}+{{ final_amount }}+"{{ tx_out }}"
         --mint="{{ quantity | int - existing_quantity | int }} {{ policy_id }}.{{ name }}"
         --minting-script-file {{ policy_script }}
+        --metadata-json-file {{ asset_path }}/metadata.json
+        --invalid-hereafter {{ expiration_slot }}
         --out-file {{ asset_path }}/matx.raw
       become: true
       become_user: "{{ cardano_user }}"
       register: final_transaction
 
-    - name: "Ops | Native Asset {{ name }} | Sign the transaction"
+    - name: "Ops | NFT {{ nft_slug }} | Sign the transaction"
       command: >-
         {{ cardano_bin_path }}/cardano-cli transaction sign
         --signing-key-file {{ payment_skey }}
@@ -195,7 +231,7 @@
       become_user: "{{ cardano_user }}"
       register: signing_result
 
-    - name: "Ops | Native Asset {{ name }} | Submit the transaction"
+    - name: "Ops | NFT {{ nft_slug }} | Submit the transaction"
       tx_submit_until_success:
         signed_tx: "{{ asset_path }}/matx.signed"
         network_param: "{{ network_param }}"
@@ -214,6 +250,6 @@
       retries: "{{ cardano_max_tx_submit_retry }}"   # try re-submitting the transaction that many times
       delay: 60    # wait up to 10 min to pick up the transaction
       until: submit_result.lookup_result.tokens[asset_policy_name] is defined and
-             submit_result.lookup_result.tokens[asset_policy_name] | int >= (quantity | int)
+        submit_result.lookup_result.tokens[asset_policy_name] | int >= (quantity | int)
 
   when: existing_quantity | int < quantity | int
