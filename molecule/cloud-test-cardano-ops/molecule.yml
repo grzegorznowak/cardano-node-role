@@ -10,7 +10,7 @@ driver:
 lint:
   name: yamllint
 platforms:
-  - name: molecule-focal-test-cardano-wallet-creation-ops
+  - name: molecule-focal-test-cardano-ops
     region_id: ams3
     size_id: s-4vcpu-8gb
     groups:
@@ -54,8 +54,16 @@ provisioner:
             image: ""
             name: NFT 001
             id: 1
-            open_period: 100
-            quantity: 1111111
+            open_period: 1000000
+            quantity: 1111112
+            wallet: *wallet_default
+          - slug: BurningGiraffe
+            description: Burning Giraffe
+            image: ""
+            name: Burning Giraffe
+            id: 1
+            open_period: 1000000
+            quantity: 10
             wallet: *wallet_default
         cardano_assets:
           - name: &test_asset TestAsset001

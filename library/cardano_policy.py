@@ -234,12 +234,11 @@ def main():
             [create_policy_keys(cardano_bin_path,
                                 policy, module)
              for policy in new_policies]
-        # but have script and policy id be regenerated according to the latest parameters
-        if len(all_policies):
+
             [create_policy_id(cardano_bin_path,
                               policy, module,
                               type, slot)
-             for policy in all_policies]
+             for policy in new_policies]
 
             changed = True
 
