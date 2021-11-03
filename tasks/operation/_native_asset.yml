@@ -89,7 +89,7 @@
         group: "{{ cardano_group }}"
         mode: '0775'
 
-    - name: "Ops | Native Asset {{ name }} | Check if we can fund the transaction using our parameters"
+    - name: "Ops | Native Asset {{ name }} | Wait until we have at least {{ dummy_fee }} lovelace in {{ wallet_addr }}"
       assert_address_funded:
         cardano_node_socket: "{{ cardano_node_socket }}"
         cardano_bin_path: "{{ cardano_bin_path }}"
@@ -101,6 +101,9 @@
       become: true
       become_user: "{{ cardano_user }}"
       register: lovelace_result
+      retries: 60
+      delay: 10    # wait up to 10 min for wallet to be funded
+      until: lovelace_result.lovelace | int >= dummy_fee
 
     - name: "Ops | Native Asset {{ name }} | Calc lovelace we have"
       set_fact:

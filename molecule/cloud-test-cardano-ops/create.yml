@@ -52,7 +52,7 @@
         size_id: "{{ item.size_id }}"
         ssh_key_ids: "{{ remote_keypair.data.ssh_key.id }}"
         wait: true
-        wait_timeout: 300
+        wait_timeout: 600
         state: present
       register: server
       with_items: "{{ molecule_yml.platforms }}"
@@ -64,7 +64,7 @@
         jid: "{{ item.ansible_job_id }}"
       register: digitalocean_jobs
       until: digitalocean_jobs.finished
-      retries: 300
+      retries: 600
       with_items: "{{ server.results }}"
 
     # Mandatory configuration for Molecule to function.

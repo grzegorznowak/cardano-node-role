@@ -19,6 +19,7 @@ platforms:
       - asset_holders
       - nft_holders
       - mature  # because the node is almost synced
+#     - stress_testers  - a heavy duty stuff that we only want to run once in every while to not DDoS the chain
 
 provisioner:
   name: ansible
@@ -47,6 +48,7 @@ provisioner:
           - &wallet_default default
           - wallet1
           - wallet2
+          - siege
         cardano_nfts:
           - slug: NFT001
             description:
@@ -72,7 +74,9 @@ provisioner:
           - name: &test_asset_2 TestAsset002
             quantity: &test_asset_qty_2 20000
             wallet: *wallet_default
-        cardano_assets_burn:  # needed to maintain idempotence when testing against the distrubuted system
+        # needed to maintain idempotence when testing against the distrubuted system
+        # however currently is not used
+        cardano_assets_burn:
           - name: *test_asset
             quantity: *test_asset_qty
             wallet: *wallet_default

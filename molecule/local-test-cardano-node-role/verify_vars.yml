@@ -25,3 +25,5 @@ cardano_skey_file: payment.skey
 cardano_payment_addr_file: payment.addr
 
 cardano_user: cardano
+
+#  cardano_assets_siege: true - one off test against transaction sizes etc. a WIP generally TBD.

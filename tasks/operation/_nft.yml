@@ -121,7 +121,7 @@
         group: "{{ cardano_group }}"
         mode: '0775'
 
-    - name: "Ops | NFT {{ nft_slug }} | Check if wgie can fund the transaction using our parameters"
+    - name: "Ops | NFT {{ nft_slug }} | Wait until we have at least {{ dummy_fee }} lovelace in {{ wallet_addr }}"
       assert_address_funded:
         cardano_node_socket: "{{ cardano_node_socket }}"
         cardano_bin_path: "{{ cardano_bin_path }}"
@@ -133,6 +133,9 @@
       become: true
       become_user: "{{ cardano_user }}"
       register: lovelace_result
+      retries: 60
+      delay: 10    # wait up to 10 min for wallet to be funded
+      until: lovelace_result.lovelace | int >= dummy_fee
 
     - name: "Ops | NFT {{ nft_slug }} | Calc lovelace we have"
       set_fact:

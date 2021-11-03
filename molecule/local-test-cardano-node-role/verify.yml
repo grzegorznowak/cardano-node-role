@@ -65,3 +65,12 @@
     - include_vars: verify_vars.yml
     - include: install_goss.yml
     - include: ../../tests/integration/test_ansible_nft_holders.yml
+
+- name: Stress Tests the Blockchain
+  hosts: stress_testers
+  become: true
+
+  tasks:
+    - include_vars: verify_vars.yml
+    - include: install_goss.yml
+    - include: ../../tests/integration/test_stress.yml

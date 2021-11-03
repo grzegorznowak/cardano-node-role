@@ -21,3 +21,12 @@ def test_token_listing():
     assert tokens['x.token1'] == 2
     assert tokens['y.token1'] == 120
     assert tokens['z.token2'] == 103
+    utxo2 = '''
+                               TxHash                                 TxIx        Amount
+    --------------------------------------------------------------------------------------
+        '''
+
+    # a happy path
+    tokens = tokens_from_utxo(utxo2)
+    print(tokens)
+    assert len(tokens) == 0

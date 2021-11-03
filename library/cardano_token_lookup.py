@@ -3,6 +3,7 @@ from functools import reduce
 from collections import Counter
 import operator
 
+
 def create_utxo_query_command(cardano_node_socket, active_network, testnet_magic, cardano_bin_path, wallet_address):
 
     command = ""
@@ -10,15 +11,15 @@ def create_utxo_query_command(cardano_node_socket, active_network, testnet_magic
         command = "CARDANO_NODE_SOCKET_PATH={0} " \
                   "{1}/cardano-cli query utxo " \
                   "--testnet-magic {2} --address {3}".format(cardano_node_socket,
-                                                          cardano_bin_path,
-                                                          testnet_magic,
-                                                          wallet_address)
+                                                             cardano_bin_path,
+                                                             testnet_magic,
+                                                             wallet_address)
     elif active_network == 'main':
         command = "CARDANO_NODE_SOCKET_PATH={0} " \
                   "{1}/cardano-cli query utxo " \
                   "--mainnet --address {2}".format(cardano_node_socket,
-                                               cardano_bin_path,
-                                               wallet_address)
+                                                   cardano_bin_path,
+                                                   wallet_address)
 
     return command
 
@@ -34,7 +35,7 @@ def tokens_from_utxo(raw_utxo_table):
            for tokens in row_tokens]
 
     return dict(reduce(operator.add,
-                       map(Counter, all_tokens)))
+                       map(Counter, all_tokens), Counter({})))
 
 
 def main():
