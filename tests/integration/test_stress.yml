@@ -1,0 +1,12 @@
+---
+
+# only used during performance tests
+- include_tasks: _native_asset.yml
+  vars:
+    quantity: "999"
+    name: "siegetoken{{ item }}"
+    wallet_addr: "{{ wallet_results['wallets_addresses']['siege'] }}"
+    payment_skey: "{{ wallet_results['wallets']['siege']['paths']['skey'] }}"
+    policy_name: "native_asset_siege_{{ item }}_policy"
+  loop: "{{ range(0, 255) | list }}"
+  when: cardano_assets_siege is defined and cardano_assets_siege == true
