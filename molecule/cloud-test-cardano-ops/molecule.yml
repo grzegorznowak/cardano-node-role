@@ -71,18 +71,29 @@ provisioner:
           - name: &test_asset TestAsset001
             quantity: &test_asset_qty 10000
             wallet: *wallet_default
+            send_to: wallet1
           - name: &test_asset_2 TestAsset002
             quantity: &test_asset_qty_2 20000
             wallet: *wallet_default
+            send_to: wallet_missing
+          - name: &test_asset_3 TestAsset003
+            quantity: &test_asset_qty_3 30000
+            wallet: *wallet_default
+
         # needed to maintain idempotence when testing against the distrubuted system
         # however currently is not used
-        cardano_assets_burn:
-          - name: *test_asset
-            quantity: *test_asset_qty
-            wallet: *wallet_default
-          - name: *test_asset_2
-            quantity: *test_asset_qty_2
-            wallet: *wallet_default
+#       UPDATE: idempotence is not really testable anyway given we create new policies each time
+#       TODO: remove after 1.0.0 release
+#        cardano_assets_burn:
+#          - name: *test_asset
+#            quantity: *test_asset_qty
+#            wallet: *wallet_default
+#          - name: *test_asset_2
+#            quantity: *test_asset_qty_2
+#            wallet: *wallet_default
+#          - name: *test_asset_2
+#            quantity: *test_asset_qty_2
+#            wallet: *wallet_default
 
 scenario:
   name: cloud-test-cardano-ops

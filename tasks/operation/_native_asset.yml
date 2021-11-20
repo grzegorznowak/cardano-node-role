@@ -7,6 +7,7 @@
 # payment_skey      skey correlated with the wallet_addr
 # policy_name       name of the policy used to create this asset
 # cardano_bin_path  cardano-cli path
+# send_to           either an own wallet name or a full address where minet tokens should be sent to
 
 - name: "Ops | Native Asset {{ name }} | Make sure we're on a synced node"
   assert_cardano_synced:
