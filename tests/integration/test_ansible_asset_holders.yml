@@ -1,18 +1,32 @@
 ---
 
-- name: Test Ops | Native Assets | Read the wallet address
+- name: Test Ops | Native Assets | Read the minting wallet address
   command: >-
     cat {{ cardano_wallet_fullpath }}/{{ cardano_payment_addr_file }}
-  register: wallet_addr
+  register: minting_addr
 
-- name: Test Ops | Native Assets | Grab all the minted tokens
+- name: Test Ops | Native Assets | Read the mint receiving wallet address
+  command: >-
+    cat {{ cardano_mint_receiving_wallet_fullpath }}/{{ cardano_payment_addr_file }}
+  register: mint_receiving_addr
+
+- name: "Test Ops | Native Assets | Grab tokens in {{ cardano_minting_wallet }} wallet"
   cardano_token_lookup:
     cardano_node_socket: "{{ cardano_node_socket }}"
     cardano_bin_path: "{{ cardano_bin_path }}"
     active_network: "{{ active_network }}"
     testnet_magic: "{{ network_magic }}"  # only used on testnet
-    address: "{{ wallet_addr.stdout }}"
-  register: existing_tokens
+    address: "{{ minting_addr.stdout }}"
+  register: mint_addr_existing_tokens
+
+- name: "Test Ops | Native Assets | Grab tokens in {{ cardano_mint_receiving_wallet }} wallet"
+  cardano_token_lookup:
+    cardano_node_socket: "{{ cardano_node_socket }}"
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    active_network: "{{ active_network }}"
+    testnet_magic: "{{ network_magic }}"  # only used on testnet
+    address: "{{ mint_receiving_addr.stdout }}"
+  register: mint_receiving_existing_tokens
 
 - name: Test Ops | Native Assets | Grab the token's policy
   cardano_policy:
@@ -28,4 +42,6 @@
 - name: Test Ops  | Native Assets | Make sure we have the token in the expected quantity
   assert:
     that:
-      - existing_tokens.tokens[policy_id+'.TestAsset001'] == 10000
+      - mint_addr_existing_tokens.tokens[policy_id+'.TestAsset002'] == 20000
+      - mint_addr_existing_tokens.tokens[policy_id+'.TestAsset003'] == 30000
+      - mint_receiving_existing_tokens.tokens[policy_id+'.TestAsset001'] == 10000

@@ -18,7 +18,11 @@ cardano_node_runtime: "{{ cardano_home_directory }}/cardano_node"
 
 cardano_wallets_path: wallets
 cardano_testing_wallet: default
+cardano_minting_wallet: default
+cardano_mint_receiving_wallet: wallet1
 cardano_wallet_fullpath: "{{ cardano_home_directory }}/{{ cardano_wallets_path }}/{{ cardano_testing_wallet }}"
+cardano_minting_wallet_fullpath: "{{ cardano_home_directory }}/{{ cardano_wallets_path }}/{{ cardano_minting_wallet }}"
+cardano_mint_receiving_wallet_fullpath: "{{ cardano_home_directory }}/{{ cardano_wallets_path }}/{{ cardano_mint_receiving_wallet }}"
 
 cardano_vkey_file: payment.vkey
 cardano_skey_file: payment.skey

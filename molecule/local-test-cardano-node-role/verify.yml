@@ -1,52 +1,52 @@
 ---
 
-- name: Verify Common
-  hosts: all
-  become: true
-  tasks:
-    - include_vars: verify_vars.yml
-    - include: install_goss.yml
-    - include: ../../tests/integration/test_ansible_all.yml
-    - include: verify_goss_group.yml
-      vars:
-        goss_test_group: "all"
-
-- name: Verify Pristine Nodes
-  hosts: pristine
-  become: true
-  tasks:
-    - include_vars: verify_vars.yml
-    - include: install_goss.yml
-    - include: ../../tests/integration/test_ansible_pristine.yml
-
-- name: Verify Mature Nodes
-  hosts: mature
-  become: true
-  tasks:
-    - include_vars: verify_vars.yml
-    - include: install_goss.yml
-    - include: ../../tests/integration/test_ansible_mature.yml
-
-- name: Verify CNCLI Users
-  hosts: cncli_users
-  become: true
-  vars:
-    cncli_add: true
-  tasks:
-    - include_vars: verify_vars.yml
-    - include: install_goss.yml
-    - include: verify_goss_group.yml
-      vars:
-        goss_test_group: "cncli_users"
-
-- name: Verify Wallet Holders
-  hosts: wallet_holders
-  become: true
-
-  tasks:
-    - include_vars: verify_vars.yml
-    - include: install_goss.yml
-    - include: ../../tests/integration/test_ansible_wallet_holders.yml
+#- name: Verify Common
+#  hosts: all
+#  become: true
+#  tasks:
+#    - include_vars: verify_vars.yml
+#    - include: install_goss.yml
+#    - include: ../../tests/integration/test_ansible_all.yml
+#    - include: verify_goss_group.yml
+#      vars:
+#        goss_test_group: "all"
+#
+#- name: Verify Pristine Nodes
+#  hosts: pristine
+#  become: true
+#  tasks:
+#    - include_vars: verify_vars.yml
+#    - include: install_goss.yml
+#    - include: ../../tests/integration/test_ansible_pristine.yml
+#
+#- name: Verify Mature Nodes
+#  hosts: mature
+#  become: true
+#  tasks:
+#    - include_vars: verify_vars.yml
+#    - include: install_goss.yml
+#    - include: ../../tests/integration/test_ansible_mature.yml
+#
+#- name: Verify CNCLI Users
+#  hosts: cncli_users
+#  become: true
+#  vars:
+#    cncli_add: true
+#  tasks:
+#    - include_vars: verify_vars.yml
+#    - include: install_goss.yml
+#    - include: verify_goss_group.yml
+#      vars:
+#        goss_test_group: "cncli_users"
+#
+#- name: Verify Wallet Holders
+#  hosts: wallet_holders
+#  become: true
+#
+#  tasks:
+#    - include_vars: verify_vars.yml
+#    - include: install_goss.yml
+#    - include: ../../tests/integration/test_ansible_wallet_holders.yml
 
 - name: Verify Asset Holders
   hosts: asset_holders
@@ -57,20 +57,20 @@
     - include: install_goss.yml
     - include: ../../tests/integration/test_ansible_asset_holders.yml
 
-- name: Verify NFT Holders
-  hosts: nft_holders
-  become: true
-
-  tasks:
-    - include_vars: verify_vars.yml
-    - include: install_goss.yml
-    - include: ../../tests/integration/test_ansible_nft_holders.yml
-
-- name: Stress Tests the Blockchain
-  hosts: stress_testers
-  become: true
-
-  tasks:
-    - include_vars: verify_vars.yml
-    - include: install_goss.yml
-    - include: ../../tests/integration/test_stress.yml
+#- name: Verify NFT Holders
+#  hosts: nft_holders
+#  become: true
+#
+#  tasks:
+#    - include_vars: verify_vars.yml
+#    - include: install_goss.yml
+#    - include: ../../tests/integration/test_ansible_nft_holders.yml
+#
+#- name: Stress Tests the Blockchain
+#  hosts: stress_testers
+#  become: true
+#
+#  tasks:
+#    - include_vars: verify_vars.yml
+#    - include: install_goss.yml
+#    - include: ../../tests/integration/test_stress.yml
