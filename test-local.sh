@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt install -y unzip virtualenv build-essential python3-dev
+sudo apt install -y curl unzip virtualenv build-essential python3-dev
 sudo apt install python-pip || true
 sudo apt install python3-pip || true
 

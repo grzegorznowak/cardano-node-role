@@ -71,11 +71,11 @@ provisioner:
           - name: &test_asset TestAsset001
             quantity: &test_asset_qty 10000
             wallet: *wallet_default
-            send_to: wallet1
+            mint_to: wallet1
           - name: &test_asset_2 TestAsset002
             quantity: &test_asset_qty_2 20000
             wallet: *wallet_default
-            send_to: wallet_missing
+            mint_to: wallet_missing
           - name: &test_asset_3 TestAsset003
             quantity: &test_asset_qty_3 30000
             wallet: *wallet_default

@@ -13,5 +13,5 @@
     wallet_addr: "{{ wallet_results['wallets_addresses'][item.wallet] }}"
     payment_skey: "{{ wallet_results['wallets'][item.wallet]['paths']['skey'] }}"
     policy_name: "nft_{{ item.slug }}_policy"
-    send_to: "{{ wallet_results['wallets_addresses'][item.send_to] | default(item.send_to) }}"
+    mint_to: "{{ wallet_results['wallets_addresses'][item.send_to] | default(item.send_to) | default(wallet_addr) }}"
   loop: "{{ cardano_nfts }}"

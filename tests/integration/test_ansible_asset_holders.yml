@@ -2,7 +2,7 @@
 
 - name: Test Ops | Native Assets | Read the minting wallet address
   command: >-
-    cat {{ cardano_wallet_fullpath }}/{{ cardano_payment_addr_file }}
+    cat {{ cardano_minting_wallet_fullpath }}/{{ cardano_payment_addr_file }}
   register: minting_addr
 
 - name: Test Ops | Native Assets | Read the mint receiving wallet address
@@ -28,20 +28,54 @@
     address: "{{ mint_receiving_addr.stdout }}"
   register: mint_receiving_existing_tokens
 
-- name: Test Ops | Native Assets | Grab the token's policy
+- name: Test Ops | Native Assets | Grab the token's 001 policy
   cardano_policy:
     cardano_bin_path: "{{ cardano_bin_path }}"
     name: "native_asset_TestAsset001_policy"
   become: true
   become_user: "{{ cardano_user }}"
-  register: policies_results
+  register: policies_results_1
+
+- name: Test Ops | Native Assets | Grab the token's 002 policy
+  cardano_policy:
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    name: "native_asset_TestAsset002_policy"
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: policies_results_2
+
+- name: Test Ops | Native Assets | Grab the token's 003 policy
+  cardano_policy:
+    cardano_bin_path: "{{ cardano_bin_path }}"
+    name: "native_asset_TestAsset003_policy"
+  become: true
+  become_user: "{{ cardano_user }}"
+  register: policies_results_3
+
+- debug:
+    var: policies_results_1
+  changed_when: true
+
+- debug:
+    var: policies_results_2
+  changed_when: true
+
+- debug:
+    var: policies_results_3
+  changed_when: true
 
 - set_fact:
-    policy_id: "{{ policies_results['policies_ids']['native_asset_TestAsset001_policy'] }}"
+    policy_id_1: "{{ policies_results_1['policies_ids']['native_asset_TestAsset001_policy'] }}"
+    policy_id_2: "{{ policies_results_2['policies_ids']['native_asset_TestAsset002_policy'] }}"
+    policy_id_3: "{{ policies_results_3['policies_ids']['native_asset_TestAsset003_policy'] }}"
+
+- debug:
+    var: mint_addr_existing_tokens
+  changed_when: true
 
 - name: Test Ops  | Native Assets | Make sure we have the token in the expected quantity
   assert:
     that:
-      - mint_addr_existing_tokens.tokens[policy_id+'.TestAsset002'] == 20000
-      - mint_addr_existing_tokens.tokens[policy_id+'.TestAsset003'] == 30000
-      - mint_receiving_existing_tokens.tokens[policy_id+'.TestAsset001'] == 10000
+      - mint_addr_existing_tokens.tokens[policy_id_2+'.TestAsset002'] == 20000
+      - mint_addr_existing_tokens.tokens[policy_id_3+'.TestAsset003'] == 30000
+      - mint_receiving_existing_tokens.tokens[policy_id_1+'.TestAsset001'] == 10000  # mint-receiving address check
