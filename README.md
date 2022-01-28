@@ -211,26 +211,26 @@ blocking specific Ops that require certain amounts to be available.
 
 ```yaml
 # Cardano user
-cardano_home_directory: /home/cardano
 cardano_user: cardano
 cardano_group: cardano
+cardano_home_directory: "/home/{{ cardano_user }}"
 
 # possible options:
 # src - compile from source
 # dist - use the official binary
-cardano_install_method: src
+cardano_install_method: dist
 
 # Version variables
 ghc_version: 8.10.4
 cabal_version: 3.4.0.0
 
 # Applicable only when building from src
-cardano_node_version: 1.30.0
+cardano_node_version: 1.33.0
 
 # Applicable only when installing from dist
-cardano_hydra_build: 7981360
+cardano_hydra_build: 9941151
 # always confirm your sha, or a poison might be coming
-cardano_dist_sha_256: 3bf8dae2457e647600180ceda094637b46bcab9da837c769d6e8c9e3e8dc157c
+cardano_dist_sha_256: eb7fbc652f79bcb8f56699ed7fee174a4ed321307c7086838d44972136795543
 cardano_dist_url: "https://hydra.iohk.io/build/{{ cardano_hydra_build }}/download/1"
 
 # Service Config

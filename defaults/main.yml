@@ -10,9 +10,9 @@ cardano_assets: []
 cardano_nfts: []
 
 # Cardano paths and users
-cardano_home_directory: /home/cardano
 cardano_user: cardano
 cardano_group: cardano
+cardano_home_directory: "/home/{{ cardano_user }}"
 ### keeps track of assets we mint
 cardano_assets_directory: "{{ cardano_home_directory }}/assets"
 
@@ -25,7 +25,7 @@ cardano_max_tx_submit_retry: 2
 # possible options:
 # src - compile from source
 # dist - use the official binary
-cardano_install_method: src
+cardano_install_method: dist
 
 # Versions
 ghc_version: 8.10.4
