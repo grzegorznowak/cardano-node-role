@@ -13,6 +13,7 @@ jobs:
   cd-build:
     environment: production
     runs-on: ubuntu-latest
+    concurrency: molecule_cd
 
     steps:
       - uses: actions/checkout@v2

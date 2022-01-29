@@ -6,6 +6,9 @@ cardano_wallets: []  # don't create anything by default, let us decide
 # Native Assets to mint
 cardano_assets: []
 
+# Native Assets to burn
+cardano_assets_burn: []
+
 # NFTs to mint
 cardano_nfts: []
 

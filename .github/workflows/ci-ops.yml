@@ -13,6 +13,7 @@ jobs:
   ci-test-ops:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     environment: ci
+    concurrency: molecule_ops
     runs-on: ubuntu-latest
 
     steps:
