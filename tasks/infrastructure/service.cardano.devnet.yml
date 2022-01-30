@@ -5,9 +5,9 @@
     repo: "{{ crdano_devnet_repo }}"
     dest: "{{ cardano_devnet_path }}"
     version: "{{ cardano_devnet_script_version }}"
-    owner: "{{ cardano_user }}"
-    group: "{{ cardano_group }}"
     force: true
+  become: true
+  become_user: "{{ cardano_user }}"
 
 - name: Cardano Service | Copy service file template
   template:
