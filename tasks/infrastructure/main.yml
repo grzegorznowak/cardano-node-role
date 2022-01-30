@@ -4,6 +4,12 @@
 - include: dependencies.yml
 - include: build.libsodium.yml
 - include: build.cardano.yml
+
 - include: service.cardano.yml
+  when: active_network != 'dev'
+
+- include: service.cardano.devnet.yml
+  when: active_network == 'dev'
+
 - include: tools.cncli.yml
   when: cncli_add

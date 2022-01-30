@@ -1,0 +1,33 @@
+---
+
+- name: Git checkout
+  git:
+    repo: "{{ crdano_devnet_repo }}"
+    dest: "{{ cardano_devnet_path }}"
+    version: "{{ cardano_devnet_script_version }}"
+    force: true
+
+- name: Cardano Service | Copy service file template
+  template:
+    src: service_devnet.j2
+    dest: "{{ cardano_service_file }}"
+    mode: "775"
+  register: cardano_service_file_result
+  notify: Cardano Restart
+
+- name: Cardano Service | reload systemctl
+  systemd:
+    daemon_reload: true
+  when: cardano_service_file_result is defined and cardano_service_file_result.changed
+  tags:
+    - skip_ansible_lint  # we do want to have this reloaded here and now
+
+- name: "Cardano Service | Enable the {{ cardano_service_name }} service"
+  service:
+    name: "{{ cardano_service_name }}.service"
+    enabled: true
+
+- name: "Cardano Service | Start the {{ cardano_service_name }} service"
+  service:
+    name: "{{ cardano_service_name }}.service"
+    state: started

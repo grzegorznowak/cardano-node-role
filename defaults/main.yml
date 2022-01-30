@@ -49,6 +49,8 @@ cardano_listen_port: 22322  # has to be in the upper bracket if it's running as 
 
 # Net Definitions
 cardano_nets:
+  dev:
+    magic: 42
   main:
     magic: 764824073
     files:
@@ -75,6 +77,12 @@ cardano_nets:
 active_network: test
 network_magic: "{{ cardano_nets[active_network]['magic'] }}"
 
+# repo with the juicy devnet scripts
+crdano_devnet_repo: https://github.com/woofpool/cardano-private-testnet-setup.git
+# repo sha to checkout to
+cardano_devnet_script_version: c7fe4c1c383661e9fac1d94dc54f6a332827b983
+cardano_devnet_path: "{{ cardano_home_directory }}/cardano_devnet"
+
 # NON-essential variables. We use those to keep things more DRY or tight
 # feel free to adjust if you don't like those
 cardano_config_path: "{{ cardano_home_directory }}/cardano_node_config"
@@ -91,6 +99,7 @@ cardano_service_name: cardano-node
 cardano_node_pidfile: "/var/run/{{ cardano_service_name }}/cardano_node.pid"
 cardano_service_file: "/lib/systemd/system/{{ cardano_service_name }}.service"
 cardano_node_runtime: "{{ cardano_home_directory }}/cardano_node"
+
 cardano_node_db: "{{ cardano_node_runtime }}/db"
 cardano_node_socket: "{{ cardano_node_runtime }}/db/node.socket"
 cardano_start_path: /var/lib/cardano_start.sh
