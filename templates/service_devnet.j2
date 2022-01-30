@@ -14,7 +14,7 @@ Restart=always
 RestartSec=5
 User={{ cardano_user }}
 Group={{ cardano_group }}
-RuntimeDirectory={{ cardano_devnet_path }}
+RuntimeDirectory={{ cardano_service_name }}
 RuntimeDirectoryMode=2775
 
 ExecStop=/bin/kill -s TERM $MAINPID
