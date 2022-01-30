@@ -5,6 +5,7 @@ After=network.target
 [Service]
 Type=simple
 Environment=LD_LIBRARY_PATH=/usr/local/lib
+Environment=PATH={{ cardano_bin_path }}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 WorkingDirectory={{ cardano_devnet_path }}
 ExecStart={{ cardano_devnet_path }}/scripts/automate.sh
 
