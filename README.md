@@ -1,7 +1,6 @@
 # Cardano Node Role
 
 ![Ansible Lint](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/lint.yml/badge.svg)
-![CI Sources Integration](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci-sources.yml/badge.svg)
 ![CI Binary Integration](https://github.com/grzegorznowak/cardano-node-role/actions/workflows/ci-prebuilt.yml/badge.svg)
 
 Installs Cardano Node as a systemd service on Ubuntus and Debians.
