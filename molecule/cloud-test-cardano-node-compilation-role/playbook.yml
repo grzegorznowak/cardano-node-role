@@ -5,8 +5,5 @@
 
   roles:
     - shareable-ansible-toolkit/common_ssh
-    # Make sure the upgrade path works OK
-    - role: cardano-node-role
-      cardano_node_version: 1.30.0
     - role: cardano-node-role
       cardano_node_version: 1.33.0
