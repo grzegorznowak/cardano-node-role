@@ -354,8 +354,8 @@ The very broad 10k feet view of what is planned generally:
 * ~~A baseline Cardano Node installation~~
 * ~~Full CI/CD~~
 * ~~Integrate CNCLI~~
-* Automate native tokens minting
-* Automate NFT minting
+* ~~Automate native tokens minting~~
+* ~~Automate NFT minting~~
 * Smart contracts' interfacing 
 * More/better provisioning examples
 * Exposition of what would be the result of running this role as a public node
@@ -363,17 +363,6 @@ The very broad 10k feet view of what is planned generally:
 
 Some food for thought, but not really in plans as of now:
 * Research the possibility of Block Producing Node to be ephemeral
-* Complete stacking pool implementation  
+* Complete staking pool implementation  
 
 the above is subject to change or can be refactored into bespoke roles for modularity.
- 
-## Donations
-
-Running CI pipeline for this project is no fluff, so your support is highly appreciated
-
-You can support this project by buying a native token minted using this very role and called a `FKL`,
-which pays tribute to Guy Richie's movies.
-
-Simply Send 2ADA to the following address and I will send you 1FKL + ~1.5ADA back, fees excluded. 
-
-`addr1q8ckqv8hm9zsvv8glxypmj3chfymjttnppfeypgt4zy09p6nzz27ada3sl2vhc30j64g2j6788fkqx4cqmgzxvxxyurs479zqu`
