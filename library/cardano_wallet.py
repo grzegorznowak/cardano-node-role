@@ -130,7 +130,7 @@ def main():
         addr_file=dict(type='str', default='payment.addr'),
         state=dict(type='str', default='present', choices=['present']),
         active_network=dict(type='str', default='test',
-                            choices=['test', 'main']),
+                            choices=['test', 'main', 'dev']),
         testnet_magic=dict(type='str'))
 
     module = AnsibleModule(argument_spec=argument_spec,
