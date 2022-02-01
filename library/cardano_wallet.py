@@ -116,6 +116,14 @@ def build_wallet_cmds(active_network, testnet_magic, cardano_bin_path, wallet):
                                     "--mainnet".format(cardano_bin_path,
                                                        vkey_file,
                                                        addr_file))
+
+    elif active_network == "dev":
+        wallet_creation_cmds.append("{0}/cardano-cli address build "
+                                    "--payment-verification-key-file {1} "
+                                    "--out-file {2} "
+                                    "--mainnet".format(cardano_bin_path,
+                                                       vkey_file,
+                                                       addr_file))
     return wallet_creation_cmds
 
 
