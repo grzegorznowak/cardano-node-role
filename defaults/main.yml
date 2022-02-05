@@ -78,7 +78,7 @@ active_network: test
 network_magic: "{{ cardano_nets[active_network]['magic'] }}"
 
 # repo with the juicy devnet scripts
-crdano_devnet_repo: https://github.com/woofpool/cardano-private-testnet-setup.git
+cardano_devnet_repo: https://github.com/woofpool/cardano-private-testnet-setup.git
 # repo sha to checkout to
 cardano_devnet_script_version: c7fe4c1c383661e9fac1d94dc54f6a332827b983
 cardano_devnet_path: "{{ cardano_home_directory }}/cardano_devnet"

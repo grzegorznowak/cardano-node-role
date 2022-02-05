@@ -2,15 +2,25 @@
 
 - name: Git checkout
   git:
-    repo: "{{ crdano_devnet_repo }}"
+    repo: "{{ cardano_devnet_repo }}"
     dest: "{{ cardano_devnet_path }}"
     version: "{{ cardano_devnet_script_version }}"
     force: true
   become: true
   become_user: "{{ cardano_user }}"
-  notify:
-    - Flush the devnet
-    - Cardano Restart
+  register: cardano_devnet_repo_result
+
+- name: "Cardano Service | Stop the service before flushing devnet"
+  service:
+    name: "{{ cardano_service_name }}.service"
+    state: stopped
+  when: cardano_devnet_repo_result.changed
+
+- name: Cardano Devnet | Flush the devnet files when different version is in use
+  file:
+    path: "{{ cardano_devnet_path }}/private-testnet"
+    state: absent
+  when: cardano_devnet_repo_result.changed
 
 - name: Cardano Service | Copy service file template
   template:
