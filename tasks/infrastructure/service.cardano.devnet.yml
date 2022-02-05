@@ -8,6 +8,9 @@
     force: true
   become: true
   become_user: "{{ cardano_user }}"
+  notify:
+    - Flush the devnet
+    - Cardano Restart
 
 - name: Cardano Service | Copy service file template
   template:

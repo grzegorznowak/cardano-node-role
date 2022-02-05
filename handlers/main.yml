@@ -9,3 +9,8 @@
   service:
     name: "{{ cncli_sync_service_name }}.service"
     state: restarted
+
+- name: Flush the devnet
+  file:
+    path: "{{ cardano_devnet_path }}/private-testnet"
+    state: absent
