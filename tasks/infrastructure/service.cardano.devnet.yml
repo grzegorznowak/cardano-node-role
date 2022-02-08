@@ -25,6 +25,7 @@
     name: "{{ cardano_service_name }}.service"
     state: stopped
   when: cardano_devnet_repo_result.changed
+  ignore_errors: true  # initial converge won't really have that service
   tags:
     - skip_ansible_lint  # turn a round, we need this
 
