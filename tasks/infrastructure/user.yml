@@ -15,6 +15,7 @@
     create_home: true
     shell: /bin/bash
     home: "{{ cardano_home_directory }}"
+  when: cardano_user != 'root'
 
 - name: User | Permissions to the home directory
   file:
