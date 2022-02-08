@@ -9,6 +9,16 @@
   become: true
   become_user: "{{ cardano_user }}"
   register: cardano_devnet_repo_result
+  when: cardano_user != 'root'
+
+- name: Git checkout
+  git:
+    repo: "{{ cardano_devnet_repo }}"
+    dest: "{{ cardano_devnet_path }}"
+    version: "{{ cardano_devnet_script_version }}"
+    force: true
+  register: cardano_devnet_repo_result
+  when: cardano_user == 'root'
 
 - name: "Cardano Service | Stop the service before flushing devnet"
   service:
