@@ -3,6 +3,7 @@
 - include: user.yml
 - include: dependencies.yml
 - include: build.libsodium.yml
+  when: cardano_node_with_libsodium == true
 - include: build.cardano.yml
 
 - include: service.cardano.yml
