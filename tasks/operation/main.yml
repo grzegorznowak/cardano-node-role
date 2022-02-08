@@ -1,5 +1,8 @@
 ---
 
-- include: wallets.yml
-- include: native_assets.yml
-- include: nfts.yml
+- include_tasks: wallets.yml
+  when: cardano_wallets | length > 0
+- include_tasks: native_assets.yml
+  when: cardano_assets | length > 0
+- include_tasks: nfts.yml
+  when: cardano_nfts | length > 0
