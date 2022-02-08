@@ -15,7 +15,7 @@
     create_home: true
     shell: /bin/bash
     home: "{{ cardano_home_directory }}"
-  when: cardano_user != 'root'
+  when: cardano_user != 'root'  # ansible-bender compat, and also probably a good notion anyway
 
 - name: User | Permissions to the home directory
   file:
@@ -25,3 +25,4 @@
     group: "{{ cardano_group }}"
     recurse: false
     mode: '0775'
+  when: cardano_user != 'root'  # ansible-bender compat, and also probably a good notion anyway
