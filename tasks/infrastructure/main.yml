@@ -7,10 +7,10 @@
 - include: build.cardano.yml
 
 - include: service.cardano.yml
-  when: active_network != 'dev'
+  when: active_network != 'dev' and cardano_node_as_service is true
 
 - include: service.cardano.devnet.yml
-  when: active_network == 'dev'
+  when: active_network == 'dev' and cardano_node_as_service is true
 
 - include: tools.cncli.yml
   when: cncli_add

@@ -33,7 +33,7 @@
   service:
     name: "{{ cardano_service_name }}.service"
     state: stopped
-  ignore_errors: true  # if it's a first run, the service won't be there. TODO: evade that better!
+  ignore_errors: true  # if it's a first run or not installed, the service won't be there. TODO: evade that better!
 
 - name: Cardano Src | install cardno-node bin
   shell: >

@@ -96,6 +96,7 @@ cardano_bin_path: "{{ cardano_home_directory }}/bin"
 cardano_node_with_libsodium: true
 
 # service specific non-essential config
+cardano_node_as_service: true  # set to false to not attempt installation of cardano_node as service
 cardano_service_name: cardano-node
 cardano_node_pidfile: "/var/run/{{ cardano_service_name }}/cardano_node.pid"
 cardano_service_file: "/lib/systemd/system/{{ cardano_service_name }}.service"
