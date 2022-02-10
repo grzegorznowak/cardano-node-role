@@ -3,14 +3,14 @@
 - include_tasks: user.yml
 - include_tasks: dependencies.yml
 - include_tasks: build.libsodium.yml
-  when: cardano_node_with_libsodium is true
+  when: cardano_node_with_libsodium
 - include_tasks: build.cardano.yml
 
 - include_tasks: service.cardano.yml
-  when: active_network != 'dev' and cardano_node_as_service is true
+  when: active_network != 'dev' and cardano_node_as_service
 
 - include_tasks: service.cardano.devnet.yml
-  when: active_network == 'dev' and cardano_node_as_service is true
+  when: active_network == 'dev' and cardano_node_as_service
 
 - include_tasks: tools.cncli.yml
   when: cncli_add
