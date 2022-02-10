@@ -34,7 +34,7 @@ cardano_install_method: dist
 ghc_version: 8.10.4
 cabal_version: 3.4.0.0
 
-# Applicable only when building from src
+# Used to check versions between src and dist installation methods
 cardano_node_version: 1.33.0
 
 # Applicable only when installing from dist
