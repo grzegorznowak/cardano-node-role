@@ -7,7 +7,7 @@ on:
     branches: [ main ]
     paths:
       - 'images/cardano-node/**'
-      - 'workflows/cd.cardano-node.image.yml'
+      - '.github/workflows/cd.cardano-node.image.yml'
 
 env:
   IMAGE_NAME: cardano-node

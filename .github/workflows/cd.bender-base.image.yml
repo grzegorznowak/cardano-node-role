@@ -7,7 +7,7 @@ on:
     branches: [ main ]
     paths:
       - 'images/bender-base/**'
-      - 'workflows/cd.bender-base.image.yml'
+      - '.github/workflows/cd.bender-base.image.yml'
 jobs:
   build:
 
