@@ -45,7 +45,8 @@
     asset_path: "{{ cardano_assets_directory }}/native/{{ name }}"
 
 # since set_fact can't depend on the vars it defines itself, we need the second round here
-- set_fact:
+- name: Ops | Memoize asset_policy_name
+  set_fact:
     asset_policy_name: "{{ policy_id }}.{{ name }}"  # token name with policy id as needed by utxo
 
 - name: "Ops | Native Assets Burn {{ asset_policy_name }} | Grab existing tokens"
@@ -66,7 +67,8 @@
       # and not really tested as a stand-alone use-case
       - active_network == "test"
 
-- set_fact:
+- name: Ops | Memoize network_param
+  set_fact:
     network_param: "testnet-magic {{ network_magic }}"
 
 
@@ -83,7 +85,8 @@
   become_user: "{{ cardano_user }}"
   register: lovelace_result
 
-- assert:
+- name: Ops | Make sure we have enough lovelace
+  assert:
     that:
       - lovelace_result.lovelace | int >= dummy_fee
 

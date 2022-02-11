@@ -2,4 +2,4 @@ exclude_paths:
   - ./molecule
   - ./tests
   - ./meta
-  - ./tasks/operation/_native_asset_burn.yml
+  - .github
