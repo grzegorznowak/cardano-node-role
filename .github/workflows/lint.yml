@@ -11,12 +11,14 @@ on:
       - 'README.md'
       - meta/*
       - .github
+      - images
   pull_request:
     branches: [ main ]
     paths-ignore:
       - 'README.md'
       - meta/*
       - .github
+      - images
 
 jobs:
   lint:

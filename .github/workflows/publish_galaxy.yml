@@ -18,6 +18,13 @@ jobs:
         with:
           fetch-depth: '0'
 
+      - name: Cleanup non-ansible things
+        run: |
+          rm images -rf
+          rm molecule -rf
+          rm tests -rf
+          rm .github -rf
+
       - name: Publish role
         uses: robertdebock/galaxy-action@1.1.1
         with:
