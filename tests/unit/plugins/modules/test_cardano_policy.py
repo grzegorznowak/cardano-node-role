@@ -78,8 +78,8 @@ def test_nfts_policy_id_creation_cmds(tmp_path):
 
     assert len(policy_id_cmds) == 1
     assert len(policy_id_cmds[0]) == 2
-    assert policy_id_cmds[0][0] == "echo '{{\"type\": \"all\", \"scripts\": [{{\"slot\": 1234, " \
-"\"type\": \"before\"}}, {{\"keyHash\": \"{0}\", \"type\": \"sig\"}}]}}\' " \
+    assert policy_id_cmds[0][0] == "echo '{{\"type\": \"all\", \"scripts\": [{{\"type\": \"before\", " \
+"\"slot\": 1234}}, {{\"type\": \"sig\", \"keyHash\": \"{0}\"}}]}}\' " \
 "> {1}/policy1/script".format(key_hash, str(tmp_path))
 
 
