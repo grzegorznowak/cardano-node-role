@@ -30,7 +30,6 @@
     update-cache: true
     install_recommends: false
     cache_valid_time: 3600
-  when: cardano_install_method == "src"
 
 - name: Dependencies | Make sure we have directory where bins would be (a fix for bender)
   file:
