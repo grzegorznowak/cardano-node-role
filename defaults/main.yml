@@ -93,7 +93,7 @@ libsodium_repo: https://github.com/input-output-hk/libsodium
 cardano_repo: https://github.com/input-output-hk/cardano-node.git
 installation_scripts_path: /usr/src
 cardano_bin_path: "{{ cardano_home_directory }}/bin"
-cardano_node_with_libsodium: true
+cardano_node_with_libsodium: false
 
 # service specific non-essential config
 cardano_node_as_service: true  # set to false to not attempt installation of cardano_node as service
