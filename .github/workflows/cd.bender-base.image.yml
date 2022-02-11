@@ -1,0 +1,39 @@
+---
+
+name: CD | Build Base Image for Bender
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'images/bender-base/**'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: '0'
+          
+      - name: authenticate with the ghcr.io container registry
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u grzegorznowak --password-stdin
+      - name: install buildah dependencies
+        run: |
+          . /etc/os-release
+          sudo sh -c "echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/x${ID^}_${VERSION_ID}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list"
+          wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/x${ID^}_${VERSION_ID}/Release.key -O Release.key
+          sudo apt-key add - < Release.key
+          sudo apt-get update -qq
+          sudo apt-get -qq -y install buildah
+
+      - name: build the image
+        run: |
+          buildah build-using-dockerfile --tag ghcr.io/grzegorznowak/bender-base:latest images/bender-base
+
+      - name: publish the image
+        run: |
+          buildah push ghcr.io/grzegorznowak/bender-base:latest
