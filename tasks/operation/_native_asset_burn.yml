@@ -112,7 +112,7 @@
     --out-file {{ asset_path }}/burning.raw
   become: true
   become_user: "{{ cardano_user }}"
-  changed-when: true
+  changed_when: true
   register: raw_out
 
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Calculate the actual fee"
@@ -125,7 +125,7 @@
     --protocol-params-file {{ asset_path }}/protocol.json | cut -d " " -f1
   become: true
   become_user: "{{ cardano_user }}"
-  changed-when: false
+  changed_when: false
   register: burn_fee
 
 - name: Ops | Memoize the final_amount
@@ -148,7 +148,7 @@
     --out-file {{ asset_path }}/burning.raw
   become: true
   become_user: "{{ cardano_user }}"
-  changed-when: true
+  changed_when: true
   register: final_transaction
 
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Sign the transaction"
@@ -161,7 +161,7 @@
     --out-file {{ asset_path }}/burning.signed
   become: true
   become_user: "{{ cardano_user }}"
-  changed-when: true
+  changed_when: true
   register: signing_result
 
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Submit the transaction"
@@ -173,7 +173,7 @@
     CARDANO_NODE_SOCKET_PATH: "{{ cardano_node_socket }}"
   become: true
   become_user: "{{ cardano_user }}"
-  changed-when: true
+  changed_when: true
   register: submit_result
 
 - name: "Ops | Native Assets Burn {{ asset_policy_name }} | Wait for changes to propagate"
