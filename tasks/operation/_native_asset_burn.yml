@@ -21,7 +21,8 @@
   register: sync_check_result
   until: sync_check_result.progress | int == 100
 
-- assert:
+- name: Ops | Make sure the node is synched
+  assert:
     that:
       - (sync_check_result.progress | int) == 100
 
@@ -100,7 +101,7 @@
   register: tx_token_result
 
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Build raw transaction"
-  shell: >-
+  command: >-
     {{ cardano_bin_path }}/cardano-cli transaction build-raw
     --fee {{ burn_fee }}
     {{ tx_token_result.tx_in_formatted }}
@@ -113,7 +114,7 @@
   register: raw_out
 
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Calculate the actual fee"
-  shell: >-
+  command: >-
     {{ cardano_bin_path }}/cardano-cli
     transaction calculate-min-fee --tx-body-file {{ asset_path }}/burning.raw
     --tx-in-count {{ tx_token_result.txs_in_used }}
@@ -124,7 +125,8 @@
   become_user: "{{ cardano_user }}"
   register: burn_fee
 
-- set_fact:
+- name: Ops | Memoize the final_amount
+  set_fact:
     final_amount: "{{ tx_token_result.lovelace_available | int - (burn_fee.stdout | int) }}"
 
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Make sure we can afford the burning in terms of ada balance"
@@ -133,7 +135,7 @@
       - final_amount > 0
 
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Build the final transaction"
-  shell: >-
+  command: >-
     {{ cardano_bin_path }}/cardano-cli transaction build-raw
     --fee {{ burn_fee.stdout | int }}
     {{ tx_token_result.tx_in_formatted }}
@@ -146,7 +148,7 @@
   register: final_transaction
 
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Sign the transaction"
-  shell: >-
+  command: >-
     {{ cardano_bin_path }}/cardano-cli transaction sign
     --signing-key-file {{ payment_skey }}
     --signing-key-file {{ policy_skey }}
@@ -158,7 +160,7 @@
   register: signing_result
 
 - name: "Ops | Native Asset Burn {{ asset_policy_name }} | Submit the transaction"
-  shell: >-
+  command: >-
     {{ cardano_bin_path }}/cardano-cli transaction submit
     --tx-file {{ asset_path }}/burning.signed
     --{{ network_param }}
