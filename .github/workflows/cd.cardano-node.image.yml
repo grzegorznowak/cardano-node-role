@@ -7,6 +7,7 @@ on:
     branches: [ main ]
     paths:
       - 'images/cardano-node/**'
+      - 'workflows/cd.cardano-node.image.yml'
 
 env:
   IMAGE_NAME: cardano-node
@@ -18,6 +19,10 @@ jobs:
       matrix:
         cardano-node-version: [ 1.33.0 ]
     steps:
+      - name: free up space on the build server
+        run: |
+          ./.github/scripts/free_space.sh
+
       - uses: actions/checkout@v2
         with:
           fetch-depth: '0'
