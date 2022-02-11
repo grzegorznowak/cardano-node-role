@@ -1,5 +1,6 @@
 exclude_paths:
-  - ./molecule
-  - ./tests
-  - ./meta
+  - molecule
+  - tests
+  - meta
   - .github
+  - images
