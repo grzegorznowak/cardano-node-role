@@ -2,7 +2,7 @@
 
 - include_tasks: user.yml
 - include_tasks: dependencies.yml
-  when: cardano_install_method == "src" or cardano_node_with_libsodium
+  when: cardano_install_method == "src" or cardano_node_with_full_deps
 - include_tasks: build.libsodium.yml
   when: cardano_install_method == "src" or cardano_node_with_libsodium
 - include_tasks: build.cardano.yml
