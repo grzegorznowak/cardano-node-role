@@ -10,13 +10,17 @@
       cardano_hydra_build: 7408438  # 1.29.0
       cardano_dist_sha_256: 5b15b65dead36e9cfb1bf0fdafe76c4d374988ca5b56270a00cdcc66815b08e0
       cardano_node_with_libsodium: false
+      cardano_node_with_full_deps: false  # SKIP the inclusion of heavy stuff
     # Test upgrading
     - role: cardano-node-role
       cardano_hydra_build: 7981360  # 1.30.0
       cardano_dist_sha_256: 3bf8dae2457e647600180ceda094637b46bcab9da837c769d6e8c9e3e8dc157c
       cardano_node_with_libsodium: false
+      cardano_node_with_full_deps: false  # SKIP the inclusion of heavy stuff
     # Test upgrading
     - role: cardano-node-role
       cardano_hydra_build: 9941151  # 1.33.0
       cardano_dist_sha_256: eb7fbc652f79bcb8f56699ed7fee174a4ed321307c7086838d44972136795543
       cardano_node_with_libsodium: false
+      cardano_node_with_full_deps: false  # SKIP the inclusion of heavy stuff
+
