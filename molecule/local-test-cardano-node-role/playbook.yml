@@ -4,4 +4,5 @@
   hosts: all
 
   roles:
-    - cardano-node-role
+    - role: cardano-node-role
+      ghc_installer_extra_options: "BOOTSTRAP_HASKELL_MINIMAL=1"

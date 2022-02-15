@@ -78,6 +78,7 @@
         BOOTSTRAP_HASKELL_GHC_VERSION={{ ghc_version }}
         BOOTSTRAP_HASKELL_CABAL_VERSION={{ cabal_version }}
         BOOTSTRAP_HASKELL_NONINTERACTIVE=1
+        {{ ghc_installer_extra_options }}
         {{ ghc_installer_path }}
   when:
     - cabal_current_version != cabal_version

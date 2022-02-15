@@ -88,6 +88,7 @@ cardano_devnet_path: "{{ cardano_home_directory }}/cardano_devnet"
 cardano_config_path: "{{ cardano_home_directory }}/cardano_node_config"
 ghc_installer_path: /tmp/ghc.sh
 ghc_bin_path: /root/.ghcup/bin
+ghc_installer_extra_options: ""  # ie.  BOOTSTRAP_HASKELL_MINIMAL=1
 cardano_src_path: /usr/src/cardano
 libsodium_repo: https://github.com/input-output-hk/libsodium
 cardano_repo: https://github.com/input-output-hk/cardano-node.git
