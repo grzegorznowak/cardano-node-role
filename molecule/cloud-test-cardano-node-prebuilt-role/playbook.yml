@@ -23,4 +23,3 @@
       cardano_dist_sha_256: eb7fbc652f79bcb8f56699ed7fee174a4ed321307c7086838d44972136795543
       cardano_node_with_libsodium: false
       cardano_node_with_full_deps: false  # SKIP the inclusion of heavy stuff
-
