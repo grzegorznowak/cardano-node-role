@@ -9,7 +9,7 @@
     cardano_install_method: dist
     cardano_node_with_libsodium: false
     cardano_node_as_service: false
-    cardano_node_with_full_deps: true  # do include the full ghc and cabal etc
+    cardano_node_with_full_deps: false  # SKIP the inclusion of heavy stuff
     # repo with the juicy devnet scripts
     cardano_home_directory: /root
     cardano_node_version: 1.33.0
